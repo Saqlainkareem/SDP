@@ -2,125 +2,32 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- MOBILE & LAPTOP RESPONSIVE META TAGS -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Restaurant POS - Login</title>
-    
-    <!-- Tailwind CSS -->
     <link rel="stylesheet" href="assets/app.css">
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="assets/fontawesome/all.min.css">
-    
     <style>
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            touch-action: manipulation;
-            background: #040711;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            color: #f8fafc;
-            overflow-x: hidden;
-        }
-
-        .restaurant-font {
-            font-family: 'Cinzel', serif;
-        }
-
-        /* DYNAMIC ROYAL LUXURY BACKGROUND */
-        .royal-mesh-bg {
-            background-color: #040711;
-            background-image: 
-                radial-gradient(at 15% 15%, rgba(217, 119, 6, 0.22) 0%, transparent 55%),
-                radial-gradient(at 85% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 60%),
-                radial-gradient(at 50% 85%, rgba(180, 83, 9, 0.2) 0%, transparent 65%),
-                radial-gradient(at 90% 90%, rgba(88, 28, 135, 0.25) 0%, transparent 50%);
-            background-attachment: fixed;
-            background-size: cover;
-        }
-
-        /* GLASSMORPHISM WITH PERCENTAGE BLUR & BORDER */
-        .glass-luxury-panel {
-            background: rgba(11, 17, 33, 0.78);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(245, 158, 11, 0.25);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85),
-                        0 0 35px rgba(217, 119, 6, 0.12);
-        }
-
-        .glass-input {
-            background: rgba(6, 11, 23, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .glass-input:focus {
-            border-color: #f59e0b;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
-            background: rgba(10, 18, 38, 0.95);
-        }
-
-        /* LUXURY GOLD BUTTON WITH HOVER GLOW */
-        .royal-gold-btn {
-            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #b45309 100%);
-            background-size: 200% auto;
-            box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .royal-gold-btn:hover {
-            background-position: right center;
-            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.55);
-            transform: translateY(-2px);
-        }
-
-        .royal-gold-btn:active {
-            transform: translateY(0);
-        }
-
-        .royal-gold-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* ANIMATED AMBIENT GLOW ORBS */
-        .ambient-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            pointer-events: none;
-            z-index: 0;
-            animation: orbFloat 10s ease-in-out infinite alternate;
-        }
-
-        @keyframes orbFloat {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(3%, 4%) scale(1.08); }
-        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; touch-action: manipulation; background: #040711; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; overflow-x: hidden; }
+        .restaurant-font { font-family: 'Cinzel', serif; }
+        .royal-mesh-bg { background-color: #040711; background-image: radial-gradient(at 15% 15%, rgba(217, 119, 6, 0.22) 0%, transparent 55%), radial-gradient(at 85% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 60%), radial-gradient(at 50% 85%, rgba(180, 83, 9, 0.2) 0%, transparent 65%), radial-gradient(at 90% 90%, rgba(88, 28, 135, 0.25) 0%, transparent 50%); background-attachment: fixed; background-size: cover; }
+        .glass-luxury-panel { background: rgba(11, 17, 33, 0.78); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(245, 158, 11, 0.25); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(217, 119, 6, 0.12); }
+        .glass-input { background: rgba(6, 11, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
+        .glass-input:focus { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.35); background: rgba(10, 18, 38, 0.95); }
+        .royal-gold-btn { background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #b45309 100%); background-size: 200% auto; box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .royal-gold-btn:hover { background-position: right center; box-shadow: 0 15px 35px rgba(245, 158, 11, 0.55); transform: translateY(-2px); }
+        .royal-gold-btn:active { transform: translateY(0); }
+        .royal-gold-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .ambient-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
+        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(3%, 4%) scale(1.08); } }
     </style>
 </head>
-
 <body class="royal-mesh-bg min-h-screen flex items-center justify-center p-[2%] relative">
-
-    <!-- FLOATING LIGHT ORBS -->
     <div class="ambient-orb w-[35vw] h-[35vw] bg-amber-600/20 top-[-10%] left-[-5%]"></div>
     <div class="ambient-orb w-[40vw] h-[40vw] bg-blue-900/25 bottom-[-10%] right-[-5%]"></div>
 
-    <!-- MAIN DUAL-PANE CONTAINER -->
     <div class="w-[94%] max-w-[85rem] glass-luxury-panel rounded-3xl relative z-10 overflow-hidden flex flex-col lg:flex-row my-auto shadow-2xl border border-amber-500/30">
-        
-        <!-- ================= LEFT PANEL: RESTAURANT SHOWCASE (52% ON LAPTOP) ================= -->
         <div class="w-full lg:w-[52%] p-[5%] flex flex-col justify-between relative bg-gradient-to-br from-slate-900/90 via-slate-950/80 to-amber-950/30 border-b lg:border-b-0 lg:border-r border-amber-500/20">
-            
-            <!-- TOP BRAND HEADER -->
             <div class="space-y-[3%]">
                 <div class="flex items-center gap-[4%]">
                     <div class="relative w-[18%] max-w-[5rem] aspect-square flex-shrink-0">
@@ -132,111 +39,54 @@
                             <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             Official Enterprise Console
                         </span>
-                        <h1 class="text-xl lg:text-2xl font-black text-amber-400 tracking-wider restaurant-font leading-tight">
-                            SCALESOFT POS
-                        </h1>
-                        <p class="text-xs text-slate-300 font-medium tracking-wide">
-                            Restaurant Billing &amp; Management
-                        </p>
+                        <h1 class="text-xl lg:text-2xl font-black text-amber-400 tracking-wider restaurant-font leading-tight">SCALESOFT POS</h1>
+                        <p class="text-xs text-slate-300 font-medium tracking-wide">Restaurant Billing &amp; Management</p>
                     </div>
                 </div>
-
-                <!-- DIVIDER -->
                 <div class="h-[1px] w-full bg-gradient-to-r from-amber-500/50 via-amber-500/20 to-transparent"></div>
             </div>
 
-            <!-- MIDDLE: SYSTEM CAPABILITIES & HIGHLIGHTS -->
             <div class="my-[6%] space-y-[4%]">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">
-                    Console Capabilities
-                </h3>
-
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Console Capabilities</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-[3%]">
-                    <!-- Feature 1 -->
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
-                            <i class="fa-solid fa-receipt"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">Express Billing</h4>
-                            <p class="text-[0.65rem] text-slate-400">Fast Thermal Receipts</p>
-                        </div>
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-receipt"></i></div>
+                        <div><h4 class="text-xs font-bold text-white">Express Billing</h4><p class="text-[0.65rem] text-slate-400">Fast Thermal Receipts</p></div>
                     </div>
-
-                    <!-- Feature 2 -->
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
-                            <i class="fa-solid fa-utensils"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">Restaurant Ready</h4>
-                            <p class="text-[0.65rem] text-slate-400">Dine-in, Takeaway, Delivery</p>
-                        </div>
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>
+                        <div><h4 class="text-xs font-bold text-white">Restaurant Ready</h4><p class="text-[0.65rem] text-slate-400">Dine-in, Takeaway, Delivery</p></div>
                     </div>
-
-                    <!-- Feature 3 -->
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
-                            <i class="fa-solid fa-chart-line"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">Live Ledger</h4>
-                            <p class="text-[0.65rem] text-slate-400">Daily Sales &amp; Khata</p>
-                        </div>
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-chart-line"></i></div>
+                        <div><h4 class="text-xs font-bold text-white">Live Ledger</h4><p class="text-[0.65rem] text-slate-400">Daily Sales &amp; Khata</p></div>
                     </div>
-
-                    <!-- Feature 4 -->
                     <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
-                            <i class="fa-solid fa-shield-halved"></i>
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-white">Offline Folder Storage</h4>
-                            <p class="text-[0.65rem] text-slate-400">Data saved in your folder</p>
-                        </div>
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div><h4 class="text-xs font-bold text-white">Offline Folder Storage</h4><p class="text-[0.65rem] text-slate-400">Data saved in your folder</p></div>
                     </div>
                 </div>
             </div>
 
-            <!-- BOTTOM: SYSTEM LIVE CLOCK & ENCRYPTION BADGE -->
             <div class="flex items-center justify-between pt-[3%] border-t border-slate-800/80 text-[0.7rem] text-slate-400">
-                <div class="flex items-center gap-2">
-                    <i class="fa-regular fa-clock text-amber-400"></i>
-                    <span id="live-clock" class="font-mono font-semibold text-slate-200">--:--:--</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-amber-400 font-semibold">
-                    <i class="fa-solid fa-lock text-[0.65rem]"></i>
-                    <span>Authorized Terminal</span>
-                </div>
+                <div class="flex items-center gap-2"><i class="fa-regular fa-clock text-amber-400"></i><span id="live-clock" class="font-mono font-semibold text-slate-200">--:--:--</span></div>
+                <div class="flex items-center gap-1.5 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[0.65rem]"></i><span>Authorized Terminal</span></div>
             </div>
         </div>
 
-        <!-- ================= RIGHT PANEL: LOGIN AUTHENTICATION (48% ON LAPTOP) ================= -->
         <div class="w-full lg:w-[48%] p-[5%] flex flex-col justify-center bg-slate-950/70">
-            
             <div class="w-full max-w-[28rem] mx-auto space-y-[5%]">
-                
-                <!-- LOGIN HEADLINE -->
                 <div class="space-y-[2%]">
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[0.7rem] font-bold uppercase tracking-wider">
                         <i class="fa-solid fa-key"></i> System Access Required
                     </div>
-                    <h2 class="text-xl lg:text-2xl font-black text-white tracking-wide">
-                        Sign In to POS Terminal
-                    </h2>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Admin ke diye hue email aur password se login karein.
-                    </p>
+                    <h2 class="text-xl lg:text-2xl font-black text-white tracking-wide">Sign In to POS Terminal</h2>
+                    <p class="text-xs text-slate-400 leading-relaxed">Admin ke diye hue email aur password se login karein.</p>
                 </div>
 
-                <!-- NOTIFICATION / ERROR ALERT BOX -->
-                <div id="alert-box" class="hidden p-[3.5%] rounded-xl text-xs font-semibold text-center transition-all duration-300">
-                </div>
+                <div id="alert-box" class="hidden p-[3.5%] rounded-xl text-xs font-semibold text-center transition-all duration-300"></div>
 
-                <!-- LOGIN FORM -->
                 <form id="login-form" class="space-y-[4.5%]" onsubmit="event.preventDefault(); handleSystemLogin();">
-                    
-                    <!-- EMAIL -->
                     <div class="space-y-1.5">
                         <label class="block text-[0.7rem] font-extrabold text-amber-300 uppercase tracking-wider">
                             <i class="fa-solid fa-user-check mr-1.5 text-amber-400"></i> User Account / Email
@@ -244,13 +94,10 @@
                         <div class="relative">
                             <input type="email" id="login-email" value="" required autocomplete="username" placeholder="restaurant@gmail.com"
                                    class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-xs text-amber-100 font-semibold placeholder-slate-500 focus:outline-none pl-11">
-                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm">
-                                <i class="fa-solid fa-at"></i>
-                            </span>
+                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm"><i class="fa-solid fa-at"></i></span>
                         </div>
                     </div>
 
-                    <!-- PASSWORD -->
                     <div class="space-y-1.5">
                         <div class="flex justify-between items-center">
                             <label class="block text-[0.7rem] font-extrabold text-slate-200 uppercase tracking-wider">
@@ -261,43 +108,34 @@
                         <div class="relative">
                             <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter password..." autofocus
                                    class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-sm text-white placeholder-slate-500 focus:outline-none pl-11 pr-11 tracking-wider">
-                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm">
-                                <i class="fa-solid fa-key"></i>
-                            </span>
+                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm"><i class="fa-solid fa-key"></i></span>
                             <button type="button" onclick="togglePasswordVisibility()" class="absolute right-[3.5%] top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 transition-colors p-1" title="Show / Hide Password">
                                 <i id="pass-icon" class="fa-solid fa-eye text-sm"></i>
                             </button>
                         </div>
                     </div>
 
-                    <!-- LOGIN SUBMIT BUTTON -->
                     <button type="submit" id="btn-login" class="w-full royal-gold-btn text-white font-extrabold py-[3.8%] rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer mt-2">
-                        <i id="btn-login-icon" class="fa-solid fa-door-open text-amber-200 text-sm"></i> 
+                        <i id="btn-login-icon" class="fa-solid fa-door-open text-amber-200 text-sm"></i>
                         <span id="btn-login-text">Unlock Restaurant Console</span>
                     </button>
                 </form>
 
-                <!-- FOOTER BRANDING & DEVELOPER CREDITS -->
                 <div class="pt-[4%] border-t border-slate-800/80 text-center space-y-1">
-                    <p class="text-[0.7rem] text-slate-400 font-medium">
-                        Designed &amp; Developed by <span class="text-amber-400 font-bold tracking-wide">Scale Soft Group</span>
-                    </p>
+                    <p class="text-[0.7rem] text-slate-400 font-medium">Designed &amp; Developed by <span class="text-amber-400 font-bold tracking-wide">Scale Soft Group</span></p>
                     <p class="text-[0.68rem] text-slate-400 font-semibold flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-whatsapp text-emerald-400"></i> 
-                        <span>Contact:</span> 
+                        <i class="fa-brands fa-whatsapp text-emerald-400"></i>
+                        <span>Contact:</span>
                         <a href="tel:03162967150" class="text-slate-200 hover:text-amber-300 transition-colors font-mono">03162967150</a>
                     </p>
                 </div>
-
             </div>
         </div>
-
     </div>
 
-    <!-- FIREBASE AUTHENTICATION & ROUTING SCRIPT -->
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAgNQRFr-UWCjY0OYCbPYIPS71czHWMcxA",
@@ -314,10 +152,8 @@
         try {
             const fbApp = firebase.initializeApp(firebaseConfig);
             auth = fbApp.auth();
-            db = fbApp.database();
-        } catch (e) {
-            console.error("Firebase init failed:", e);
-        }
+            db = fbApp.firestore();
+        } catch (e) { console.error("Firebase init failed:", e); }
 
         function updateClock() {
             const el = document.getElementById('live-clock');
@@ -329,84 +165,56 @@
         function showAlert(message, type) {
             const box = document.getElementById('alert-box');
             box.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/50', 'text-red-200', 'bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-200');
-            if (type === 'success') {
-                box.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/50', 'text-emerald-200');
-            } else {
-                box.classList.add('bg-red-500/20', 'border', 'border-red-500/50', 'text-red-200');
-            }
+            if (type === 'success') box.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/50', 'text-emerald-200');
+            else box.classList.add('bg-red-500/20', 'border', 'border-red-500/50', 'text-red-200');
             box.textContent = message;
         }
 
         function setLoading(loading) {
-            const btn = document.getElementById('btn-login');
-            const icon = document.getElementById('btn-login-icon');
-            const txt = document.getElementById('btn-login-text');
+            const btn = document.getElementById('btn-login'), icon = document.getElementById('btn-login-icon'), txt = document.getElementById('btn-login-text');
             if (!btn) return;
             btn.disabled = loading;
-            if (loading) {
-                icon.className = 'fa-solid fa-spinner fa-spin text-amber-200 text-sm';
-                txt.textContent = 'Checking Account...';
-            } else {
-                icon.className = 'fa-solid fa-door-open text-amber-200 text-sm';
-                txt.textContent = 'Unlock Restaurant Console';
-            }
+            if (loading) { icon.className = 'fa-solid fa-spinner fa-spin text-amber-200 text-sm'; txt.textContent = 'Checking Account...'; }
+            else { icon.className = 'fa-solid fa-door-open text-amber-200 text-sm'; txt.textContent = 'Unlock Restaurant Console'; }
         }
 
         function friendlyAuthError(err) {
-            const code = (err && err.code) || '';
-            const msg = (err && err.message) || String(err);
-            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email' || /invalid login|invalid-credential|wrong-password|user-not-found/i.test(msg)) {
+            const code = (err && err.code) || '', msg = (err && err.message) || String(err);
+            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email') {
                 return 'غلط ای میل یا پاسورڈ! (Incorrect email or password)';
             }
-            if (code === 'auth/too-many-requests') {
-                return 'Bohot zyada ghalat koshishein. Thori der baad dobara try karein.';
-            }
-            if (code === 'auth/network-request-failed') {
-                return 'Internet connection check karein (Network error).';
-            }
+            if (code === 'auth/too-many-requests') return 'Bohot zyada ghalat koshishein. Thori der baad dobara try karein.';
+            if (code === 'auth/network-request-failed') return 'Internet connection check karein (Network error).';
+            if (code === 'permission-denied') return 'Permission Denied: Firestore Rules check karein.';
             return msg;
         }
 
         async function route(user, auto) {
-            const snap = await db.ref('restaurants/' + user.uid).once('value');
-            const r = snap.val();
-
-            if (!r) {
+            const doc = await db.collection('restaurants').doc(user.uid).get();
+            if (!doc.exists) {
                 if (!auto) {
-                    const adminSnap = await db.ref('admins/' + user.uid).once('value').catch(() => null);
+                    const adminDoc = await db.collection('admins').doc(user.uid).get().catch(() => null);
                     await auth.signOut();
-                    if (adminSnap && adminSnap.val() === true) {
-                        throw new Error('Yeh Admin account hai. Admin Console ke liye admin.html kholein.');
-                    }
+                    if (adminDoc && adminDoc.exists) throw new Error('Yeh Admin account hai. Admin Console ke liye admin.html kholein.');
                     throw new Error('Is account ka restaurant record maujood nahi hai. Admin se rabta karein.');
                 }
                 return null;
             }
-
+            const r = doc.data();
             if (r.blocked) {
                 await auth.signOut();
                 throw new Error('Aap ka account block hai. Barah-e-karam admin se rabta karein. (Account blocked)');
             }
-
-            // Update last_seen timestamp (non-blocking)
-            db.ref('restaurants/' + user.uid + '/last_seen').set(new Date().toISOString()).catch(() => {});
+            db.collection('restaurants').doc(user.uid).update({ last_seen: new Date().toISOString() }).catch(() => {});
             return 'pos.html';
         }
 
         let manualLoginInProgress = false;
-
         async function handleSystemLogin() {
             const email = document.getElementById('login-email').value.trim().toLowerCase();
             const password = document.getElementById('login-password').value;
-
-            if (!auth || !db) {
-                showAlert('Internet check karein (Firebase load nahi hua).', 'error');
-                return;
-            }
-            if (!email || !password) {
-                showAlert('Email aur password likhein. (Enter email & password)', 'error');
-                return;
-            }
+            if (!auth || !db) return showAlert('Internet check karein (Firebase load nahi hua).', 'error');
+            if (!email || !password) return showAlert('Email aur password likhein.', 'error');
 
             manualLoginInProgress = true;
             setLoading(true);
@@ -418,16 +226,12 @@
             } catch (e) {
                 setLoading(false);
                 showAlert(friendlyAuthError(e), 'error');
-            } finally {
-                manualLoginInProgress = false;
-            }
+            } finally { manualLoginInProgress = false; }
         }
 
-        // Auto-redirect if already logged in (unless ?logout=1 was requested)
         (function checkExistingSession() {
             if (!auth || !db) return;
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('logout') === '1') {
+            if (new URLSearchParams(window.location.search).get('logout') === '1') {
                 auth.signOut().catch(() => {});
                 return;
             }
@@ -437,22 +241,14 @@
                 try {
                     const dest = await route(user, true);
                     if (dest) window.location.href = dest;
-                } catch (e) {
-                    showAlert(friendlyAuthError(e), 'error');
-                }
+                } catch (e) { showAlert(friendlyAuthError(e), 'error'); }
             });
         })();
 
         function togglePasswordVisibility() {
-            const inp = document.getElementById('login-password');
-            const icon = document.getElementById('pass-icon');
-            if (inp.type === 'password') {
-                inp.type = 'text';
-                icon.className = 'fa-solid fa-eye-slash text-sm text-amber-400';
-            } else {
-                inp.type = 'password';
-                icon.className = 'fa-solid fa-eye text-sm text-slate-400';
-            }
+            const inp = document.getElementById('login-password'), icon = document.getElementById('pass-icon');
+            if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash text-sm text-amber-400'; }
+            else { inp.type = 'password'; icon.className = 'fa-solid fa-eye text-sm text-slate-400'; }
         }
     </script>
 </body>
