@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="assets/fontawesome/all.min.css">
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 :root{--bg:#070b16;--p:#0f172a;--p2:#16213b;--ln:#243252;--tx:#e5eaf5;--mu:#8da0c4;--ac:#f59e0b;--gr:#10b981;--rd:#f43f5e;--bl:#38bdf8}
@@ -84,7 +84,7 @@ let fbApp, auth, db, secApp, secAuth;
 try {
   fbApp = firebase.initializeApp(firebaseConfig);
   auth = fbApp.auth();
-  db = fbApp.database();
+  db = fbApp.firestore();
   secApp = firebase.initializeApp(firebaseConfig, 'secondary');
   secAuth = secApp.auth();
   secAuth.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(()=>{});
@@ -93,9 +93,10 @@ try {
 }
 
 const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let R=[],P=[],S={},tab='dash',flt='all',q='',dId=null,rtRefs=[],odRef=null,odCb=null,renderTimer=null;
+let R=[],P=[],S={},tab='dash',flt='all',q='',dId=null,unsubs=[],odUnsub=null,renderTimer=null;
 const toast=(t,isErr)=>{const e=document.createElement('div');e.textContent=t;if(isErr)e.style.borderLeftColor='var(--rd)';$('ts').appendChild(e);setTimeout(()=>e.remove(),4200)};
 const showRtErr=msg=>{if(!msg){$('rt-err').classList.add('hid');return}$('rt-err-txt').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> '+esc(msg);$('rt-err').classList.remove('hid')};
+const setConn=(ok,txt)=>{$('rtdot').className='rt-dot '+(ok?'ok':'err');$('rtmsg').textContent=txt||(ok?'Firestore Live':'Connection Issue')};
 const fd=d=>d?new Date(d).toLocaleDateString('en-GB'):'-',left=r=>r.expires_at?Math.ceil((new Date(r.expires_at)-Date.now())/864e5):0;
 const seen=r=>r.last_seen&&Date.now()-new Date(r.last_seen)<120000;const ago=r=>{if(!r.last_seen)return'kabhi nahi';const m=Math.round((Date.now()-new Date(r.last_seen))/6e4);return m<60?m+' min pehle':m<1440?Math.round(m/60)+' ghante pehle':Math.round(m/1440)+' din pehle'};
 const money=n=>'Rs '+Math.round(n).toLocaleString('en-US');
@@ -112,7 +113,8 @@ function friendlyErr(e){
   }
   if(code==='auth/operation-not-allowed')return 'Firebase Console -> Authentication -> Sign-in method mein Email/Password Enable karein.';
   if(code==='auth/network-request-failed')return 'Internet connection check karein (Firebase se rabta nahi ho raha).';
-  if(/permission_denied|permission denied/i.test(msg))return 'Permission Denied: Firebase Realtime Database -> Rules mein diye gaye rules Publish karein.';
+  if(code==='permission-denied'||/permission-denied|insufficient permissions/i.test(msg))return 'Permission Denied: Firebase Console -> Firestore Database -> Rules mein diye gaye rules Publish karein.';
+  if(code==='unavailable'||/offline|unavailable/i.test(msg))return 'Firestore unavailable/offline hai. Firebase Console mein Firestore Database create karein aur internet check karein.';
   return msg;
 }
 
@@ -140,21 +142,24 @@ async function login(){
 
 async function init(u){
   try{
-    const snap=await db.ref('admins/'+u.uid).once('value');
-    if(snap.val()!==true){
-      // First-time Admin Auto-Save: agar admins node khali hai to pehle user ko auto-save karo
+    const adminDoc=await db.collection('admins').doc(u.uid).get();
+    if(!adminDoc.exists){
+      // First-time Admin Auto-Save via meta/admin_lock
       let bootstrapped=false;
       try{
-        const allAdmins=await db.ref('admins').once('value');
-        if(!allAdmins.exists()){
-          await db.ref('admins/'+u.uid).set(true);
+        const lockDoc=await db.collection('meta').doc('admin_lock').get();
+        if(!lockDoc.exists){
+          const batch=db.batch();
+          batch.set(db.collection('admins').doc(u.uid),{active:true,email:u.email||'',created_at:new Date().toISOString()});
+          batch.set(db.collection('meta').doc('admin_lock'),{owner:u.uid,locked:true,created_at:new Date().toISOString()});
+          await batch.commit();
           bootstrapped=true;
-          toast('Pehla Admin account auto-save ho gaya ✔');
+          toast('Pehla Admin account Firestore mein auto-save ho gaya ✔');
         }
       }catch(_){}
       if(!bootstrapped){
         await auth.signOut();
-        $('lerr').innerHTML='Yeh account Admin list mein nahi hai.<br>Firebase Realtime Database -> Data -> <b>admins/'+esc(u.uid)+'</b> = <b>true</b> add karein.';
+        $('lerr').innerHTML='Yeh account Admin list mein nahi hai.<br>Firestore Database -> <b>admins</b> collection mein Document ID <b>'+esc(u.uid)+'</b> add karein.';
         return;
       }
     }
@@ -166,9 +171,9 @@ async function init(u){
 }
 
 function stopRealtime(){
-  rtRefs.forEach(([r,cb])=>r.off('value',cb));
-  rtRefs=[];
-  if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}
+  unsubs.forEach(u=>{try{u()}catch(_){}});
+  unsubs=[];
+  if(odUnsub){try{odUnsub()}catch(_){};odUnsub=null;}
 }
 
 function scheduleRender(){
@@ -183,56 +188,57 @@ function scheduleRender(){
 
 function startRealtime(){
   stopRealtime();
-  const connRef=db.ref('.info/connected');
-  const connCb=s=>{
-    const ok=!!s.val();
-    $('rtdot').className='rt-dot '+(ok?'ok':'err');
-    $('rtmsg').textContent=ok?'Live Connected':'Offline / Reconnecting';
-  };
-  connRef.on('value',connCb);
-  rtRefs.push([connRef,connCb]);
+  setConn(navigator.onLine, navigator.onLine?'Connecting...':'Offline');
+  const onLine=()=>setConn(true,'Firestore Live');
+  const offLine=()=>setConn(false,'Browser Offline');
+  window.addEventListener('online',onLine);
+  window.addEventListener('offline',offLine);
+  unsubs.push(()=>{window.removeEventListener('online',onLine);window.removeEventListener('offline',offLine)});
 
-  const watch=(path,onData)=>{
-    const ref=db.ref(path);
-    const cb=s=>{showRtErr('');onData(s.val());scheduleRender()};
-    const errCb=err=>{
-      const m=friendlyErr(err);
-      showRtErr(path+': '+m);
-      toast('Realtime issue ('+path+'): '+m,true);
-    };
-    ref.on('value',cb,errCb);
-    rtRefs.push([ref,cb]);
+  const onErr=(label)=>err=>{
+    const m=friendlyErr(err);
+    setConn(false,'Issue');
+    showRtErr(label+': '+m);
+    toast('Firestore ('+label+'): '+m,true);
   };
 
-  watch('restaurants',val=>{
-    const obj=val||{};
-    R=Object.entries(obj).map(([k,v])=>({...v,user_id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
-  });
-  watch('payments',val=>{
-    const obj=val||{};
-    P=Object.entries(obj).map(([k,v])=>({...v,id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
-    const n=P.filter(p=>p.status==='pending').length;$('pb').textContent=n;$('pb').classList.toggle('hid',!n);
-  });
-  watch('pay_settings',val=>{
-    S=val||{};
-  });
+  unsubs.push(
+    db.collection('restaurants').onSnapshot(snap=>{
+      R=snap.docs.map(d=>({...d.data(),user_id:d.id})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+      showRtErr('');setConn(true,'Firestore Live');scheduleRender();
+    },onErr('restaurants'))
+  );
+
+  unsubs.push(
+    db.collection('payments').onSnapshot(snap=>{
+      P=snap.docs.map(d=>({...d.data(),id:d.id})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+      const n=P.filter(p=>p.status==='pending').length;$('pb').textContent=n;$('pb').classList.toggle('hid',!n);
+      showRtErr('');setConn(true,'Firestore Live');scheduleRender();
+    },onErr('payments'))
+  );
+
+  unsubs.push(
+    db.collection('pay_settings').doc('1').onSnapshot(doc=>{
+      S=doc.exists?(doc.data()||{}):{};
+      showRtErr('');scheduleRender();
+    },onErr('pay_settings'))
+  );
 }
 
 async function logout(){stopRealtime();await auth.signOut();location.reload()}
 async function load(){
   try{
     const[a,b,c]=await Promise.all([
-      db.ref('restaurants').once('value'),
-      db.ref('payments').once('value'),
-      db.ref('pay_settings').once('value')
+      db.collection('restaurants').get(),
+      db.collection('payments').get(),
+      db.collection('pay_settings').doc('1').get()
     ]);
-    const rObj=a.val()||{};
-    R=Object.entries(rObj).map(([k,v])=>({...v,user_id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
-    const pObj=b.val()||{};
-    P=Object.entries(pObj).map(([k,v])=>({...v,id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
-    S=c.val()||{};
+    R=a.docs.map(d=>({...d.data(),user_id:d.id})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+    P=b.docs.map(d=>({...d.data(),id:d.id})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+    S=c.exists?(c.data()||{}):{};
+    showRtErr('');setConn(true,'Firestore Live');
   }catch(e){
-    const m=friendlyErr(e);showRtErr(m);toast('Error: '+m,true);
+    const m=friendlyErr(e);showRtErr(m);setConn(false,'Error');toast('Error: '+m,true);
   }
   const n=P.filter(p=>p.status==='pending').length;$('pb').textContent=n;$('pb').classList.toggle('hid',!n);
 }
@@ -276,24 +282,22 @@ function renderDrawerBody(id){
 }
 
 function openD(id,keep){
-  if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}
+  if(odUnsub){try{odUnsub()}catch(_){};odUnsub=null;}
   dId=id;
   const r=R.find(x=>x.user_id===id);if(!r)return;
   renderDrawerBody(id);
   $('dr').classList.add('on');$('ov').classList.add('on');
-  odRef=db.ref('pos_data/'+id);
-  odCb=snap=>{
+  odUnsub=db.collection('pos_data').doc(id).onSnapshot(doc=>{
     const e=$('od');if(!e||dId!==id)return;
-    const data=snap.val(),curR=R.find(x=>x.user_id===id)||r;
+    const data=doc.exists?doc.data():null,curR=R.find(x=>x.user_id===id)||r;
     if(!data){e.innerHTML='<p style="color:var(--mu)">'+(curR.cloud_sync?'Abhi tak koi data sync nahi hua.':'Is restaurant ka data sirf offline hai.')+'</p>';return}
     const v=data.value||{},m=Array.isArray(v.menu)?v.menu:Object.values(v.menu||{}),o=Array.isArray(v.orders)?v.orders:Object.values(v.orders||{}),td=new Date().toISOString().slice(0,10),sum=a=>a.reduce((x,y)=>x+(+y.netPayable||0),0);
     e.innerHTML=`<div class="kv"><span>Last sync</span><b>${data.updated_at?new Date(data.updated_at).toLocaleString():'-'}</b></div><div class="kv"><span>Menu items</span><b>${m.length}</b></div><div class="kv"><span>Total bills</span><b>${o.length}</b></div><div class="kv"><span>Total sales</span><b>${money(sum(o))}</b></div><div class="kv"><span>Aaj ki sales</span><b>${money(sum(o.filter(x=>x.date===td)))}</b></div>`;
-  };
-  odRef.on('value',odCb,err=>{
+  },err=>{
     const e=$('od');if(e&&dId===id)e.innerHTML='<p style="color:var(--rd)">'+esc(friendlyErr(err))+'</p>';
   });
 }
-function closeD(){if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}dId=null;$('dr').classList.remove('on');$('ov').classList.remove('on')}
+function closeD(){if(odUnsub){try{odUnsub()}catch(_){};odUnsub=null;}dId=null;$('dr').classList.remove('on');$('ov').classList.remove('on')}
 
 /* ---------- Payments ---------- */
 let pf='pending';
@@ -316,14 +320,14 @@ if(m==='till'&&t){if(typeof QRCode==='undefined'){e.innerHTML='<small style="col
 else if(m==='qr'&&u)e.innerHTML='<img src="'+esc(u)+'" style="max-width:170px;border-radius:10px;background:#fff;padding:6px">'})}
 async function saveSet(){const g=k=>({mode:$(k+'_m').value,till:$(k+'_t').value.trim(),name:$(k+'_n').value.trim(),qr:$(k+'_q').value.trim()});
 S={easypaisa:g('easypaisa'),jazzcash:g('jazzcash'),warn_days:+$('wd').value||7,instructions:$('ins').value.trim(),notice:$('gn').value.trim()};
-try{await db.ref('pay_settings').set(S);toast('Settings save ho gayi ✔')}catch(e){toast(friendlyErr(e),true)}}
+try{await db.collection('pay_settings').doc('1').set(S);toast('Settings save ho gayi ✔')}catch(e){toast(friendlyErr(e),true)}}
 
 /* ---------- Forms & actions ---------- */
 const mo=h=>{$('mb').innerHTML=h;$('md').style.display='flex'},cm=()=>$('md').style.display='none';
 function planF(r){r=r||{plan_name:'monthly',plan_days:30,fee:0,cloud_sync:true};const ex=r.expires_at?r.expires_at.slice(0,10):'';
 return`<label>Restaurant name<input id="f_n" value="${esc(r.name)}"></label><label>Phone<input id="f_p" value="${esc(r.phone)}"></label><label>Plan<select id="f_pl" onchange="pc()"><option value="weekly">Weekly (7 din)</option><option value="monthly">Monthly (30 din)</option><option value="custom">Custom days</option><option value="free">Permanent Free</option><option value="none">No plan (pehle payment karni hogi)</option></select></label>
 <label>Plan days<input id="f_d" type="number" value="${r.plan_days||30}"></label><label>Fee (Rs) - restaurant yehi amount pay karega<input id="f_f" type="number" value="${r.fee||0}"></label><label>Expiry date<input id="f_e" type="date" value="${ex}"></label>
-<label class="ck" style="margin-top:12px"><input id="f_c" type="checkbox" ${r.cloud_sync?'checked':''}> Data online (Firebase) rakhna hai</label><label>Notice (is restaurant ke liye)<textarea id="f_no" rows="2">${esc(r.notice)}</textarea></label><label>Admin notes (private)<textarea id="f_nt" rows="2">${esc(r.notes)}</textarea></label>`}
+<label class="ck" style="margin-top:12px"><input id="f_c" type="checkbox" ${r.cloud_sync?'checked':''}> Data online (Firestore) rakhna hai</label><label>Notice (is restaurant ke liye)<textarea id="f_no" rows="2">${esc(r.notice)}</textarea></label><label>Admin notes (private)<textarea id="f_nt" rows="2">${esc(r.notes)}</textarea></label>`}
 function pc(){const v=$('f_pl').value;if(v==='weekly')$('f_d').value=7;if(v==='monthly')$('f_d').value=30;if(v==='none'||v==='free')$('f_e').value='';else $('f_e').value=new Date(Date.now()+(+$('f_d').value||30)*864e5).toISOString().slice(0,10)}
 function addM(){mo(`<h3 style="margin-top:0">New Restaurant</h3><label>Login Email (Gmail)<input id="f_em" type="email"></label><label>Password (min 6)<input id="f_pw" type="text"></label>${planF()}<p><button id="addBtn" class="btn g" onclick="addR()"><i class="fa-solid fa-check"></i> Create</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value='monthly';pc()}
 function editM(id){const r=R.find(x=>x.user_id===id);mo(`<h3 style="margin-top:0">Edit: ${esc(r.name)}</h3>${planF(r)}<p><button class="btn g" onclick="saveR('${esc(id)}')">Save</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value=r.is_free?'free':(!r.expires_at?'none':(['weekly','monthly'].includes(r.plan_name)?r.plan_name:'custom'))}
@@ -339,7 +343,7 @@ async function addR(){
     const cred=await secAuth.createUserWithEmailAndPassword(em,pw);
     const uid=cred.user.uid;
     await secAuth.signOut().catch(()=>{});
-    await db.ref('restaurants/'+uid).set({...v,user_id:uid,email:em,blocked:false,force_pay:false,last_seen:null,created_at:new Date().toISOString()});
+    await db.collection('restaurants').doc(uid).set({...v,user_id:uid,email:em,blocked:false,force_pay:false,last_seen:null,created_at:new Date().toISOString()});
     cm();toast('Restaurant auto-save ho gaya ✔  Email: '+em);
   }catch(e){toast(friendlyErr(e),true)}
   finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Create';}}
@@ -354,23 +358,28 @@ async function delR(id){
   const r=R.find(x=>x.user_id===id);if(!r)return;
   if(!confirm(r.name+' ko HAMESHA ke liye delete karein? Uska online data aur payments bhi chale jayenge.'))return;
   try{
-    const updates={};
-    updates['restaurants/'+id]=null;
-    updates['pos_data/'+id]=null;
-    P.filter(p=>p.user_id===id).forEach(p=>{updates['payments/'+p.id]=null});
-    await db.ref().update(updates);
+    const batch=db.batch();
+    batch.delete(db.collection('restaurants').doc(id));
+    batch.delete(db.collection('pos_data').doc(id));
+    P.filter(p=>p.user_id===id).forEach(p=>{batch.delete(db.collection('payments').doc(String(p.id)))});
+    await batch.commit();
     closeD();toast('Delete ho gaya');
   }catch(e){toast(friendlyErr(e),true)}
 }
-async function saveR(id){try{await db.ref('restaurants/'+id).update(vals());toast('Save ho gaya ✔');cm()}catch(e){toast(friendlyErr(e),true)}}
-async function blk(id){const r=R.find(x=>x.user_id===id);if(!r)return;if(!confirm((r.blocked?'Unblock ':'Block ')+r.name+'?'))return;try{await db.ref('restaurants/'+id).update({blocked:!r.blocked});toast(r.blocked?'Unblock ho gaya - user ko foran pata chal jayega':'Block ho gaya - user ki screen lock ho jayegi')}catch(e){toast('Block nahi hua: '+friendlyErr(e),true)}}
-async function fp(id){const r=R.find(x=>x.user_id===id);if(!r)return;try{await db.ref('restaurants/'+id).update({force_pay:!r.force_pay})}catch(e){toast(friendlyErr(e),true)}}
+async function saveR(id){try{await db.collection('restaurants').doc(id).update(vals());toast('Save ho gaya ✔');cm()}catch(e){toast(friendlyErr(e),true)}}
+async function blk(id){const r=R.find(x=>x.user_id===id);if(!r)return;if(!confirm((r.blocked?'Unblock ':'Block ')+r.name+'?'))return;try{await db.collection('restaurants').doc(id).update({blocked:!r.blocked});toast(r.blocked?'Unblock ho gaya - user ko foran pata chal jayega':'Block ho gaya - user ki screen lock ho jayegi')}catch(e){toast('Block nahi hua: '+friendlyErr(e),true)}}
+async function fp(id){const r=R.find(x=>x.user_id===id);if(!r)return;try{await db.collection('restaurants').doc(id).update({force_pay:!r.force_pay})}catch(e){toast(friendlyErr(e),true)}}
 function ext(r,days){const b=Math.max(Date.now(),r.expires_at?new Date(r.expires_at).getTime():0);return new Date(b+(days||30)*864e5).toISOString()}
-async function renew(id){const r=R.find(x=>x.user_id===id);if(!r)return;const d=r.plan_days||30;if(!confirm(r.name+': '+d+' din barhayein?'))return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,d),is_free:false});toast('Plan barh gaya ✔')}catch(e){toast(friendlyErr(e),true)}}
-async function addDays(id){const r=R.find(x=>x.user_id===id),n=+prompt('Kitne din add karne hain?','30');if(!r||!n)return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,n),is_free:false});toast(n+' din add ho gaye ✔')}catch(e){toast(friendlyErr(e),true)}}
+async function renew(id){const r=R.find(x=>x.user_id===id);if(!r)return;const d=r.plan_days||30;if(!confirm(r.name+': '+d+' din barhayein?'))return;try{await db.collection('restaurants').doc(id).update({expires_at:ext(r,d),is_free:false});toast('Plan barh gaya ✔')}catch(e){toast(friendlyErr(e),true)}}
+async function addDays(id){const r=R.find(x=>x.user_id===id),n=+prompt('Kitne din add karne hain?','30');if(!r||!n)return;try{await db.collection('restaurants').doc(id).update({expires_at:ext(r,n),is_free:false});toast(n+' din add ho gaye ✔')}catch(e){toast(friendlyErr(e),true)}}
 async function dec(id,ok){const p=P.find(x=>String(x.id)===String(id)),r=p&&R.find(x=>x.user_id===p.user_id);if(!p)return toast('Payment nahi mili',true);
-try{if(ok){if(!r)return toast('Restaurant nahi mila',true);await db.ref('restaurants/'+r.user_id).update({expires_at:ext(r,p.plan_days||r.plan_days||30),is_free:false,force_pay:false})}
-await db.ref('payments/'+id).update({status:ok?'approved':'rejected',decided_at:new Date().toISOString()});toast(ok?'Approved - plan barh gaya ✔':'Reject ho gaya')}catch(e){toast(friendlyErr(e),true)}}
+try{
+  const batch=db.batch();
+  if(ok){if(!r)return toast('Restaurant nahi mila',true);batch.update(db.collection('restaurants').doc(r.user_id),{expires_at:ext(r,p.plan_days||r.plan_days||30),is_free:false,force_pay:false})}
+  batch.update(db.collection('payments').doc(String(id)),{status:ok?'approved':'rejected',decided_at:new Date().toISOString()});
+  await batch.commit();
+  toast(ok?'Approved - plan barh gaya ✔':'Reject ho gaya');
+}catch(e){toast(friendlyErr(e),true)}}
 
 // Online/Last-seen timer UI refresh har 15 sec
 setInterval(()=>{if(!$('app').classList.contains('hid')&&!$('md').style.display.includes('flex')&&!(document.activeElement&&document.activeElement.closest('.tools'))){show();if(dId)renderDrawerBody(dId);}},15000);
