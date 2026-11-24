@@ -48,6 +48,16 @@
             align-items: center;
             justify-content: center;
             padding: 20px 14px;
+            transition: filter 0.3s ease;
+        }
+
+        /* FULL FILE BLUR WHEN 3-DAY LICENSE IS EXPIRED */
+        .page-wrap.file-blurred {
+            filter: blur(15px) grayscale(25%);
+            -webkit-filter: blur(15px) grayscale(25%);
+            pointer-events: none !important;
+            user-select: none !important;
+            -webkit-user-select: none !important;
         }
 
         .portal-shell {
@@ -483,7 +493,8 @@
             position: fixed;
             inset: 0;
             background: rgba(35, 15, 10, 0.72);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -633,7 +644,7 @@
 </head>
 <body>
 
-<div class="page-wrap">
+<div id="main-page-wrap" class="page-wrap">
     <div class="portal-shell">
 
         <!-- ================= LEFT RESTAURANT SHOWCASE PANEL ================= -->
@@ -644,7 +655,7 @@
                     <div style="min-width:0;">
                         <div class="brand-badge">
                             <span class="pulse-dot"></span>
-                            <span id="txt-badge">Restaurant POS Terminal</span>
+                            <span id="txt-badge">100% Offline Restaurant POS</span>
                         </div>
                         <h1 id="ui-brand-name" class="brand-title">MS Nihari &amp; Restaurant</h1>
                         <p id="ui-brand-sub" class="brand-sub">Dine-In, Takeaway, Delivery &amp; Kitchen Tokens</p>
@@ -654,8 +665,8 @@
                 <!-- Summary Card -->
                 <div class="rest-summary-box">
                     <div class="rest-kv">
-                        <span id="txt-storage-lbl">Data Storage:</span>
-                        <b>LocalStorage (Instant Offline)</b>
+                        <span id="txt-storage-lbl">Offline Storage:</span>
+                        <b>100% Offline (LocalStorage)</b>
                     </div>
                     <div class="rest-kv">
                         <span id="txt-license-lbl">License Status:</span>
@@ -715,7 +726,7 @@
             <div class="top-actions">
                 <div id="top-license-chip" class="status-chip">
                     <i class="fa-solid fa-circle-check"></i>
-                    <span id="top-license-text">Active · 3 Days Left</span>
+                    <span id="top-license-text">Offline Active · 3 Days Left</span>
                 </div>
                 <div class="top-btn-group">
                     <button type="button" onclick="openSettings()" class="btn-outline-warm">
@@ -733,7 +744,7 @@
             <div class="login-center">
                 <h2 id="txt-login-title" class="login-heading">Sign In to Kitchen &amp; Counter POS</h2>
                 <p id="txt-login-desc" class="login-sub">
-                    Apna email aur password darj karke Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.
+                    Apna email aur password darj karke Offline Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.
                 </p>
 
                 <div id="alert-box" class="alert-box hidden-el"></div>
@@ -745,7 +756,7 @@
                         </div>
                         <div class="input-wrap">
                             <i class="fa-solid fa-at input-ico"></i>
-                            <input type="text" id="login-email" class="warm-input" autocomplete="username" placeholder="admin@gmail.com" required>
+                            <input type="text" id="login-email" class="warm-input" autocomplete="username" placeholder="scalesoft@gmail.com" required>
                         </div>
                     </div>
 
@@ -762,7 +773,7 @@
                             </button>
                         </div>
                         <div id="default-pass-hint" class="default-hint">
-                            <span>Default: <b>admin@gmail.com</b> / <b>123456</b></span>
+                            <span>Default: <b>scalesoft@gmail.com</b> / <b>112233</b></span>
                             <a href="javascript:void(0)" onclick="openSettings()" style="color:#b45309;font-weight:700;text-decoration:none;">Change in Settings</a>
                         </div>
                     </div>
@@ -776,7 +787,7 @@
 
             <!-- Footer -->
             <div class="right-footer">
-                <span>Powered by <b style="color:#3d1810;">Scale Soft Group</b></span>
+                <span>Powered by <b style="color:#3d1810;">Scale Soft Group</b> (Offline Edition)</span>
                 <span><i class="fa-brands fa-whatsapp" style="color:#10b981;"></i> Support: <b style="color:#3d1810;">03162967150</b></span>
             </div>
         </div>
@@ -799,7 +810,7 @@
                     <input type="file" id="set-dp-file" accept="image/*" onchange="handleDpUpload(event)" style="font-size:11.5px;width:100%;">
                     <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
                         <button type="button" onclick="resetDp()" class="btn-outline-warm" style="padding:4px 10px;font-size:11px;">Reset Default DP</button>
-                        <span style="font-size:10.5px;color:#6b5b53;">Saved in LocalStorage</span>
+                        <span style="font-size:10.5px;color:#6b5b53;">Saved Offline in LocalStorage</span>
                     </div>
                 </div>
             </div>
@@ -828,7 +839,7 @@
             <div class="set-grid">
                 <div>
                     <div class="field-label">Login Email / Username</div>
-                    <input type="text" id="set-email" class="set-input" placeholder="admin@gmail.com">
+                    <input type="text" id="set-email" class="set-input" placeholder="scalesoft@gmail.com">
                 </div>
                 <div>
                     <div class="field-label">New Password (Optional)</div>
@@ -837,7 +848,7 @@
             </div>
 
             <div class="license-box">
-                <div class="license-box-row"><span>License Mode:</span><b>3-Day Auto Cycle</b></div>
+                <div class="license-box-row"><span>License Mode:</span><b>3-Day Offline Auto Cycle</b></div>
                 <div class="license-box-row"><span>Expiry Time:</span><b id="set-lic-exp">-</b></div>
                 <div class="license-box-row"><span>Remaining Time:</span><b id="set-lic-rem" style="color:#b45309;">-</b></div>
                 <div class="license-box-row"><span>Total Renewals:</span><b id="set-lic-cnt">0</b></div>
@@ -864,7 +875,7 @@
             </div>
             <h4 id="act-heading" style="margin:0 0 6px;font-size:17px;color:#230f0a;font-weight:800;">3-Day Access Period Expired</h4>
             <p id="act-desc" style="margin:0 0 16px;font-size:12.5px;color:#6b5b53;line-height:1.5;">
-                Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.
+                Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.
             </p>
 
             <div id="act-alert" class="alert-box hidden-el"></div>
@@ -894,6 +905,14 @@
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
     const VALID_CODE = 'S366307282';
 
+    const FALLBACK_SVG_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
+        '<rect width="120" height="120" rx="60" fill="#3d1810"/>' +
+        '<circle cx="60" cy="60" r="52" fill="none" stroke="#f59e0b" stroke-width="4"/>' +
+        '<text x="60" y="70" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="bold" fill="#fbbf24">POS</text>' +
+        '</svg>'
+    );
+
     const DEFAULT_BRANDING = {
         name: 'MS Nihari & Restaurant',
         subtitle: 'Dine-In, Takeaway, Delivery & Kitchen Tokens',
@@ -903,8 +922,8 @@
     };
 
     const DEFAULT_AUTH = {
-        email: 'admin@gmail.com',
-        pass: '123456',
+        email: 'scalesoft@gmail.com',
+        pass: '112233',
         isDefault: true
     };
 
@@ -915,8 +934,8 @@
     const I18N = {
         en: {
             langBtn: 'اردو',
-            badge: 'Restaurant POS Terminal',
-            storageLbl: 'Data Storage:',
+            badge: '100% Offline Restaurant POS',
+            storageLbl: 'Offline Storage:',
             licenseLbl: 'License Status:',
             phoneLbl: 'Restaurant Phone:',
             f1t: 'Dine-In & Parcel', f1s: 'Takeaway & Delivery',
@@ -926,7 +945,7 @@
             btnSettings: 'Settings',
             btnActivate: 'License',
             loginTitle: 'Sign In to Kitchen & Counter POS',
-            loginDesc: 'Apna email aur password darj karke Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.',
+            loginDesc: 'Apna email aur password darj karke Offline Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.',
             emailLbl: 'Account / Email',
             passLbl: 'Password',
             passReq: 'Required',
@@ -934,8 +953,8 @@
         },
         ur: {
             langBtn: 'English',
-            badge: 'ریسٹورنٹ پی او ایس ٹرمینل',
-            storageLbl: 'ڈیٹا اسٹوریج:',
+            badge: 'مکمل آف لائن ریسٹورنٹ پی او ایس',
+            storageLbl: 'آف لائن اسٹوریج:',
             licenseLbl: 'لائسنس اسٹیٹس:',
             phoneLbl: 'ریسٹورنٹ فون:',
             f1t: 'ڈائن ان اور پارسل', f1s: 'ٹیک اوے اور ڈیلیوری',
@@ -945,7 +964,7 @@
             btnSettings: 'سیٹنگز',
             btnActivate: 'لائسنس',
             loginTitle: 'ریسٹورنٹ بلنگ لاگ ان',
-            loginDesc: 'بلنگ سسٹم کھولنے کے لیے ای میل اور پاسورڈ درج کریں۔ سیٹنگز سے ریسٹورنٹ کا نام، ڈی پی اور پاسورڈ تبدیل کریں۔',
+            loginDesc: 'آف لائن بلنگ سسٹم کھولنے کے لیے ای میل اور پاسورڈ درج کریں۔ سیٹنگز سے ریسٹورنٹ کا نام، ڈی پی اور پاسورڈ تبدیل کریں۔',
             emailLbl: 'اکاؤنٹ / ای میل',
             passLbl: 'پاسورڈ',
             passReq: 'لازمی',
@@ -1002,6 +1021,7 @@
         const navEl = document.getElementById('ui-nav-license');
         const chipEl = document.getElementById('top-license-chip');
         const chipTxt = document.getElementById('top-license-text');
+        const pageWrap = document.getElementById('main-page-wrap');
 
         if (navEl) {
             navEl.textContent = expired ? 'Expired!' : `Active (${remTxt})`;
@@ -1009,7 +1029,7 @@
         }
         if (chipEl && chipTxt) {
             chipEl.className = expired ? 'status-chip warn' : 'status-chip';
-            chipTxt.textContent = expired ? 'Expired · Code Required' : `Active · ${remTxt} left`;
+            chipTxt.textContent = expired ? 'Expired · File Blurred' : `Offline Active · ${remTxt} left`;
         }
 
         const setExp = document.getElementById('set-lic-exp');
@@ -1021,18 +1041,27 @@
 
         const modal = document.getElementById('modal-activation');
         const closeBtn = document.getElementById('act-close-btn');
+
         if (expired) {
+            // Blur the entire file when 3-day activation expires
+            if (pageWrap) pageWrap.classList.add('file-blurred');
+            try { localStorage.removeItem('ms_pos_session_v1'); } catch (e) {}
+
+            document.getElementById('modal-settings').classList.add('hidden-el');
+            document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
+            document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
+            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
+            closeBtn.classList.add('hidden-el');
             if (modal.classList.contains('hidden-el')) {
-                document.getElementById('modal-settings').classList.add('hidden-el');
-                document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
-                document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
-                document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
-                closeBtn.classList.add('hidden-el');
                 modal.classList.remove('hidden-el');
-                manualActivationOpen = false;
+                setTimeout(() => document.getElementById('act-code-input').focus(), 80);
             }
-        } else if (!manualActivationOpen) {
-            modal.classList.add('hidden-el');
+            manualActivationOpen = false;
+        } else {
+            if (pageWrap) pageWrap.classList.remove('file-blurred');
+            if (!manualActivationOpen) {
+                modal.classList.add('hidden-el');
+            }
         }
     }
 
@@ -1047,7 +1076,7 @@
         if (expired) {
             document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
             document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
-            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
+            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
             closeBtn.classList.add('hidden-el');
         } else {
             document.getElementById('act-modal-title').textContent = 'License & Activation';
@@ -1104,7 +1133,27 @@
     }
 
     function getAuthCreds() {
-        return Object.assign({}, DEFAULT_AUTH, safeRead(STORAGE_KEYS.AUTH, {}));
+        const saved = safeRead(STORAGE_KEYS.AUTH, null);
+        if (!saved) {
+            const fresh = Object.assign({}, DEFAULT_AUTH);
+            safeWrite(STORAGE_KEYS.AUTH, fresh);
+            return fresh;
+        }
+        // Auto-upgrade previous default credentials if untouched
+        if (saved.isDefault && saved.email === 'admin@gmail.com' && saved.pass === '123456') {
+            const migrated = Object.assign({}, DEFAULT_AUTH);
+            safeWrite(STORAGE_KEYS.AUTH, migrated);
+            return migrated;
+        }
+        return Object.assign({}, DEFAULT_AUTH, saved);
+    }
+
+    function setSafeImgSrc(imgEl, src) {
+        imgEl.onerror = function() {
+            imgEl.onerror = null;
+            imgEl.src = FALLBACK_SVG_LOGO;
+        };
+        imgEl.src = src || FALLBACK_SVG_LOGO;
     }
 
     function applyBrandingToUI() {
@@ -1116,12 +1165,10 @@
         document.getElementById('ui-brand-sub').textContent = b.subtitle || DEFAULT_BRANDING.subtitle;
         document.getElementById('ui-brand-phone').textContent = b.phone || DEFAULT_BRANDING.phone;
 
-        const dpEl = document.getElementById('ui-brand-dp');
-        dpEl.onerror = () => { dpEl.src = 'logo.svg'; };
-        dpEl.src = b.dp || 'logo.svg';
+        setSafeImgSrc(document.getElementById('ui-brand-dp'), b.dp || 'logo.svg');
 
         const emailInp = document.getElementById('login-email');
-        if (emailInp && !emailInp.value) emailInp.value = authCreds.email || 'admin@gmail.com';
+        if (emailInp && !emailInp.value) emailInp.value = authCreds.email || 'scalesoft@gmail.com';
 
         const hintEl = document.getElementById('default-pass-hint');
         if (hintEl) hintEl.style.display = authCreds.isDefault ? 'flex' : 'none';
@@ -1131,7 +1178,7 @@
         if (isLicenseExpired()) { updateLicenseUI(); return; }
         const b = getBranding(), a = getAuthCreds();
         tempDpDataUrl = null;
-        document.getElementById('set-dp-preview').src = b.dp || 'logo.svg';
+        setSafeImgSrc(document.getElementById('set-dp-preview'), b.dp || 'logo.svg');
         document.getElementById('set-dp-file').value = '';
         document.getElementById('set-name').value = b.name || '';
         document.getElementById('set-sub').value = b.subtitle || '';
@@ -1172,7 +1219,7 @@
 
     function resetDp() {
         tempDpDataUrl = 'logo.svg';
-        document.getElementById('set-dp-preview').src = 'logo.svg';
+        setSafeImgSrc(document.getElementById('set-dp-preview'), 'logo.svg');
         document.getElementById('set-dp-file').value = '';
     }
 
@@ -1193,10 +1240,11 @@
         const oldA = getAuthCreds();
         const newEmail = document.getElementById('set-email').value.trim().toLowerCase() || oldA.email;
         const newPass = document.getElementById('set-pass').value;
+        const finalPass = newPass ? newPass : oldA.pass;
         safeWrite(STORAGE_KEYS.AUTH, {
             email: newEmail,
-            pass: newPass ? newPass : oldA.pass,
-            isDefault: newPass ? false : (newEmail === DEFAULT_AUTH.email && oldA.pass === DEFAULT_AUTH.pass)
+            pass: finalPass,
+            isDefault: (newEmail === DEFAULT_AUTH.email && finalPass === DEFAULT_AUTH.pass)
         });
 
         document.getElementById('login-email').value = newEmail;
@@ -1225,7 +1273,7 @@
         }
 
         safeWrite('ms_pos_session_v1', { loggedIn: true, email: email, loginAt: new Date().toISOString() });
-        showLoginAlert('لاگ ان کامیاب! POS khul raha hai...', 'success');
+        showLoginAlert('لاگ ان کامیاب! Offline POS khul raha hai...', 'success');
         setTimeout(() => { window.location.href = 'pos.html'; }, 250);
     }
 
@@ -1265,6 +1313,13 @@
         const el = document.getElementById('live-clock');
         if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: true });
     }
+
+    // Prevent Escape key from closing expired activation lock
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && isLicenseExpired()) {
+            e.preventDefault();
+        }
+    });
 
     (function initIndex() {
         getLicense();
