@@ -4,252 +4,1275 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Restaurant POS - Login</title>
+
     <link rel="stylesheet" href="assets/app.css">
     <link rel="stylesheet" href="assets/fontawesome/all.min.css">
+
     <style>
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        html, body { width: 100%; min-height: 100vh; margin: 0; padding: 0; touch-action: manipulation; background: #040711; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; overflow-x: hidden; }
-        .restaurant-font { font-family: 'Cinzel', serif; }
-        .royal-mesh-bg { background-color: #040711; background-image: radial-gradient(at 15% 15%, rgba(217, 119, 6, 0.22) 0%, transparent 55%), radial-gradient(at 85% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 60%), radial-gradient(at 50% 85%, rgba(180, 83, 9, 0.2) 0%, transparent 65%), radial-gradient(at 90% 90%, rgba(88, 28, 135, 0.25) 0%, transparent 50%); background-attachment: fixed; background-size: cover; }
-        .glass-luxury-panel { background: rgba(11, 17, 33, 0.78); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(245, 158, 11, 0.25); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 35px rgba(217, 119, 6, 0.12); }
-        .glass-input { background: rgba(6, 11, 23, 0.85); border: 1px solid rgba(255, 255, 255, 0.1); transition: all 0.3s ease; }
-        .glass-input:focus { border-color: #f59e0b; box-shadow: 0 0 20px rgba(245, 158, 11, 0.35); background: rgba(10, 18, 38, 0.95); }
-        .royal-gold-btn { background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #b45309 100%); background-size: 200% auto; box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-        .royal-gold-btn:hover { background-position: right center; box-shadow: 0 15px 35px rgba(245, 158, 11, 0.55); transform: translateY(-2px); }
-        .royal-gold-btn:active { transform: translateY(0); }
-        .royal-gold-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
-        .ambient-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
-        @keyframes orbFloat { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(3%, 4%) scale(1.08); } }
+        :root {
+            --rest-dark: #230f0a;
+            --rest-mid: #3d1810;
+            --rest-warm: #5c2214;
+            --gold-600: #b45309;
+            --gold-500: #d97706;
+            --gold-400: #f59e0b;
+            --cream-bg: #faf5ef;
+            --card-white: #ffffff;
+            --text-dark: #23120b;
+            --text-muted: #6b5b53;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #fdf8f2 0%, #f7ebd9 50%, #fffdf9 100%);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .hidden-el {
+            display: none !important;
+        }
+
+        .page-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 14px;
+        }
+
+        .portal-shell {
+            width: 100%;
+            max-width: 1120px;
+            background: var(--card-white);
+            border: 1.5px solid #f3d6ad;
+            border-radius: 26px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            box-shadow: 0 24px 60px -15px rgba(61, 24, 16, 0.25), 0 0 0 1px rgba(217, 119, 6, 0.08);
+        }
+
+        /* LEFT RESTAURANT ESPRESSO-MAROON PANEL */
+        .left-rest-panel {
+            width: 44%;
+            background: linear-gradient(180deg, #230f0a 0%, #3d1810 55%, #5c2214 100%);
+            color: #ffffff;
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.22);
+        }
+
+        .dp-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2.5px solid #f59e0b;
+            background: #ffffff;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+            cursor: pointer;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #fcd34d;
+            margin-bottom: 3px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            display: inline-block;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+        }
+
+        .brand-title {
+            margin: 0;
+            font-size: 21px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .brand-sub {
+            margin: 2px 0 0;
+            font-size: 12px;
+            color: #fde68a;
+            font-weight: 500;
+        }
+
+        .rest-summary-box {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(251, 191, 36, 0.28);
+            border-radius: 16px;
+            padding: 14px 16px;
+            margin: 18px 0;
+        }
+
+        .rest-kv {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            padding: 5px 0;
+        }
+
+        .rest-kv span {
+            color: #fde68a;
+        }
+
+        .rest-kv b {
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .rest-kv b.gold {
+            color: #fbbf24;
+            font-size: 13px;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0 18px;
+        }
+
+        .feature-pill {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(251, 191, 36, 0.16);
+            border-radius: 12px;
+            padding: 11px 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: 0.2s ease;
+        }
+
+        .feature-pill:hover {
+            background: rgba(245, 158, 11, 0.16);
+            border-color: rgba(251, 191, 36, 0.5);
+        }
+
+        .feature-ico {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+            display: grid;
+            place-items: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .feature-pill h4 {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .feature-pill p {
+            margin: 1px 0 0;
+            font-size: 10.5px;
+            color: #fed7aa;
+        }
+
+        .left-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 14px;
+            border-top: 1px solid rgba(251, 191, 36, 0.22);
+            font-size: 11.5px;
+            color: #fde68a;
+        }
+
+        .lang-pill {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(253, 230, 138, 0.4);
+            color: #ffffff;
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .lang-pill:hover {
+            background: #d97706;
+            border-color: #d97706;
+        }
+
+        /* RIGHT WHITE PANEL */
+        .right-white-panel {
+            width: 56%;
+            background: #ffffff;
+            padding: 28px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f1e6d8;
+        }
+
+        .status-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 11.5px;
+            font-weight: 700;
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-chip.warn {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        .top-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-outline-warm {
+            background: #ffffff;
+            color: #3d1810;
+            border: 1.5px solid #e2d5c3;
+            border-radius: 10px;
+            padding: 7px 13px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-outline-warm:hover {
+            border-color: #d97706;
+            color: #b45309;
+            background: #fffbeb;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+            color: #ffffff;
+            border: 0;
+            border-radius: 10px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(180, 83, 9, 0.28);
+            transition: 0.2s;
+        }
+
+        .btn-gold:hover {
+            filter: brightness(1.08);
+            transform: translateY(-1px);
+        }
+
+        .login-center {
+            max-width: 420px;
+            width: 100%;
+            margin: 24px auto;
+        }
+
+        .login-heading {
+            margin: 0 0 6px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #230f0a;
+        }
+
+        .login-sub {
+            margin: 0 0 20px;
+            font-size: 13px;
+            color: #6b5b53;
+            line-height: 1.5;
+        }
+
+        .field-group {
+            margin-bottom: 16px;
+        }
+
+        .field-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #3d1810;
+            margin-bottom: 6px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-ico {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #d97706;
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .warm-input {
+            width: 100%;
+            padding: 12px 42px 12px 40px;
+            border: 1.5px solid #e2d5c3;
+            border-radius: 12px;
+            background: #fdfaf6;
+            color: #23120b;
+            font-size: 13.5px;
+            font-weight: 600;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .warm-input:focus {
+            background: #ffffff;
+            border-color: #d97706;
+            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.16);
+        }
+
+        .eye-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: 0;
+            color: #6b5b53;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .eye-btn:hover {
+            color: #b45309;
+        }
+
+        .btn-primary-rest {
+            width: 100%;
+            padding: 14px 18px;
+            border: 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #3d1810 0%, #9a3412 50%, #d97706 100%);
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px -5px rgba(154, 52, 18, 0.42);
+            transition: 0.25s;
+        }
+
+        .btn-primary-rest:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -5px rgba(217, 119, 6, 0.5);
+        }
+
+        .btn-primary-rest:active {
+            transform: translateY(0);
+        }
+
+        .alert-box {
+            padding: 11px 14px;
+            border-radius: 12px;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .alert-err {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #b91c1c;
+        }
+
+        .alert-ok {
+            background: #ecfdf5;
+            border: 1px solid #a7f3d0;
+            color: #047857;
+        }
+
+        .default-hint {
+            margin-top: 8px;
+            font-size: 11px;
+            color: #6b5b53;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .right-footer {
+            padding-top: 14px;
+            border-top: 1px solid #f1e6d8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            font-size: 11.5px;
+            color: #6b5b53;
+        }
+
+        /* MODALS */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(35, 15, 10, 0.72);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 9999;
+        }
+
+        .modal-card {
+            width: 100%;
+            max-width: 500px;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border: 2px solid #f3d6ad;
+            border-radius: 22px;
+            box-shadow: 0 25px 60px rgba(35, 15, 10, 0.45);
+            animation: popIn 0.25s ease-out;
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.93) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-head {
+            background: linear-gradient(135deg, #230f0a 0%, #5c2214 100%);
+            color: #ffffff;
+            padding: 18px 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-head h3 {
+            margin: 0;
+            font-size: 17px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.14);
+            border: 0;
+            color: #ffffff;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .modal-body {
+            padding: 20px 22px;
+        }
+
+        .dp-edit-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px;
+            background: #fffbeb;
+            border: 1.5px dashed #fbbf24;
+            border-radius: 14px;
+            margin-bottom: 16px;
+        }
+
+        .dp-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2.5px solid #d97706;
+            object-fit: cover;
+            background: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .set-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #e2d5c3;
+            border-radius: 10px;
+            background: #fdfaf6;
+            color: #23120b;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .set-input:focus {
+            background: #ffffff;
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.16);
+        }
+
+        .set-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .license-box {
+            background: #fdfaf6;
+            border: 1.5px solid #f1e6d8;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-top: 14px;
+            font-size: 12px;
+        }
+
+        .license-box-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            color: #6b5b53;
+        }
+
+        .license-box-row b {
+            color: #3d1810;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-7px); }
+            40%, 80% { transform: translateX(7px); }
+        }
+        .shake {
+            animation: shake 0.35s ease-in-out;
+        }
+
+        @media (max-width: 900px) {
+            .portal-shell {
+                flex-direction: column;
+            }
+            .left-rest-panel, .right-white-panel {
+                width: 100%;
+            }
+            .right-white-panel {
+                padding: 24px 20px;
+            }
+            .set-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
-<body class="royal-mesh-bg min-h-screen flex items-center justify-center p-[2%] relative">
-    <div class="ambient-orb w-[35vw] h-[35vw] bg-amber-600/20 top-[-10%] left-[-5%]"></div>
-    <div class="ambient-orb w-[40vw] h-[40vw] bg-blue-900/25 bottom-[-10%] right-[-5%]"></div>
+<body>
 
-    <div class="w-[94%] max-w-[85rem] glass-luxury-panel rounded-3xl relative z-10 overflow-hidden flex flex-col lg:flex-row my-auto shadow-2xl border border-amber-500/30">
-        <div class="w-full lg:w-[52%] p-[5%] flex flex-col justify-between relative bg-gradient-to-br from-slate-900/90 via-slate-950/80 to-amber-950/30 border-b lg:border-b-0 lg:border-r border-amber-500/20">
-            <div class="space-y-[3%]">
-                <div class="flex items-center gap-[4%]">
-                    <div class="relative w-[18%] max-w-[5rem] aspect-square flex-shrink-0">
-                        <div class="absolute inset-0 bg-amber-500/30 rounded-full blur-md"></div>
-                        <img src="logo.svg" alt="Logo" class="relative w-full h-full object-contain rounded-full border border-amber-400/50 shadow-lg">
-                    </div>
-                    <div>
-                        <span class="text-[0.7rem] uppercase tracking-[0.25em] font-bold text-amber-400/90 flex items-center gap-1.5">
-                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            Official Enterprise Console
-                        </span>
-                        <h1 class="text-xl lg:text-2xl font-black text-amber-400 tracking-wider restaurant-font leading-tight">SCALESOFT POS</h1>
-                        <p class="text-xs text-slate-300 font-medium tracking-wide">Restaurant Billing &amp; Management</p>
+<div class="page-wrap">
+    <div class="portal-shell">
+
+        <!-- ================= LEFT RESTAURANT SHOWCASE PANEL ================= -->
+        <div class="left-rest-panel">
+            <div>
+                <div class="brand-row">
+                    <img id="ui-brand-dp" src="logo.svg" alt="DP" class="dp-circle" onclick="openSettings()" title="Click to change Restaurant Name & DP">
+                    <div style="min-width:0;">
+                        <div class="brand-badge">
+                            <span class="pulse-dot"></span>
+                            <span id="txt-badge">Restaurant POS Terminal</span>
+                        </div>
+                        <h1 id="ui-brand-name" class="brand-title">MS Nihari &amp; Restaurant</h1>
+                        <p id="ui-brand-sub" class="brand-sub">Dine-In, Takeaway, Delivery &amp; Kitchen Tokens</p>
                     </div>
                 </div>
-                <div class="h-[1px] w-full bg-gradient-to-r from-amber-500/50 via-amber-500/20 to-transparent"></div>
-            </div>
 
-            <div class="my-[6%] space-y-[4%]">
-                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Console Capabilities</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-[3%]">
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-receipt"></i></div>
-                        <div><h4 class="text-xs font-bold text-white">Express Billing</h4><p class="text-[0.65rem] text-slate-400">Fast Thermal Receipts</p></div>
+                <!-- Summary Card -->
+                <div class="rest-summary-box">
+                    <div class="rest-kv">
+                        <span id="txt-storage-lbl">Data Storage:</span>
+                        <b>LocalStorage (Instant Offline)</b>
                     </div>
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-utensils"></i></div>
-                        <div><h4 class="text-xs font-bold text-white">Restaurant Ready</h4><p class="text-[0.65rem] text-slate-400">Dine-in, Takeaway, Delivery</p></div>
+                    <div class="rest-kv">
+                        <span id="txt-license-lbl">License Status:</span>
+                        <b id="ui-nav-license" class="gold">Active (3d 0h)</b>
                     </div>
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-chart-line"></i></div>
-                        <div><h4 class="text-xs font-bold text-white">Live Ledger</h4><p class="text-[0.65rem] text-slate-400">Daily Sales &amp; Khata</p></div>
+                    <div class="rest-kv">
+                        <span id="txt-phone-lbl">Restaurant Phone:</span>
+                        <b id="ui-brand-phone">03162967150</b>
                     </div>
-                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
-                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0"><i class="fa-solid fa-shield-halved"></i></div>
-                        <div><h4 class="text-xs font-bold text-white">Offline Folder Storage</h4><p class="text-[0.65rem] text-slate-400">Data saved in your folder</p></div>
+                </div>
+
+                <!-- Restaurant Capabilities -->
+                <div class="feature-grid">
+                    <div class="feature-pill">
+                        <div class="feature-ico"><i class="fa-solid fa-utensils"></i></div>
+                        <div>
+                            <h4 id="txt-f1-t">Dine-In &amp; Parcel</h4>
+                            <p id="txt-f1-s">Takeaway &amp; Delivery</p>
+                        </div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-ico"><i class="fa-solid fa-receipt"></i></div>
+                        <div>
+                            <h4 id="txt-f2-t">Kitchen Tokens</h4>
+                            <p id="txt-f2-s">80mm Thermal Slips</p>
+                        </div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-ico"><i class="fa-solid fa-fire-burner"></i></div>
+                        <div>
+                            <h4 id="txt-f3-t">Prepared Stock</h4>
+                            <p id="txt-f3-s">Cooked &amp; Sold Tracking</p>
+                        </div>
+                    </div>
+                    <div class="feature-pill">
+                        <div class="feature-ico"><i class="fa-solid fa-sliders"></i></div>
+                        <div>
+                            <h4 id="txt-f4-t">Custom Branding</h4>
+                            <p id="txt-f4-s">Edit Name &amp; DP</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between pt-[3%] border-t border-slate-800/80 text-[0.7rem] text-slate-400">
-                <div class="flex items-center gap-2"><i class="fa-regular fa-clock text-amber-400"></i><span id="live-clock" class="font-mono font-semibold text-slate-200">--:--:--</span></div>
-                <div class="flex items-center gap-1.5 text-amber-400 font-semibold"><i class="fa-solid fa-lock text-[0.65rem]"></i><span>Authorized Terminal</span></div>
+            <div class="left-footer">
+                <div style="display:flex;align-items:center;gap:7px;">
+                    <i class="fa-regular fa-clock" style="color:#fbbf24;"></i>
+                    <span id="live-clock" style="font-family:monospace;font-weight:700;color:#ffffff;">--:--:--</span>
+                </div>
+                <button type="button" id="btn-lang-toggle" onclick="toggleLanguage()" class="lang-pill">اردو</button>
             </div>
         </div>
 
-        <div class="w-full lg:w-[48%] p-[5%] flex flex-col justify-center bg-slate-950/70">
-            <div class="w-full max-w-[28rem] mx-auto space-y-[5%]">
-                <div class="space-y-[2%]">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[0.7rem] font-bold uppercase tracking-wider">
-                        <i class="fa-solid fa-key"></i> System Access Required
-                    </div>
-                    <h2 class="text-xl lg:text-2xl font-black text-white tracking-wide">Sign In to POS Terminal</h2>
-                    <p class="text-xs text-slate-400 leading-relaxed">Admin ke diye hue email aur password se login karein.</p>
+        <!-- ================= RIGHT WHITE LOGIN PANEL ================= -->
+        <div class="right-white-panel">
+            <!-- Top Bar -->
+            <div class="top-actions">
+                <div id="top-license-chip" class="status-chip">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span id="top-license-text">Active · 3 Days Left</span>
                 </div>
+                <div class="top-btn-group">
+                    <button type="button" onclick="openSettings()" class="btn-outline-warm">
+                        <i class="fa-solid fa-gear" style="color:#d97706;"></i>
+                        <span id="txt-btn-settings">Settings</span>
+                    </button>
+                    <button type="button" onclick="openActivateModalManual()" class="btn-gold">
+                        <i class="fa-solid fa-key"></i>
+                        <span id="txt-btn-activate">License</span>
+                    </button>
+                </div>
+            </div>
 
-                <div id="alert-box" class="hidden p-[3.5%] rounded-xl text-xs font-semibold text-center transition-all duration-300"></div>
+            <!-- Login Form -->
+            <div class="login-center">
+                <h2 id="txt-login-title" class="login-heading">Sign In to Kitchen &amp; Counter POS</h2>
+                <p id="txt-login-desc" class="login-sub">
+                    Apna email aur password darj karke Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.
+                </p>
 
-                <form id="login-form" class="space-y-[4.5%]" onsubmit="event.preventDefault(); handleSystemLogin();">
-                    <div class="space-y-1.5">
-                        <label class="block text-[0.7rem] font-extrabold text-amber-300 uppercase tracking-wider">
-                            <i class="fa-solid fa-user-check mr-1.5 text-amber-400"></i> User Account / Email
-                        </label>
-                        <div class="relative">
-                            <input type="email" id="login-email" value="" required autocomplete="username" placeholder="restaurant@gmail.com"
-                                   class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-xs text-amber-100 font-semibold placeholder-slate-500 focus:outline-none pl-11">
-                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm"><i class="fa-solid fa-at"></i></span>
+                <div id="alert-box" class="alert-box hidden-el"></div>
+
+                <form id="login-form" onsubmit="event.preventDefault(); handleSystemLogin();">
+                    <div class="field-group">
+                        <div class="field-label">
+                            <span><i class="fa-solid fa-user" style="color:#d97706;margin-right:5px;"></i> <span id="txt-email-lbl">Account / Email</span></span>
+                        </div>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-at input-ico"></i>
+                            <input type="text" id="login-email" class="warm-input" autocomplete="username" placeholder="admin@gmail.com" required>
                         </div>
                     </div>
 
-                    <div class="space-y-1.5">
-                        <div class="flex justify-between items-center">
-                            <label class="block text-[0.7rem] font-extrabold text-slate-200 uppercase tracking-wider">
-                                <i class="fa-solid fa-lock mr-1.5 text-amber-400"></i> Password
-                            </label>
-                            <span class="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                    <div class="field-group">
+                        <div class="field-label">
+                            <span><i class="fa-solid fa-lock" style="color:#d97706;margin-right:5px;"></i> <span id="txt-pass-lbl">Password</span></span>
+                            <span id="txt-pass-req" style="color:#6b5b53;font-weight:600;text-transform:none;">Required</span>
                         </div>
-                        <div class="relative">
-                            <input type="password" id="login-password" required autocomplete="current-password" placeholder="Enter password..." autofocus
-                                   class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-sm text-white placeholder-slate-500 focus:outline-none pl-11 pr-11 tracking-wider">
-                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm"><i class="fa-solid fa-key"></i></span>
-                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-[3.5%] top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 transition-colors p-1" title="Show / Hide Password">
-                                <i id="pass-icon" class="fa-solid fa-eye text-sm"></i>
+                        <div class="input-wrap">
+                            <i class="fa-solid fa-key input-ico"></i>
+                            <input type="password" id="login-password" class="warm-input" autocomplete="current-password" placeholder="Enter password..." autofocus required>
+                            <button type="button" onclick="togglePasswordVisibility()" class="eye-btn" title="Show / Hide Password">
+                                <i id="pass-icon" class="fa-solid fa-eye"></i>
                             </button>
                         </div>
+                        <div id="default-pass-hint" class="default-hint">
+                            <span>Default: <b>admin@gmail.com</b> / <b>123456</b></span>
+                            <a href="javascript:void(0)" onclick="openSettings()" style="color:#b45309;font-weight:700;text-decoration:none;">Change in Settings</a>
+                        </div>
                     </div>
 
-                    <button type="submit" id="btn-login" class="w-full royal-gold-btn text-white font-extrabold py-[3.8%] rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer mt-2">
-                        <i id="btn-login-icon" class="fa-solid fa-door-open text-amber-200 text-sm"></i>
-                        <span id="btn-login-text">Unlock Restaurant Console</span>
+                    <button type="submit" id="btn-login" class="btn-primary-rest">
+                        <i class="fa-solid fa-door-open"></i>
+                        <span id="txt-btn-login">Unlock Restaurant POS</span>
                     </button>
                 </form>
+            </div>
 
-                <div class="pt-[4%] border-t border-slate-800/80 text-center space-y-1">
-                    <p class="text-[0.7rem] text-slate-400 font-medium">Designed &amp; Developed by <span class="text-amber-400 font-bold tracking-wide">Scale Soft Group</span></p>
-                    <p class="text-[0.68rem] text-slate-400 font-semibold flex items-center justify-center gap-1.5">
-                        <i class="fa-brands fa-whatsapp text-emerald-400"></i>
-                        <span>Contact:</span>
-                        <a href="tel:03162967150" class="text-slate-200 hover:text-amber-300 transition-colors font-mono">03162967150</a>
-                    </p>
+            <!-- Footer -->
+            <div class="right-footer">
+                <span>Powered by <b style="color:#3d1810;">Scale Soft Group</b></span>
+                <span><i class="fa-brands fa-whatsapp" style="color:#10b981;"></i> Support: <b style="color:#3d1810;">03162967150</b></span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= SETTINGS MODAL ================= -->
+<div id="modal-settings" class="modal-backdrop hidden-el">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3><i class="fa-solid fa-gear" style="color:#fbbf24;"></i> <span>Restaurant Settings (Name, DP &amp; Account)</span></h3>
+            <button type="button" onclick="closeSettings()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="dp-edit-row">
+                <img id="set-dp-preview" src="logo.svg" alt="DP Preview" class="dp-preview">
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:12px;font-weight:800;color:#3d1810;margin-bottom:5px;">Restaurant Logo / DP</div>
+                    <input type="file" id="set-dp-file" accept="image/*" onchange="handleDpUpload(event)" style="font-size:11.5px;width:100%;">
+                    <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
+                        <button type="button" onclick="resetDp()" class="btn-outline-warm" style="padding:4px 10px;font-size:11px;">Reset Default DP</button>
+                        <span style="font-size:10.5px;color:#6b5b53;">Saved in LocalStorage</span>
+                    </div>
                 </div>
+            </div>
+
+            <div class="set-grid">
+                <div>
+                    <div class="field-label">Restaurant Name</div>
+                    <input type="text" id="set-name" class="set-input" placeholder="MS Nihari &amp; Restaurant">
+                </div>
+                <div>
+                    <div class="field-label">Subtitle / Tagline</div>
+                    <input type="text" id="set-sub" class="set-input" placeholder="Dine-In, Takeaway &amp; Delivery">
+                </div>
+                <div>
+                    <div class="field-label">Owner Phone (on Bill)</div>
+                    <input type="text" id="set-phone" class="set-input" placeholder="03162967150">
+                </div>
+                <div>
+                    <div class="field-label">Restaurant Address</div>
+                    <input type="text" id="set-address" class="set-input" placeholder="Main Bazar / City">
+                </div>
+            </div>
+
+            <hr style="border:0;border-top:1px solid #f1e6d8;margin:16px 0;">
+
+            <div class="set-grid">
+                <div>
+                    <div class="field-label">Login Email / Username</div>
+                    <input type="text" id="set-email" class="set-input" placeholder="admin@gmail.com">
+                </div>
+                <div>
+                    <div class="field-label">New Password (Optional)</div>
+                    <input type="password" id="set-pass" class="set-input" placeholder="Leave blank to keep old">
+                </div>
+            </div>
+
+            <div class="license-box">
+                <div class="license-box-row"><span>License Mode:</span><b>3-Day Auto Cycle</b></div>
+                <div class="license-box-row"><span>Expiry Time:</span><b id="set-lic-exp">-</b></div>
+                <div class="license-box-row"><span>Remaining Time:</span><b id="set-lic-rem" style="color:#b45309;">-</b></div>
+                <div class="license-box-row"><span>Total Renewals:</span><b id="set-lic-cnt">0</b></div>
+            </div>
+
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">
+                <button type="button" onclick="closeSettings()" class="btn-outline-warm">Cancel</button>
+                <button type="button" onclick="saveSettings()" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyAgNQRFr-UWCjY0OYCbPYIPS71czHWMcxA",
-            authDomain: "dairy1-1c7f0.firebaseapp.com",
-            databaseURL: "https://dairy1-1c7f0-default-rtdb.firebaseio.com",
-            projectId: "dairy1-1c7f0",
-            storageBucket: "dairy1-1c7f0.firebasestorage.app",
-            messagingSenderId: "384398878301",
-            appId: "1:384398878301:web:32c4d8ab8edbd66137cfb4",
-            measurementId: "G-L7VTQ63BEG"
-        };
+<!-- ================= 3-DAY EXPIRY ACTIVATION LOCK MODAL ================= -->
+<div id="modal-activation" class="modal-backdrop hidden-el">
+    <div id="act-card" class="modal-card" style="max-width:440px;">
+        <div class="modal-head" style="background:linear-gradient(135deg,#230f0a 0%,#991b1b 100%);">
+            <h3><i class="fa-solid fa-lock"></i> <span id="act-modal-title">Activation Required (3 Days Over)</span></h3>
+            <button type="button" id="act-close-btn" onclick="closeActivateModal()" class="modal-close hidden-el"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+            <div style="width:64px;height:64px;border-radius:16px;background:#fef3c7;color:#b45309;display:grid;place-items:center;font-size:28px;margin:0 auto 12px;border:2px solid #fbbf24;">
+                <i class="fa-solid fa-key"></i>
+            </div>
+            <h4 id="act-heading" style="margin:0 0 6px;font-size:17px;color:#230f0a;font-weight:800;">3-Day Access Period Expired</h4>
+            <p id="act-desc" style="margin:0 0 16px;font-size:12.5px;color:#6b5b53;line-height:1.5;">
+                Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.
+            </p>
 
-        let auth = null, db = null;
+            <div id="act-alert" class="alert-box hidden-el"></div>
+
+            <form onsubmit="event.preventDefault(); submitActivationCode();">
+                <input type="text" id="act-code-input" class="set-input" placeholder="Enter Activation Code..." style="text-align:center;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:12px;">
+                <button type="submit" class="btn-primary-rest" style="margin-top:12px;">
+                    <i class="fa-solid fa-unlock-keyhole"></i> Activate for 3 Days
+                </button>
+            </form>
+
+            <div style="margin-top:16px;padding-top:12px;border-top:1px dashed #e2d5c3;font-size:11.5px;color:#6b5b53;">
+                Code hasil karne ke liye rabta karein: <b style="color:#3d1810;">03162967150</b>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEYS = {
+        LICENSE: 'ms_pos_license_v1',
+        BRANDING: 'ms_pos_branding_v1',
+        AUTH: 'ms_pos_auth_v1',
+        LEGACY_SETTINGS: 'ms_pos_settings'
+    };
+
+    const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
+    const VALID_CODE = 'S366307282';
+
+    const DEFAULT_BRANDING = {
+        name: 'MS Nihari & Restaurant',
+        subtitle: 'Dine-In, Takeaway, Delivery & Kitchen Tokens',
+        phone: '03162967150',
+        address: '',
+        dp: 'logo.svg'
+    };
+
+    const DEFAULT_AUTH = {
+        email: 'admin@gmail.com',
+        pass: '123456',
+        isDefault: true
+    };
+
+    let currentLang = 'en';
+    let tempDpDataUrl = null;
+    let manualActivationOpen = false;
+
+    const I18N = {
+        en: {
+            langBtn: 'اردو',
+            badge: 'Restaurant POS Terminal',
+            storageLbl: 'Data Storage:',
+            licenseLbl: 'License Status:',
+            phoneLbl: 'Restaurant Phone:',
+            f1t: 'Dine-In & Parcel', f1s: 'Takeaway & Delivery',
+            f2t: 'Kitchen Tokens', f2s: '80mm Thermal Slips',
+            f3t: 'Prepared Stock', f3s: 'Cooked & Sold Tracking',
+            f4t: 'Custom Branding', f4s: 'Edit Name & DP',
+            btnSettings: 'Settings',
+            btnActivate: 'License',
+            loginTitle: 'Sign In to Kitchen & Counter POS',
+            loginDesc: 'Apna email aur password darj karke Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.',
+            emailLbl: 'Account / Email',
+            passLbl: 'Password',
+            passReq: 'Required',
+            btnLogin: 'Unlock Restaurant POS'
+        },
+        ur: {
+            langBtn: 'English',
+            badge: 'ریسٹورنٹ پی او ایس ٹرمینل',
+            storageLbl: 'ڈیٹا اسٹوریج:',
+            licenseLbl: 'لائسنس اسٹیٹس:',
+            phoneLbl: 'ریسٹورنٹ فون:',
+            f1t: 'ڈائن ان اور پارسل', f1s: 'ٹیک اوے اور ڈیلیوری',
+            f2t: 'کچن ٹوکن', f2s: 'تھرمل رسید پرنٹ',
+            f3t: 'تیار اسٹاک', f3s: 'پلیٹوں کا مکمل حساب',
+            f4t: 'کسٹم سیٹنگز', f4s: 'نام اور ڈی پی بدلیں',
+            btnSettings: 'سیٹنگز',
+            btnActivate: 'لائسنس',
+            loginTitle: 'ریسٹورنٹ بلنگ لاگ ان',
+            loginDesc: 'بلنگ سسٹم کھولنے کے لیے ای میل اور پاسورڈ درج کریں۔ سیٹنگز سے ریسٹورنٹ کا نام، ڈی پی اور پاسورڈ تبدیل کریں۔',
+            emailLbl: 'اکاؤنٹ / ای میل',
+            passLbl: 'پاسورڈ',
+            passReq: 'لازمی',
+            btnLogin: 'ریسٹورنٹ پی او ایس کھولیں'
+        }
+    };
+
+    function safeRead(key, fallback) {
         try {
-            const fbApp = firebase.initializeApp(firebaseConfig);
-            auth = fbApp.auth();
-            db = fbApp.firestore();
-        } catch (e) { console.error("Firebase init failed:", e); }
+            const raw = localStorage.getItem(key);
+            return raw ? JSON.parse(raw) : fallback;
+        } catch (e) { return fallback; }
+    }
 
-        function updateClock() {
-            const el = document.getElementById('live-clock');
-            if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: true });
+    function safeWrite(key, obj) {
+        try {
+            localStorage.setItem(key, JSON.stringify(obj));
+            return true;
+        } catch (e) { return false; }
+    }
+
+    function getLicense() {
+        let lic = safeRead(STORAGE_KEYS.LICENSE, null);
+        const now = Date.now();
+        if (!lic || typeof lic.expiresAt !== 'number' || typeof lic.installedAt !== 'number') {
+            lic = { installedAt: now, expiresAt: now + THREE_DAYS_MS, activations: 0, lastActivatedAt: null };
+            safeWrite(STORAGE_KEYS.LICENSE, lic);
         }
-        setInterval(updateClock, 1000);
+        return lic;
+    }
+
+    function isLicenseExpired() {
+        return Date.now() >= getLicense().expiresAt;
+    }
+
+    function formatRemaining(ms) {
+        if (ms <= 0) return 'Expired (0h 0m)';
+        const totalSec = Math.floor(ms / 1000);
+        const days = Math.floor(totalSec / 86400);
+        const hrs = Math.floor((totalSec % 86400) / 3600);
+        const mins = Math.floor((totalSec % 3600) / 60);
+        const secs = totalSec % 60;
+        if (days > 0) return `${days}d ${hrs}h ${mins}m`;
+        if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
+        return `${mins}m ${secs}s`;
+    }
+
+    function updateLicenseUI() {
+        const lic = getLicense();
+        const remMs = lic.expiresAt - Date.now();
+        const expired = remMs <= 0;
+        const remTxt = formatRemaining(remMs);
+
+        const navEl = document.getElementById('ui-nav-license');
+        const chipEl = document.getElementById('top-license-chip');
+        const chipTxt = document.getElementById('top-license-text');
+
+        if (navEl) {
+            navEl.textContent = expired ? 'Expired!' : `Active (${remTxt})`;
+            navEl.style.color = expired ? '#fca5a5' : '#fbbf24';
+        }
+        if (chipEl && chipTxt) {
+            chipEl.className = expired ? 'status-chip warn' : 'status-chip';
+            chipTxt.textContent = expired ? 'Expired · Code Required' : `Active · ${remTxt} left`;
+        }
+
+        const setExp = document.getElementById('set-lic-exp');
+        const setRem = document.getElementById('set-lic-rem');
+        const setCnt = document.getElementById('set-lic-cnt');
+        if (setExp) setExp.textContent = new Date(lic.expiresAt).toLocaleString();
+        if (setRem) setRem.textContent = remTxt;
+        if (setCnt) setCnt.textContent = String(lic.activations || 0);
+
+        const modal = document.getElementById('modal-activation');
+        const closeBtn = document.getElementById('act-close-btn');
+        if (expired) {
+            if (modal.classList.contains('hidden-el')) {
+                document.getElementById('modal-settings').classList.add('hidden-el');
+                document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
+                document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
+                document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
+                closeBtn.classList.add('hidden-el');
+                modal.classList.remove('hidden-el');
+                manualActivationOpen = false;
+            }
+        } else if (!manualActivationOpen) {
+            modal.classList.add('hidden-el');
+        }
+    }
+
+    function openActivateModalManual() {
+        const expired = isLicenseExpired();
+        manualActivationOpen = !expired;
+        const modal = document.getElementById('modal-activation');
+        const closeBtn = document.getElementById('act-close-btn');
+        document.getElementById('act-alert').classList.add('hidden-el');
+        document.getElementById('act-code-input').value = '';
+
+        if (expired) {
+            document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
+            document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
+            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
+            closeBtn.classList.add('hidden-el');
+        } else {
+            document.getElementById('act-modal-title').textContent = 'License & Activation';
+            document.getElementById('act-heading').textContent = 'Renew / Extend for 3 Days';
+            document.getElementById('act-desc').innerHTML = 'Agar aap ke paas Activation Code hai to darj karke apna <b>3-din ka timer</b> abhi reset kar sakte hain.';
+            closeBtn.classList.remove('hidden-el');
+        }
+        modal.classList.remove('hidden-el');
+        setTimeout(() => document.getElementById('act-code-input').focus(), 80);
+    }
+
+    function closeActivateModal() {
+        if (isLicenseExpired()) return;
+        manualActivationOpen = false;
+        document.getElementById('modal-activation').classList.add('hidden-el');
+    }
+
+    function submitActivationCode() {
+        const inputEl = document.getElementById('act-code-input');
+        const alertEl = document.getElementById('act-alert');
+        const cardEl = document.getElementById('act-card');
+        const code = (inputEl.value || '').trim().toUpperCase();
+
+        if (code !== VALID_CODE) {
+            alertEl.className = 'alert-box alert-err';
+            alertEl.textContent = 'Ghalat Activation Code! Sahih code darj karein.';
+            alertEl.classList.remove('hidden-el');
+            cardEl.classList.remove('shake');
+            void cardEl.offsetWidth;
+            cardEl.classList.add('shake');
+            return;
+        }
+
+        const lic = getLicense();
+        const now = Date.now();
+        lic.expiresAt = now + THREE_DAYS_MS;
+        lic.activations = (lic.activations || 0) + 1;
+        lic.lastActivatedAt = now;
+        safeWrite(STORAGE_KEYS.LICENSE, lic);
+
+        manualActivationOpen = false;
+        inputEl.value = '';
+        alertEl.className = 'alert-box alert-ok';
+        alertEl.textContent = 'Code Verified! System aglay 3 din ke liye on ho gaya hai ✔';
+        alertEl.classList.remove('hidden-el');
+
+        updateLicenseUI();
+        showLoginAlert('System aglay 3 din ke liye activate ho gaya hai ✔', 'success');
+        setTimeout(() => { document.getElementById('modal-activation').classList.add('hidden-el'); }, 700);
+    }
+
+    function getBranding() {
+        return Object.assign({}, DEFAULT_BRANDING, safeRead(STORAGE_KEYS.BRANDING, {}));
+    }
+
+    function getAuthCreds() {
+        return Object.assign({}, DEFAULT_AUTH, safeRead(STORAGE_KEYS.AUTH, {}));
+    }
+
+    function applyBrandingToUI() {
+        const b = getBranding();
+        const authCreds = getAuthCreds();
+
+        document.title = (b.name || 'Restaurant POS') + ' - Login';
+        document.getElementById('ui-brand-name').textContent = b.name || DEFAULT_BRANDING.name;
+        document.getElementById('ui-brand-sub').textContent = b.subtitle || DEFAULT_BRANDING.subtitle;
+        document.getElementById('ui-brand-phone').textContent = b.phone || DEFAULT_BRANDING.phone;
+
+        const dpEl = document.getElementById('ui-brand-dp');
+        dpEl.onerror = () => { dpEl.src = 'logo.svg'; };
+        dpEl.src = b.dp || 'logo.svg';
+
+        const emailInp = document.getElementById('login-email');
+        if (emailInp && !emailInp.value) emailInp.value = authCreds.email || 'admin@gmail.com';
+
+        const hintEl = document.getElementById('default-pass-hint');
+        if (hintEl) hintEl.style.display = authCreds.isDefault ? 'flex' : 'none';
+    }
+
+    function openSettings() {
+        if (isLicenseExpired()) { updateLicenseUI(); return; }
+        const b = getBranding(), a = getAuthCreds();
+        tempDpDataUrl = null;
+        document.getElementById('set-dp-preview').src = b.dp || 'logo.svg';
+        document.getElementById('set-dp-file').value = '';
+        document.getElementById('set-name').value = b.name || '';
+        document.getElementById('set-sub').value = b.subtitle || '';
+        document.getElementById('set-phone').value = b.phone || '';
+        document.getElementById('set-address').value = b.address || '';
+        document.getElementById('set-email').value = a.email || '';
+        document.getElementById('set-pass').value = '';
+        updateLicenseUI();
+        document.getElementById('modal-settings').classList.remove('hidden-el');
+    }
+
+    function closeSettings() {
+        document.getElementById('modal-settings').classList.add('hidden-el');
+    }
+
+    function handleDpUpload(event) {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas'), size = 240;
+                canvas.width = size; canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                const minSide = Math.min(img.width, img.height);
+                const sx = (img.width - minSide) / 2, sy = (img.height - minSide) / 2;
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, size, size);
+                ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
+                tempDpDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                document.getElementById('set-dp-preview').src = tempDpDataUrl;
+            };
+            img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function resetDp() {
+        tempDpDataUrl = 'logo.svg';
+        document.getElementById('set-dp-preview').src = 'logo.svg';
+        document.getElementById('set-dp-file').value = '';
+    }
+
+    function saveSettings() {
+        const oldB = getBranding();
+        const newName = document.getElementById('set-name').value.trim() || DEFAULT_BRANDING.name;
+        const newSub = document.getElementById('set-sub').value.trim() || DEFAULT_BRANDING.subtitle;
+        const newPhone = document.getElementById('set-phone').value.trim() || DEFAULT_BRANDING.phone;
+        const newAddr = document.getElementById('set-address').value.trim();
+        const newDp = tempDpDataUrl !== null ? tempDpDataUrl : (oldB.dp || 'logo.svg');
+
+        safeWrite(STORAGE_KEYS.BRANDING, { name: newName, subtitle: newSub, phone: newPhone, address: newAddr, dp: newDp });
+
+        const legacy = safeRead(STORAGE_KEYS.LEGACY_SETTINGS, {});
+        legacy.name = newName; legacy.tagline = newSub; legacy.phone = newPhone; legacy.address = newAddr; legacy.dp = newDp;
+        safeWrite(STORAGE_KEYS.LEGACY_SETTINGS, legacy);
+
+        const oldA = getAuthCreds();
+        const newEmail = document.getElementById('set-email').value.trim().toLowerCase() || oldA.email;
+        const newPass = document.getElementById('set-pass').value;
+        safeWrite(STORAGE_KEYS.AUTH, {
+            email: newEmail,
+            pass: newPass ? newPass : oldA.pass,
+            isDefault: newPass ? false : (newEmail === DEFAULT_AUTH.email && oldA.pass === DEFAULT_AUTH.pass)
+        });
+
+        document.getElementById('login-email').value = newEmail;
+        applyBrandingToUI();
+        closeSettings();
+        showLoginAlert('Settings (Name, DP & Account) save ho gayi ✔', 'success');
+    }
+
+    function showLoginAlert(message, type) {
+        const box = document.getElementById('alert-box');
+        box.className = 'alert-box ' + (type === 'success' ? 'alert-ok' : 'alert-err');
+        box.textContent = message;
+        box.classList.remove('hidden-el');
+    }
+
+    function handleSystemLogin() {
+        if (isLicenseExpired()) { updateLicenseUI(); return; }
+        const email = document.getElementById('login-email').value.trim().toLowerCase();
+        const password = document.getElementById('login-password').value;
+        const creds = getAuthCreds();
+
+        if (!email || !password) { showLoginAlert('Email aur password darj karein.', 'error'); return; }
+        if (email !== (creds.email || '').toLowerCase() || password !== creds.pass) {
+            showLoginAlert('Ghalat Email ya Password! (Settings se check/change kar sakte hain)', 'error');
+            return;
+        }
+
+        safeWrite('ms_pos_session_v1', { loggedIn: true, email: email, loginAt: new Date().toISOString() });
+        showLoginAlert('لاگ ان کامیاب! POS khul raha hai...', 'success');
+        setTimeout(() => { window.location.href = 'pos.html'; }, 250);
+    }
+
+    function togglePasswordVisibility() {
+        const inp = document.getElementById('login-password'), icon = document.getElementById('pass-icon');
+        if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+        else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'ur' : 'en';
+        const t = I18N[currentLang];
+        document.getElementById('btn-lang-toggle').textContent = t.langBtn;
+        document.getElementById('txt-badge').textContent = t.badge;
+        document.getElementById('txt-storage-lbl').textContent = t.storageLbl;
+        document.getElementById('txt-license-lbl').textContent = t.licenseLbl;
+        document.getElementById('txt-phone-lbl').textContent = t.phoneLbl;
+        document.getElementById('txt-f1-t').textContent = t.f1t;
+        document.getElementById('txt-f1-s').textContent = t.f1s;
+        document.getElementById('txt-f2-t').textContent = t.f2t;
+        document.getElementById('txt-f2-s').textContent = t.f2s;
+        document.getElementById('txt-f3-t').textContent = t.f3t;
+        document.getElementById('txt-f3-s').textContent = t.f3s;
+        document.getElementById('txt-f4-t').textContent = t.f4t;
+        document.getElementById('txt-f4-s').textContent = t.f4s;
+        document.getElementById('txt-btn-settings').textContent = t.btnSettings;
+        document.getElementById('txt-btn-activate').textContent = t.btnActivate;
+        document.getElementById('txt-login-title').textContent = t.loginTitle;
+        document.getElementById('txt-login-desc').textContent = t.loginDesc;
+        document.getElementById('txt-email-lbl').textContent = t.emailLbl;
+        document.getElementById('txt-pass-lbl').textContent = t.passLbl;
+        document.getElementById('txt-pass-req').textContent = t.passReq;
+        document.getElementById('txt-btn-login').textContent = t.btnLogin;
+    }
+
+    function updateClock() {
+        const el = document.getElementById('live-clock');
+        if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: true });
+    }
+
+    (function initIndex() {
+        getLicense();
+        applyBrandingToUI();
         updateClock();
-
-        function showAlert(message, type) {
-            const box = document.getElementById('alert-box');
-            box.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/50', 'text-red-200', 'bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-200');
-            if (type === 'success') box.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/50', 'text-emerald-200');
-            else box.classList.add('bg-red-500/20', 'border', 'border-red-500/50', 'text-red-200');
-            box.textContent = message;
-        }
-
-        function setLoading(loading) {
-            const btn = document.getElementById('btn-login'), icon = document.getElementById('btn-login-icon'), txt = document.getElementById('btn-login-text');
-            if (!btn) return;
-            btn.disabled = loading;
-            if (loading) { icon.className = 'fa-solid fa-spinner fa-spin text-amber-200 text-sm'; txt.textContent = 'Checking Account...'; }
-            else { icon.className = 'fa-solid fa-door-open text-amber-200 text-sm'; txt.textContent = 'Unlock Restaurant Console'; }
-        }
-
-        function friendlyAuthError(err) {
-            const code = (err && err.code) || '', msg = (err && err.message) || String(err);
-            if (code === 'auth/invalid-credential' || code === 'auth/wrong-password' || code === 'auth/user-not-found' || code === 'auth/invalid-email') {
-                return 'غلط ای میل یا پاسورڈ! (Incorrect email or password)';
-            }
-            if (code === 'auth/too-many-requests') return 'Bohot zyada ghalat koshishein. Thori der baad dobara try karein.';
-            if (code === 'auth/network-request-failed') return 'Internet connection check karein (Network error).';
-            if (code === 'permission-denied') return 'Permission Denied: Firestore Rules check karein.';
-            return msg;
-        }
-
-        async function route(user, auto) {
-            const doc = await db.collection('restaurants').doc(user.uid).get();
-            if (!doc.exists) {
-                if (!auto) {
-                    const adminDoc = await db.collection('admins').doc(user.uid).get().catch(() => null);
-                    await auth.signOut();
-                    if (adminDoc && adminDoc.exists) throw new Error('Yeh Admin account hai. Admin Console ke liye admin.html kholein.');
-                    throw new Error('Is account ka restaurant record maujood nahi hai. Admin se rabta karein.');
-                }
-                return null;
-            }
-            const r = doc.data();
-            if (r.blocked) {
-                await auth.signOut();
-                throw new Error('Aap ka account block hai. Barah-e-karam admin se rabta karein. (Account blocked)');
-            }
-            db.collection('restaurants').doc(user.uid).update({ last_seen: new Date().toISOString() }).catch(() => {});
-            return 'pos.html';
-        }
-
-        let manualLoginInProgress = false;
-        async function handleSystemLogin() {
-            const email = document.getElementById('login-email').value.trim().toLowerCase();
-            const password = document.getElementById('login-password').value;
-            if (!auth || !db) return showAlert('Internet check karein (Firebase load nahi hua).', 'error');
-            if (!email || !password) return showAlert('Email aur password likhein.', 'error');
-
-            manualLoginInProgress = true;
-            setLoading(true);
-            try {
-                const cred = await auth.signInWithEmailAndPassword(email, password);
-                const dest = await route(cred.user, false);
-                showAlert('لاگ ان کامیاب! (Access Granted)', 'success');
-                setTimeout(() => { window.location.href = dest; }, 400);
-            } catch (e) {
-                setLoading(false);
-                showAlert(friendlyAuthError(e), 'error');
-            } finally { manualLoginInProgress = false; }
-        }
-
-        (function checkExistingSession() {
-            if (!auth || !db) return;
-            if (new URLSearchParams(window.location.search).get('logout') === '1') {
-                auth.signOut().catch(() => {});
-                return;
-            }
-            const unsub = auth.onAuthStateChanged(async (user) => {
-                unsub();
-                if (!user || manualLoginInProgress) return;
-                try {
-                    const dest = await route(user, true);
-                    if (dest) window.location.href = dest;
-                } catch (e) { showAlert(friendlyAuthError(e), 'error'); }
-            });
-        })();
-
-        function togglePasswordVisibility() {
-            const inp = document.getElementById('login-password'), icon = document.getElementById('pass-icon');
-            if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash text-sm text-amber-400'; }
-            else { inp.type = 'password'; icon.className = 'fa-solid fa-eye text-sm text-slate-400'; }
-        }
-    </script>
+        updateLicenseUI();
+        setInterval(() => { updateClock(); updateLicenseUI(); }, 1000);
+    })();
+</script>
 </body>
 </html>
