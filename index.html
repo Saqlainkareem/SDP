@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- MOBILE & LAPTOP RESPONSIVE META TAGS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Restaurant POS - Login</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <link rel="stylesheet" href="assets/app.css">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="assets/fontawesome/all.min.css">
+    
+    <style>
+        
+        
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            touch-action: manipulation;
+            background: #040711;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+
+        .restaurant-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* DYNAMIC ROYAL LUXURY BACKGROUND */
+        .royal-mesh-bg {
+            background-color: #040711;
+            background-image: 
+                radial-gradient(at 15% 15%, rgba(217, 119, 6, 0.22) 0%, transparent 55%),
+                radial-gradient(at 85% 20%, rgba(30, 58, 138, 0.35) 0%, transparent 60%),
+                radial-gradient(at 50% 85%, rgba(180, 83, 9, 0.2) 0%, transparent 65%),
+                radial-gradient(at 90% 90%, rgba(88, 28, 135, 0.25) 0%, transparent 50%);
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        /* GLASSMORPHISM WITH PERCENTAGE BLUR & BORDER */
+        .glass-luxury-panel {
+            background: rgba(11, 17, 33, 0.78);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.85),
+                        0 0 35px rgba(217, 119, 6, 0.12);
+        }
+
+        .glass-input {
+            background: rgba(6, 11, 23, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            border-color: #f59e0b;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35);
+            background: rgba(10, 18, 38, 0.95);
+        }
+
+        /* LUXURY GOLD BUTTON WITH HOVER GLOW */
+        .royal-gold-btn {
+            background: linear-gradient(135deg, #d97706 0%, #f59e0b 50%, #b45309 100%);
+            background-size: 200% auto;
+            box-shadow: 0 10px 25px rgba(217, 119, 6, 0.35);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .royal-gold-btn:hover {
+            background-position: right center;
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.55);
+            transform: translateY(-2px);
+        }
+
+        .royal-gold-btn:active {
+            transform: translateY(0);
+        }
+
+        /* ANIMATED AMBIENT GLOW ORBS */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            pointer-events: none;
+            z-index: 0;
+            animation: orbFloat 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes orbFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(3%, 4%) scale(1.08); }
+        }
+    </style>
+</head>
+
+<body class="royal-mesh-bg min-h-screen flex items-center justify-center p-[2%] relative">
+
+    <!-- FLOATING LIGHT ORBS (SIZES IN %) -->
+    <div class="ambient-orb w-[35vw] h-[35vw] bg-amber-600/20 top-[-10%] left-[-5%]"></div>
+    <div class="ambient-orb w-[40vw] h-[40vw] bg-blue-900/25 bottom-[-10%] right-[-5%]"></div>
+
+    <!-- MAIN DUAL-PANE CONTAINER (DESIGNED SPECIALLY FOR LAPTOPS) -->
+    <div class="w-[94%] max-w-[85rem] glass-luxury-panel rounded-3xl relative z-10 overflow-hidden flex flex-col lg:flex-row my-auto shadow-2xl border border-amber-500/30">
+        
+        <!-- ================= LEFT PANEL: RESTAURANT SHOWCASE (52% ON LAPTOP) ================= -->
+        <div class="w-full lg:w-[52%] p-[5%] flex flex-col justify-between relative bg-gradient-to-br from-slate-900/90 via-slate-950/80 to-amber-950/30 border-b lg:border-b-0 lg:border-r border-amber-500/20">
+            
+            <!-- TOP BRAND HEADER -->
+            <div class="space-y-[3%]">
+                <div class="flex items-center gap-[4%]">
+                    <div class="relative w-[18%] max-w-[5rem] aspect-square flex-shrink-0">
+                        <div class="absolute inset-0 bg-amber-500/30 rounded-full blur-md"></div>
+                        <img src="logo.svg" alt="Logo" class="relative w-full h-full object-contain rounded-full border border-amber-400/50 shadow-lg">
+                    </div>
+                    <div>
+                        <span class="text-[0.7rem] uppercase tracking-[0.25em] font-bold text-amber-400/90 flex items-center gap-1.5">
+                            <span class="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Official Enterprise Console
+                        </span>
+                        <h1 class="text-xl lg:text-2xl font-black text-amber-400 tracking-wider restaurant-font leading-tight">
+                            SCALESOFT POS
+                        </h1>
+                        <p class="text-xs text-slate-300 font-medium tracking-wide">
+                            Restaurant Billing &amp; Management
+                        </p>
+                    </div>
+                </div>
+
+                <!-- DIVIDER -->
+                <div class="h-[1px] w-full bg-gradient-to-r from-amber-500/50 via-amber-500/20 to-transparent"></div>
+            </div>
+
+            <!-- MIDDLE: SYSTEM CAPABILITIES & HIGHLIGHTS -->
+            <div class="my-[6%] space-y-[4%]">
+                <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">
+                    Console Capabilities
+                </h3>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-[3%]">
+                    <!-- Feature 1 -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Express Billing</h4>
+                            <p class="text-[0.65rem] text-slate-400">Fast Thermal Receipts</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
+                            <i class="fa-solid fa-utensils"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Restaurant Ready</h4>
+                            <p class="text-[0.65rem] text-slate-400">Dine-in, Takeaway, Delivery</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Live Ledger</h4>
+                            <p class="text-[0.65rem] text-slate-400">Daily Sales & Khata</p>
+                        </div>
+                    </div>
+
+                    <!-- Feature 4 -->
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-[4%] flex items-center gap-[5%] hover:border-amber-500/40 transition-colors">
+                        <div class="w-[20%] aspect-square rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400 text-lg flex-shrink-0">
+                            <i class="fa-solid fa-shield-halved"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-white">Offline Folder Storage</h4>
+                            <p class="text-[0.65rem] text-slate-400">Data saved in your folder</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BOTTOM: SYSTEM LIVE CLOCK & ENCRYPTION BADGE -->
+            <div class="flex items-center justify-between pt-[3%] border-t border-slate-800/80 text-[0.7rem] text-slate-400">
+                <div class="flex items-center gap-2">
+                    <i class="fa-regular fa-clock text-amber-400"></i>
+                    <span id="live-clock" class="font-mono font-semibold text-slate-200">--:--:--</span>
+                </div>
+                <div class="flex items-center gap-1.5 text-amber-400 font-semibold">
+                    <i class="fa-solid fa-lock text-[0.65rem]"></i>
+                    <span>Authorized Terminal</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= RIGHT PANEL: LOGIN AUTHENTICATION (48% ON LAPTOP) ================= -->
+        <div class="w-full lg:w-[48%] p-[5%] flex flex-col justify-center bg-slate-950/70">
+            
+            <div class="w-full max-w-[28rem] mx-auto space-y-[5%]">
+                
+                <!-- LOGIN HEADLINE -->
+                <div class="space-y-[2%]">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[0.7rem] font-bold uppercase tracking-wider">
+                        <i class="fa-solid fa-key"></i> System Access Required
+                    </div>
+                    <h2 class="text-xl lg:text-2xl font-black text-white tracking-wide">
+                        Sign In to POS Terminal
+                    </h2>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Enter your email and password to open the billing console. Works fully offline.
+                    </p>
+                </div>
+
+                <!-- NOTIFICATION / ERROR ALERT BOX -->
+                <div id="alert-box" class="hidden p-[3.5%] rounded-xl text-xs font-semibold text-center transition-all duration-300">
+                    <!-- Dynamic Alert Message -->
+                </div>
+
+                <!-- LOGIN FORM -->
+                <form id="login-form" class="space-y-[4.5%]" onsubmit="event.preventDefault(); handleSystemLogin();">
+                    
+                    <!-- USERNAME / EMAIL (LOCKED TO ALEDHAAM) -->
+                    <div class="space-y-1.5">
+                        <label class="block text-[0.7rem] font-extrabold text-amber-300 uppercase tracking-wider">
+                            <i class="fa-solid fa-user-check mr-1.5 text-amber-400"></i> User Account / Email
+                        </label>
+                        <div class="relative">
+                            <input type="email" id="login-email" value="" required
+                                   class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-xs text-amber-100 font-semibold focus:outline-none pl-11">
+                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm">
+                                <i class="fa-solid fa-at"></i>
+                            </span>
+                            
+                        </div>
+                    </div>
+
+                    <!-- PASSWORD INPUT FIELD (CODE 098765) -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-[0.7rem] font-extrabold text-slate-200 uppercase tracking-wider">
+                                <i class="fa-solid fa-shield-keyhole mr-1.5 text-amber-400"></i> Password
+                            </label>
+                            <span class="text-[0.65rem] text-slate-400 font-medium">Required</span>
+                        </div>
+                        <div class="relative">
+                            <input type="password" id="login-password" required placeholder="Enter password..." autofocus
+                                   class="w-full glass-input rounded-xl px-[4%] py-[3.5%] text-sm text-white placeholder-slate-500 focus:outline-none pl-11 pr-11 tracking-wider">
+                            <span class="absolute left-[3.5%] top-1/2 -translate-y-1/2 text-amber-400/70 text-sm">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <button type="button" onclick="togglePasswordVisibility()" class="absolute right-[3.5%] top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-400 transition-colors p-1" title="Show / Hide Password">
+                                <i id="pass-icon" class="fa-solid fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- LOGIN SUBMIT BUTTON -->
+                    <button type="submit" id="btn-login" class="w-full royal-gold-btn text-white font-extrabold py-[3.8%] rounded-xl text-xs uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer mt-2">
+                        <i class="fa-solid fa-door-open text-amber-200 text-sm"></i> 
+                        <span>Unlock Restaurant Console</span>
+                    </button>
+                </form>
+
+                <!-- FOOTER BRANDING & DEVELOPER CREDITS -->
+                <div class="pt-[4%] border-t border-slate-800/80 text-center space-y-1">
+                    <p class="text-[0.7rem] text-slate-400 font-medium">
+                        Designed & Developed by <span class="text-amber-400 font-bold tracking-wide">Scale Soft Group</span>
+                    </p>
+                    <p class="text-[0.68rem] text-slate-400 font-semibold flex items-center justify-center gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-emerald-400"></i> 
+                        <span>Contact:</span> 
+                        <a href="tel:03162967150" class="text-slate-200 hover:text-amber-300 transition-colors font-mono">03162967150</a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- AUTHENTICATION LOGIC & SYSTEM SCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+    <script>
+        const SB_URL = "https://odsynypmpombekhiljhl.supabase.co";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9kc3lueXBtcG9tYmVraGlsamhsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyOTIzNzAsImV4cCI6MjEwODg2ODM3MH0.zZpCCPxbgNGYQgV4zduj1hWYnmhan_OrfCYiIvtgpxo";
+        let cl = null; try { cl = window.supabase.createClient(SB_URL, SB_KEY); } catch (e) {}
+
+        function updateClock() {
+            const el = document.getElementById('live-clock');
+            if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: true });
+        }
+        setInterval(updateClock, 1000); updateClock();
+
+        function showAlert(message, type) {
+            const box = document.getElementById('alert-box');
+            box.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/50', 'text-red-200', 'bg-emerald-500/20', 'border-emerald-500/50', 'text-emerald-200');
+            if (type === 'success') box.classList.add('bg-emerald-500/20', 'border', 'border-emerald-500/50', 'text-emerald-200');
+            else box.classList.add('bg-red-500/20', 'border', 'border-red-500/50', 'text-red-200');
+            box.textContent = message;
+        }
+
+        async function route(user, auto) {
+            const r = await cl.from('restaurants').select('*').eq('user_id', user.id).maybeSingle();
+            if (r.error) throw r.error;
+            if (!r.data) { if (!auto) await cl.auth.signOut(); throw new Error('Email ya password ghalat hai. (Incorrect email or password)'); }
+            if (r.data.blocked) { await cl.auth.signOut(); throw new Error('Aap ka account block hai. Barah-e-karam rabta karein. (Account blocked)'); }
+            return 'pos.html';
+        }
+
+        async function handleSystemLogin() {
+            const email = document.getElementById('login-email').value.trim().toLowerCase();
+            const password = document.getElementById('login-password').value;
+            if (!cl) { showAlert("Internet check karein (Supabase load nahi hua)", "error"); return; }
+            if (!email || !password) { showAlert("Email aur password likhein. (Enter email & password)", "error"); return; }
+            try {
+                const { data, error } = await cl.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                const dest = await route(data.user, false);
+                showAlert("لاگ ان کامیاب! (Access Granted)", "success");
+                setTimeout(() => { window.location.href = dest; }, 400);
+            } catch (e) {
+                showAlert(/invalid login/i.test(e.message || '') ? "غلط ای میل یا پاسورڈ! (Incorrect email or password)" : (e.message || String(e)), "error");
+            }
+        }
+
+        (async () => {
+            try {
+                const s = cl && (await cl.auth.getSession()).data.session;
+                if (s) window.location.href = await route(s.user, true);
+            } catch (e) { /* login form hi dikhayen */ }
+        })();
+
+        function togglePasswordVisibility() {
+            const inp = document.getElementById('login-password');
+            const icon = document.getElementById('pass-icon');
+            if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash text-sm text-amber-400'; }
+            else { inp.type = 'password'; icon.className = 'fa-solid fa-eye text-sm text-slate-400'; }
+        }
+    </script>
+</body>
+</html>
