@@ -14,7 +14,7 @@ body:before{background:#2563eb;top:-160px;left:-120px}body:after{background:#f59
 @keyframes fl{to{transform:translate(70px,50px) scale(1.15)}}
 .hid{display:none!important}button{font:inherit;cursor:pointer}
 #lg{position:relative;z-index:2;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-.lbox{width:100%;max-width:380px;background:#101a30cc;backdrop-filter:blur(16px);border:1px solid var(--ln);border-radius:20px;padding:28px;animation:up .6s cubic-bezier(.2,.8,.2,1)}
+.lbox{width:100%;max-width:400px;background:#101a30cc;backdrop-filter:blur(16px);border:1px solid var(--ln);border-radius:20px;padding:28px;animation:up .6s cubic-bezier(.2,.8,.2,1)}
 .lbox .ic{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--ac),#ef4444);display:grid;place-items:center;font-size:28px;margin:0 auto 12px;animation:pulse 2.4s infinite}
 @keyframes pulse{50%{box-shadow:0 0 0 14px #f59e0b00,0 0 30px #f59e0b66}0%,100%{box-shadow:0 0 0 0 #f59e0b55}}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
@@ -22,7 +22,7 @@ body:before{background:#2563eb;top:-160px;left:-120px}body:after{background:#f59
 input,select,textarea{width:100%;padding:10px 12px;background:#0b1326;border:1px solid var(--ln);border-radius:10px;color:var(--tx);font:inherit;margin-top:4px;transition:.2s}
 input:focus,select:focus,textarea:focus{outline:0;border-color:var(--ac);box-shadow:0 0 0 3px #f59e0b30}
 label{display:block;font-size:11px;font-weight:700;color:var(--mu);margin-top:10px;text-transform:uppercase;letter-spacing:.4px}label.ck{display:flex;gap:8px;align-items:center;text-transform:none;font-size:13px;color:var(--tx)}label.ck input{width:auto;margin:0}
-.btn{border:0;border-radius:10px;padding:9px 14px;font-weight:700;color:#fff;background:#1e2d4d;transition:.2s;display:inline-flex;gap:6px;align-items:center;margin:2px}.btn:hover{transform:translateY(-2px);filter:brightness(1.2)}
+.btn{border:0;border-radius:10px;padding:9px 14px;font-weight:700;color:#fff;background:#1e2d4d;transition:.2s;display:inline-flex;gap:6px;align-items:center;margin:2px}.btn:hover{transform:translateY(-2px);filter:brightness(1.2)}.btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .btn.g{background:linear-gradient(135deg,#059669,#10b981)}.btn.r{background:linear-gradient(135deg,#e11d48,#f43f5e)}.btn.a{background:linear-gradient(135deg,#f59e0b,#f97316);color:#1a1205}.btn.s{padding:6px 10px;font-size:12px}
 #app{position:relative;z-index:2;display:flex;min-height:100vh}
 aside{width:230px;background:#0b1224e6;border-right:1px solid var(--ln);padding:18px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:4px;backdrop-filter:blur(10px)}
@@ -30,6 +30,9 @@ aside{width:230px;background:#0b1224e6;border-right:1px solid var(--ln);padding:
 aside button.nv{background:none;border:0;color:var(--mu);text-align:left;padding:11px 12px;border-radius:11px;font-weight:600;display:flex;gap:10px;align-items:center;transition:.2s;position:relative}
 aside button.nv:hover{background:#16213b;color:#fff;padding-left:16px}aside button.nv.on{background:linear-gradient(90deg,#f59e0b26,transparent);color:var(--ac);box-shadow:inset 3px 0 var(--ac)}
 .bdg{margin-left:auto;background:var(--rd);color:#fff;border-radius:99px;font-size:11px;padding:1px 7px;animation:pulse2 1.6s infinite}@keyframes pulse2{50%{transform:scale(1.2)}}
+.rt-status{margin:8px 8px 4px;padding:7px 10px;border-radius:10px;background:#101b36;border:1px solid var(--ln);font-size:11px;display:flex;align-items:center;gap:8px;color:var(--mu)}
+.rt-dot{width:8px;height:8px;border-radius:50%;background:var(--ac);flex:none}.rt-dot.ok{background:var(--gr);box-shadow:0 0 8px var(--gr)}.rt-dot.err{background:var(--rd);box-shadow:0 0 8px var(--rd)}
+#rt-err{background:#4c0519;border:1px solid #f43f5e;color:#fecdd3;padding:10px 14px;border-radius:12px;margin-bottom:14px;font-size:13px;display:flex;justify-content:space-between;align-items:center;gap:10px}
 main{flex:1;padding:22px;min-width:0;max-width:1300px}h1{margin:0 0 16px;font-size:22px;display:flex;gap:10px;align-items:center;animation:up .4s}
 .pg{animation:up .45s cubic-bezier(.2,.8,.2,1)}
 .grid{display:grid;gap:14px}.g6{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}
@@ -48,17 +51,22 @@ table{width:100%;border-collapse:collapse}th,td{padding:10px 8px;border-bottom:1
 #ts{position:fixed;right:16px;bottom:16px;z-index:99;display:flex;flex-direction:column;gap:8px}#ts div{background:#16213b;border:1px solid var(--ln);border-left:4px solid var(--ac);padding:11px 16px;border-radius:12px;animation:up .3s;box-shadow:0 8px 24px #0008}
 .kv{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px dashed #22314f}.kv span{color:var(--mu)}
 .sk{height:14px;border-radius:7px;background:linear-gradient(90deg,#16213b,#22314f,#16213b);background-size:200% 100%;animation:sh 1.2s infinite;margin:8px 0}@keyframes sh{to{background-position:-200% 0}}
-@media(max-width:820px){aside{position:fixed;bottom:0;top:auto;left:0;right:0;width:auto;height:auto;flex-direction:row;padding:6px;z-index:30;border-top:1px solid var(--ln);justify-content:space-around}aside .brand,aside .lo{display:none}aside button.nv{flex-direction:column;gap:2px;font-size:10px;padding:8px 6px}main{padding:14px 12px 90px}}
+@media(max-width:820px){aside{position:fixed;bottom:0;top:auto;left:0;right:0;width:auto;height:auto;flex-direction:row;padding:6px;z-index:30;border-top:1px solid var(--ln);justify-content:space-around}aside .brand,aside .lo,aside .rt-status{display:none}aside button.nv{flex-direction:column;gap:2px;font-size:10px;padding:8px 6px}main{padding:14px 12px 90px}}
 </style></head><body>
 <div id="lg"><div class="lbox"><div class="ic"><i class="fa-solid fa-shield-halved"></i></div><h2 style="text-align:center;margin:0 0 4px">Admin Console</h2><p style="text-align:center;color:var(--mu);margin:0 0 8px">Restaurant subscriptions manager</p>
-<label>Email<input id="le" type="email" autocomplete="username"></label><label>Password<input id="lp" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()"></label>
-<p id="lerr" style="color:var(--rd);font-weight:700;min-height:18px"></p><button class="btn a" style="width:100%;justify-content:center" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> Login</button></div></div>
+<label>Email<input id="le" type="email" autocomplete="username" placeholder="admin@gmail.com"></label>
+<label>Password<div style="position:relative"><input id="lp" type="password" autocomplete="current-password" style="padding-right:38px" onkeydown="if(event.key==='Enter')login()"><button type="button" onclick="togPw()" style="position:absolute;right:8px;top:50%;transform:translateY(-40%);background:none;border:0;color:var(--mu)"><i id="lpi" class="fa-solid fa-eye"></i></button></div></label>
+<p id="lerr" style="color:var(--rd);font-weight:700;min-height:18px;font-size:12px;line-height:1.4"></p>
+<button id="lbtn" class="btn a" style="width:100%;justify-content:center" onclick="login()"><i class="fa-solid fa-right-to-bracket"></i> Login</button>
+<button type="button" onclick="resetAdminPw()" style="width:100%;margin-top:10px;background:none;border:0;color:var(--mu);font-size:12px;text-decoration:underline">Password bhool gaye? Reset email bhejein</button></div></div>
+
 <div id="app" class="hid">
 <aside><div class="brand"><i class="fa-solid fa-utensils"></i><span>Admin<br><small style="color:var(--mu);font-weight:500">POS Subscriptions</small></span></div>
 <button class="nv on" data-t="dash"><i class="fa-solid fa-chart-pie"></i>Dashboard</button><button class="nv" data-t="rest"><i class="fa-solid fa-store"></i>Restaurants</button>
 <button class="nv" data-t="pay"><i class="fa-solid fa-money-bill-wave"></i>Payments<span class="bdg hid" id="pb"></span></button><button class="nv" data-t="set"><i class="fa-solid fa-sliders"></i>Settings</button>
-<button class="nv lo" style="margin-top:auto" onclick="logout()"><i class="fa-solid fa-power-off"></i>Logout</button></aside>
-<main id="v"></main></div>
+<div class="rt-status" style="margin-top:auto"><span id="rtdot" class="rt-dot"></span><span id="rtmsg">Connecting...</span></div>
+<button class="nv lo" onclick="logout()"><i class="fa-solid fa-power-off"></i>Logout</button></aside>
+<main><div id="rt-err" class="hid"><span id="rt-err-txt"></span><button class="btn s" onclick="$('rt-err').classList.add('hid')">OK</button></div><div id="v"></div></main></div>
 <div id="ov" onclick="closeD()"></div><div id="dr"></div><div id="md"><div id="mb"></div></div><div id="ts"></div>
 <script>
 const firebaseConfig = {
@@ -71,16 +79,23 @@ const firebaseConfig = {
   appId: "1:384398878301:web:32c4d8ab8edbd66137cfb4",
   measurementId: "G-L7VTQ63BEG"
 };
-const fbApp = firebase.initializeApp(firebaseConfig);
-const auth = fbApp.auth();
-const db = fbApp.database();
-const secApp = firebase.initializeApp(firebaseConfig, 'secondary');
-const secAuth = secApp.auth();
-secAuth.setPersistence(firebase.auth.Auth.Persistence.NONE);
+
+let fbApp, auth, db, secApp, secAuth;
+try {
+  fbApp = firebase.initializeApp(firebaseConfig);
+  auth = fbApp.auth();
+  db = fbApp.database();
+  secApp = firebase.initializeApp(firebaseConfig, 'secondary');
+  secAuth = secApp.auth();
+  secAuth.setPersistence(firebase.auth.Auth.Persistence.NONE).catch(()=>{});
+} catch (e) {
+  document.getElementById('lerr').textContent = 'Firebase load error: ' + e.message;
+}
 
 const $=i=>document.getElementById(i),esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let R=[],P=[],S={},tab='dash',flt='all',q='',dId=null;
-const toast=t=>{const e=document.createElement('div');e.textContent=t;$('ts').appendChild(e);setTimeout(()=>e.remove(),3800)};
+let R=[],P=[],S={},tab='dash',flt='all',q='',dId=null,rtRefs=[],odRef=null,odCb=null,renderTimer=null;
+const toast=(t,isErr)=>{const e=document.createElement('div');e.textContent=t;if(isErr)e.style.borderLeftColor='var(--rd)';$('ts').appendChild(e);setTimeout(()=>e.remove(),4200)};
+const showRtErr=msg=>{if(!msg){$('rt-err').classList.add('hid');return}$('rt-err-txt').innerHTML='<i class="fa-solid fa-triangle-exclamation"></i> '+esc(msg);$('rt-err').classList.remove('hid')};
 const fd=d=>d?new Date(d).toLocaleDateString('en-GB'):'-',left=r=>r.expires_at?Math.ceil((new Date(r.expires_at)-Date.now())/864e5):0;
 const seen=r=>r.last_seen&&Date.now()-new Date(r.last_seen)<120000;const ago=r=>{if(!r.last_seen)return'kabhi nahi';const m=Math.round((Date.now()-new Date(r.last_seen))/6e4);return m<60?m+' min pehle':m<1440?Math.round(m/60)+' ghante pehle':Math.round(m/1440)+' din pehle'};
 const money=n=>'Rs '+Math.round(n).toLocaleString('en-US');
@@ -88,29 +103,122 @@ function st(r){if(r.blocked)return['Blocked','t-b','b'];if(r.is_free)return['Fre
 function countUp(){document.querySelectorAll('[data-n]').forEach(e=>{const n=+e.dataset.n,pre=e.dataset.p||'',t0=performance.now();(function f(t){const k=Math.min(1,(t-t0)/900),v=Math.round(n*(1-Math.pow(1-k,3)));e.textContent=pre+v.toLocaleString('en-US');if(k<1)requestAnimationFrame(f)})(t0)})}
 function anim(){requestAnimationFrame(()=>{document.querySelectorAll('.bar i').forEach(b=>b.style.height=b.dataset.h+'%');document.querySelectorAll('.ring .fg').forEach(c=>c.style.strokeDashoffset=c.dataset.o);countUp()})}
 
+function togPw(){const i=$('lp'),ic=$('lpi');if(i.type==='password'){i.type='text';ic.className='fa-solid fa-eye-slash'}else{i.type='password';ic.className='fa-solid fa-eye'}}
+
+function friendlyErr(e){
+  const code=(e&&e.code)||'',msg=(e&&e.message)||String(e);
+  if(code==='auth/invalid-credential'||code==='auth/wrong-password'||code==='auth/user-not-found'||code==='auth/invalid-email'){
+    return 'Email ya Password ghalat hai, ya yeh user Firebase Authentication mein abhi add nahi hua.';
+  }
+  if(code==='auth/operation-not-allowed')return 'Firebase Console -> Authentication -> Sign-in method mein Email/Password Enable karein.';
+  if(code==='auth/network-request-failed')return 'Internet connection check karein (Firebase se rabta nahi ho raha).';
+  if(/permission_denied|permission denied/i.test(msg))return 'Permission Denied: Firebase Realtime Database -> Rules mein diye gaye rules Publish karein.';
+  return msg;
+}
+
+async function resetAdminPw(){
+  const em=$('le').value.trim();
+  if(!em)return $('lerr').textContent='Pehle upar Email box mein apna admin email likhein.';
+  try{await auth.sendPasswordResetEmail(em);$('lerr').style.color='var(--gr)';$('lerr').textContent='Password reset link '+em+' par bhej diya gaya ✔'}
+  catch(e){$('lerr').style.color='var(--rd)';$('lerr').textContent=friendlyErr(e)}
+}
+
 async function login(){
-  $('lerr').textContent='';
+  $('lerr').style.color='var(--rd)';$('lerr').textContent='';
+  const em=$('le').value.trim(),pw=$('lp').value;
+  if(!em||!pw)return $('lerr').textContent='Email aur Password dono likhein.';
+  $('lbtn').disabled=true;$('lbtn').innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
   try{
-    const cred=await auth.signInWithEmailAndPassword($('le').value.trim(),$('lp').value);
+    const cred=await auth.signInWithEmailAndPassword(em,pw);
     await init(cred.user);
   }catch(e){
-    $('lerr').textContent=e.message;
+    $('lerr').textContent=friendlyErr(e);
+  }finally{
+    $('lbtn').disabled=false;$('lbtn').innerHTML='<i class="fa-solid fa-right-to-bracket"></i> Login';
   }
 }
+
 async function init(u){
   try{
     const snap=await db.ref('admins/'+u.uid).once('value');
     if(snap.val()!==true){
-      await auth.signOut();
-      $('lerr').textContent='Yeh account admin nahi hai (Firebase Database mein admins/'+u.uid+' = true add karein).';
-      return;
+      // First-time Admin Auto-Save: agar admins node khali hai to pehle user ko auto-save karo
+      let bootstrapped=false;
+      try{
+        const allAdmins=await db.ref('admins').once('value');
+        if(!allAdmins.exists()){
+          await db.ref('admins/'+u.uid).set(true);
+          bootstrapped=true;
+          toast('Pehla Admin account auto-save ho gaya ✔');
+        }
+      }catch(_){}
+      if(!bootstrapped){
+        await auth.signOut();
+        $('lerr').innerHTML='Yeh account Admin list mein nahi hai.<br>Firebase Realtime Database -> Data -> <b>admins/'+esc(u.uid)+'</b> = <b>true</b> add karein.';
+        return;
+      }
     }
-    $('lg').classList.add('hid');$('app').classList.remove('hid');await load();show();
+    $('lg').classList.add('hid');$('app').classList.remove('hid');
+    startRealtime();
   }catch(e){
-    $('lerr').textContent=e.message;
+    $('lerr').textContent=friendlyErr(e);
   }
 }
-async function logout(){await auth.signOut();location.reload()}
+
+function stopRealtime(){
+  rtRefs.forEach(([r,cb])=>r.off('value',cb));
+  rtRefs=[];
+  if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}
+}
+
+function scheduleRender(){
+  clearTimeout(renderTimer);
+  renderTimer=setTimeout(()=>{
+    const activeSearch=document.activeElement&&document.activeElement.closest('.tools');
+    const modalOpen=$('md').style.display==='flex';
+    if(!activeSearch&&!modalOpen)show();
+    if(dId)renderDrawerBody(dId);
+  },80);
+}
+
+function startRealtime(){
+  stopRealtime();
+  const connRef=db.ref('.info/connected');
+  const connCb=s=>{
+    const ok=!!s.val();
+    $('rtdot').className='rt-dot '+(ok?'ok':'err');
+    $('rtmsg').textContent=ok?'Live Connected':'Offline / Reconnecting';
+  };
+  connRef.on('value',connCb);
+  rtRefs.push([connRef,connCb]);
+
+  const watch=(path,onData)=>{
+    const ref=db.ref(path);
+    const cb=s=>{showRtErr('');onData(s.val());scheduleRender()};
+    const errCb=err=>{
+      const m=friendlyErr(err);
+      showRtErr(path+': '+m);
+      toast('Realtime issue ('+path+'): '+m,true);
+    };
+    ref.on('value',cb,errCb);
+    rtRefs.push([ref,cb]);
+  };
+
+  watch('restaurants',val=>{
+    const obj=val||{};
+    R=Object.entries(obj).map(([k,v])=>({...v,user_id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+  });
+  watch('payments',val=>{
+    const obj=val||{};
+    P=Object.entries(obj).map(([k,v])=>({...v,id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
+    const n=P.filter(p=>p.status==='pending').length;$('pb').textContent=n;$('pb').classList.toggle('hid',!n);
+  });
+  watch('pay_settings',val=>{
+    S=val||{};
+  });
+}
+
+async function logout(){stopRealtime();await auth.signOut();location.reload()}
 async function load(){
   try{
     const[a,b,c]=await Promise.all([
@@ -124,7 +232,7 @@ async function load(){
     P=Object.entries(pObj).map(([k,v])=>({...v,id:k})).sort((x,y)=>new Date(y.created_at||0)-new Date(x.created_at||0));
     S=c.val()||{};
   }catch(e){
-    toast('Error: '+e.message);
+    const m=friendlyErr(e);showRtErr(m);toast('Error: '+m,true);
   }
   const n=P.filter(p=>p.status==='pending').length;$('pb').textContent=n;$('pb').classList.toggle('hid',!n);
 }
@@ -140,7 +248,7 @@ const card=(i,col,n,l,pre)=>`<div class="card h"><div class="st"><div class="ico
 const soon=R.filter(r=>['x','e'].includes(st(r)[2])).sort((a,b)=>left(a)-left(b));
 return`<h1><i class="fa-solid fa-chart-pie" style="color:var(--ac)"></i>Dashboard</h1><div class="grid g6">${card('fa-store','#38bdf8',R.length,'Total restaurants')}${card('fa-circle-check','#10b981',c('a')+c('f'),'Active')}${card('fa-hourglass-half','#f59e0b',c('x'),'Expiring soon')}${card('fa-circle-xmark','#fb923c',c('e'),'Expired')}${card('fa-ban','#f43f5e',c('b'),'Blocked')}${card('fa-clock','#a78bfa',pend.length,'Pending payments')}</div>
 <div class="grid g2" style="margin-top:14px"><div class="card"><b>Revenue (last 6 months)</b> <span style="float:right;color:var(--gr);font-weight:800">Total ${money(tot)}</span><div class="bars">${mr.map(x=>`<div class="bar"><em>${x.v?Math.round(x.v/1000*10)/10+'k':''}</em><i data-h="${Math.max(x.v?6:2,x.v/mx*100)}"></i>${x.l}</div>`).join('')}</div></div>
-<div class="card"><b><i class="fa-solid fa-bell" style="color:var(--ac)"></i> Renewal needed</b><div style="margin-top:8px">${soon.slice(0,6).map(r=>`<div class="kv" style="cursor:pointer" onclick="openD('${r.user_id}')"><b>${esc(r.name)}</b><span class="tag ${st(r)[1]}">${left(r)<=0?'Expired':left(r)+' din'}</span></div>`).join('')||'<span style="color:var(--mu)">Sab theek hai ✔</span>'}</div></div></div>
+<div class="card"><b><i class="fa-solid fa-bell" style="color:var(--ac)"></i> Renewal needed</b><div style="margin-top:8px">${soon.slice(0,6).map(r=>`<div class="kv" style="cursor:pointer" onclick="openD('${esc(r.user_id)}')"><b>${esc(r.name)}</b><span class="tag ${st(r)[1]}">${left(r)<=0?'Expired':left(r)+' din'}</span></div>`).join('')||'<span style="color:var(--mu)">Sab theek hai ✔</span>'}</div></div></div>
 <div class="card" style="margin-top:14px"><b>Latest payments</b><div class="w"><table>${P.slice(0,6).map(p=>`<tr><td>${new Date(p.created_at).toLocaleDateString('en-GB')}</td><td>${esc(p.restaurant_name)}</td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td><span class="tag ${p.status==='approved'?'t-a':p.status==='rejected'?'t-b':'t-e'}">${p.status}</span></td></tr>`).join('')||'<tr><td>Abhi koi payment nahi</td></tr>'}</table></div></div>`}
 
 /* ---------- Restaurants ---------- */
@@ -149,25 +257,43 @@ const d=Math.max(0,left(r)),tot=r.plan_days||30,pc=Math.min(1,d/tot),col=d<=0?'#
 return`<div class="ring"><svg width="84" height="84"><circle class="bg" cx="42" cy="42" r="36"/><circle class="fg" cx="42" cy="42" r="36" stroke="${col}" data-o="${226*(1-pc)}"/></svg><div style="color:${col}">${d}<small>din</small></div></div>`}
 function vRest(){const L=R.filter(r=>(flt==='all'||st(r)[2]===flt||(flt==='a'&&st(r)[2]==='f'))&&(!q||((r.name||'')+(r.email||'')+(r.phone||'')).toLowerCase().includes(q)));
 const ch=[['all','All'],['a','Active'],['x','Expiring'],['e','Expired'],['b','Blocked'],['f','Free']];
-return`<h1><i class="fa-solid fa-store" style="color:var(--ac)"></i>Restaurants</h1><div class="tools"><button class="btn g" onclick="addM()"><i class="fa-solid fa-plus"></i> New Restaurant</button><button class="btn" onclick="refresh()"><i class="fa-solid fa-rotate"></i></button><input placeholder="Search name / email / phone" value="${esc(q)}" oninput="q=this.value.toLowerCase();clearTimeout(window._t);window._t=setTimeout(()=>{show();const i=document.querySelector('.tools input');i.focus();i.setSelectionRange(99,99)},250)">${ch.map(c=>`<button class="chip ${flt===c[0]?'on':''}" onclick="flt='${c[0]}';show()">${c[1]}</button>`).join('')}</div>
+return`<h1><i class="fa-solid fa-store" style="color:var(--ac)"></i>Restaurants</h1><div class="tools"><button class="btn g" onclick="addM()"><i class="fa-solid fa-plus"></i> New Restaurant</button><button class="btn" onclick="refresh()"><i class="fa-solid fa-rotate"></i></button><input placeholder="Search name / email / phone" value="${esc(q)}" oninput="q=this.value.toLowerCase();clearTimeout(window._t);window._t=setTimeout(()=>{show();const i=document.querySelector('.tools input');if(i){i.focus();const len=i.value.length;i.setSelectionRange(len,len);}},250)">${ch.map(c=>`<button class="chip ${flt===c[0]?'on':''}" onclick="flt='${c[0]}';show()">${c[1]}</button>`).join('')}</div>
 <div class="grid g3">${L.map((r,i)=>{const s=st(r);return`<div class="card h" style="animation-delay:${i*50}ms"><div style="display:flex;gap:14px;align-items:center">${ring(r)}<div style="min-width:0"><b style="font-size:16px">${esc(r.name)}</b><br><small style="color:var(--mu);word-break:break-all">${esc(r.email)}</small><br><span class="tag ${s[1]}">${s[0]}</span> ${r.cloud_sync?'<span class="tag t-f"><i class="fa-solid fa-cloud"></i> data online</span>':'<span class="tag t-e">data offline</span>'}<br><span class="tag ${seen(r)?'t-a':'t-e'}"><i class="fa-solid fa-circle" style="font-size:7px"></i> ${seen(r)?'Online now':'Last seen '+ago(r)}</span></div></div>
-<div class="kv" style="margin-top:10px"><span>Plan</span><b>${r.is_free?'Permanent free':!r.expires_at?'No plan (payment pending)':esc(r.plan_name)+' · '+r.plan_days+'d'}</b></div><div class="kv"><span>Fee</span><b>${money(r.fee||0)}</b></div><div class="kv"><span>Expiry</span><b>${r.is_free?'-':fd(r.expires_at)}</b></div>
-<div style="margin-top:10px"><button class="btn s a" onclick="openD('${r.user_id}')"><i class="fa-solid fa-eye"></i> Details</button><button class="btn s ${r.blocked?'g':'r'}" onclick="blk('${r.user_id}')"><i class="fa-solid ${r.blocked?'fa-unlock':'fa-ban'}"></i> ${r.blocked?'Unblock':'Block'}</button><button class="btn s" onclick="renew('${r.user_id}')"><i class="fa-solid fa-calendar-plus"></i> Renew</button></div></div>`}).join('')||'<div class="card">Koi restaurant nahi mila</div>'}</div>`}
-async function openD(id,keep){dId=id;const r=R.find(x=>x.user_id===id);if(!r)return;const s=st(r),my=P.filter(p=>p.user_id===id);
-$('dr').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${esc(r.name)}</h2><button class="btn s" onclick="closeD()"><i class="fa-solid fa-xmark"></i></button></div>
-<div style="display:flex;gap:14px;align-items:center;margin:14px 0">${ring(r)}<div><span class="tag ${s[1]}">${s[0]}</span><p style="margin:6px 0 0;color:var(--mu)">${r.is_free?'Kabhi expire nahi hoga':'Expiry: <b style="color:var(--tx)">'+fd(r.expires_at)+'</b>'}</p></div></div>
-<div class="card"><div class="kv"><span>Login email</span><b>${esc(r.email)}</b></div><div class="kv"><span>Phone</span><b>${esc(r.phone)||'-'}</b></div><div class="kv"><span>Plan</span><b>${r.is_free?'Free':!r.expires_at?'No plan':esc(r.plan_name)+' ('+r.plan_days+' din)'}</b></div><div class="kv"><span>Fee</span><b>${money(r.fee||0)}</b></div><div class="kv"><span>Joined</span><b>${fd(r.created_at)}</b></div><div class="kv"><span>Last seen</span><b>${seen(r)?'Online now':ago(r)}</b></div><div class="kv"><span>Pay button</span><b>${r.force_pay?'Forced ON':'Auto'}</b></div><div class="kv"><span>Notice</span><b style="max-width:60%;text-align:right">${esc(r.notice)||'-'}</b></div>${r.notes?`<div class="kv"><span>Admin notes</span><b style="max-width:60%;text-align:right">${esc(r.notes)}</b></div>`:''}</div>
-<div class="card" style="margin-top:12px"><b><i class="fa-solid fa-cloud" style="color:var(--bl)"></i> Online data</b><div id="od"><div class="sk"></div><div class="sk" style="width:70%"></div></div></div>
-<div style="margin:12px 0"><button class="btn a" onclick="editM('${id}')"><i class="fa-solid fa-pen"></i> Edit / Plan</button><button class="btn g" onclick="renew('${id}')"><i class="fa-solid fa-calendar-plus"></i> +${r.plan_days}d</button><button class="btn" onclick="addDays('${id}')"><i class="fa-solid fa-plus"></i> Custom days</button><button class="btn" onclick="fp('${id}')"><i class="fa-solid fa-credit-card"></i> ${r.force_pay?'Hide':'Show'} Pay btn</button><button class="btn ${r.blocked?'g':'r'}" onclick="blk('${id}')">${r.blocked?'Unblock':'Block'}</button><button class="btn" onclick="setPw('${id}')"><i class="fa-solid fa-key"></i> Reset Password</button><button class="btn r" onclick="delR('${id}')"><i class="fa-solid fa-trash"></i> Delete</button></div>
-<div class="card"><b>Payment history (${my.length})</b>${my.map(p=>`<div class="kv"><span>${new Date(p.created_at).toLocaleDateString('en-GB')} · ${esc(p.method)} · ${esc(p.tid)}</span><b>${money(p.amount)} <span class="tag ${p.status==='approved'?'t-a':p.status==='rejected'?'t-b':'t-e'}">${p.status}</span></b></div>`).join('')||'<p style="color:var(--mu)">Koi payment nahi</p>'}</div>`;
-$('dr').classList.add('on');$('ov').classList.add('on');anim();
-db.ref('pos_data/'+id).once('value').then(snap=>{const e=$('od');if(!e||dId!==id)return;
-const data=snap.val();
-if(!data){e.innerHTML='<p style="color:var(--mu)">'+(r.cloud_sync?'Abhi tak koi data sync nahi hua.':'Is restaurant ka data sirf offline hai.')+'</p>';return}
-const v=data.value||{},m=Array.isArray(v.menu)?v.menu:Object.values(v.menu||{}),o=Array.isArray(v.orders)?v.orders:Object.values(v.orders||{}),td=new Date().toISOString().slice(0,10),sum=a=>a.reduce((x,y)=>x+(+y.netPayable||0),0);
-e.innerHTML=`<div class="kv"><span>Last sync</span><b>${data.updated_at?new Date(data.updated_at).toLocaleString():'-'}</b></div><div class="kv"><span>Menu items</span><b>${m.length}</b></div><div class="kv"><span>Total bills</span><b>${o.length}</b></div><div class="kv"><span>Total sales</span><b>${money(sum(o))}</b></div><div class="kv"><span>Aaj ki sales</span><b>${money(sum(o.filter(x=>x.date===td)))}</b></div>`})
-.catch(err=>{const e=$('od');if(e&&dId===id)e.innerHTML='<p style="color:var(--rd)">'+esc(err.message)+'</p>';})}
-function closeD(){dId=null;$('dr').classList.remove('on');$('ov').classList.remove('on')}
+<div class="kv" style="margin-top:10px"><span>Plan</span><b>${r.is_free?'Permanent free':!r.expires_at?'No plan (payment pending)':esc(r.plan_name)+' · '+(r.plan_days||30)+'d'}</b></div><div class="kv"><span>Fee</span><b>${money(r.fee||0)}</b></div><div class="kv"><span>Expiry</span><b>${r.is_free?'-':fd(r.expires_at)}</b></div>
+<div style="margin-top:10px"><button class="btn s a" onclick="openD('${esc(r.user_id)}')"><i class="fa-solid fa-eye"></i> Details</button><button class="btn s ${r.blocked?'g':'r'}" onclick="blk('${esc(r.user_id)}')"><i class="fa-solid ${r.blocked?'fa-unlock':'fa-ban'}"></i> ${r.blocked?'Unblock':'Block'}</button><button class="btn s" onclick="renew('${esc(r.user_id)}')"><i class="fa-solid fa-calendar-plus"></i> Renew</button></div></div>`}).join('')||'<div class="card">Koi restaurant nahi mila</div>'}</div>`}
+
+function renderDrawerBody(id){
+  const r=R.find(x=>x.user_id===id);if(!r)return;
+  const s=st(r),my=P.filter(p=>p.user_id===id),pd=r.plan_days||30;
+  const oldOd=$('od')?$('od').innerHTML:'<div class="sk"></div><div class="sk" style="width:70%"></div>';
+  $('dr').innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center"><h2 style="margin:0">${esc(r.name)}</h2><button class="btn s" onclick="closeD()"><i class="fa-solid fa-xmark"></i></button></div>
+  <div style="display:flex;gap:14px;align-items:center;margin:14px 0">${ring(r)}<div><span class="tag ${s[1]}">${s[0]}</span><p style="margin:6px 0 0;color:var(--mu)">${r.is_free?'Kabhi expire nahi hoga':'Expiry: <b style="color:var(--tx)">'+fd(r.expires_at)+'</b>'}</p></div></div>
+  <div class="card"><div class="kv"><span>Login email</span><b>${esc(r.email)}</b></div><div class="kv"><span>Phone</span><b>${esc(r.phone)||'-'}</b></div><div class="kv"><span>Plan</span><b>${r.is_free?'Free':!r.expires_at?'No plan':esc(r.plan_name)+' ('+pd+' din)'}</b></div><div class="kv"><span>Fee</span><b>${money(r.fee||0)}</b></div><div class="kv"><span>Joined</span><b>${fd(r.created_at)}</b></div><div class="kv"><span>Last seen</span><b>${seen(r)?'Online now':ago(r)}</b></div><div class="kv"><span>Pay button</span><b>${r.force_pay?'Forced ON':'Auto'}</b></div><div class="kv"><span>Notice</span><b style="max-width:60%;text-align:right">${esc(r.notice)||'-'}</b></div>${r.notes?`<div class="kv"><span>Admin notes</span><b style="max-width:60%;text-align:right">${esc(r.notes)}</b></div>`:''}</div>
+  <div class="card" style="margin-top:12px"><b><i class="fa-solid fa-cloud" style="color:var(--bl)"></i> Online data (Live)</b><div id="od">${oldOd}</div></div>
+  <div style="margin:12px 0"><button class="btn a" onclick="editM('${esc(id)}')"><i class="fa-solid fa-pen"></i> Edit / Plan</button><button class="btn g" onclick="renew('${esc(id)}')"><i class="fa-solid fa-calendar-plus"></i> +${pd}d</button><button class="btn" onclick="addDays('${esc(id)}')"><i class="fa-solid fa-plus"></i> Custom days</button><button class="btn" onclick="fp('${esc(id)}')"><i class="fa-solid fa-credit-card"></i> ${r.force_pay?'Hide':'Show'} Pay btn</button><button class="btn ${r.blocked?'g':'r'}" onclick="blk('${esc(id)}')">${r.blocked?'Unblock':'Block'}</button><button class="btn" onclick="setPw('${esc(id)}')"><i class="fa-solid fa-key"></i> Reset Password</button><button class="btn r" onclick="delR('${esc(id)}')"><i class="fa-solid fa-trash"></i> Delete</button></div>
+  <div class="card"><b>Payment history (${my.length})</b>${my.map(p=>`<div class="kv"><span>${new Date(p.created_at).toLocaleDateString('en-GB')} · ${esc(p.method)} · ${esc(p.tid)}</span><b>${money(p.amount)} <span class="tag ${p.status==='approved'?'t-a':p.status==='rejected'?'t-b':'t-e'}">${p.status}</span></b></div>`).join('')||'<p style="color:var(--mu)">Koi payment nahi</p>'}</div>`;
+  anim();
+}
+
+function openD(id,keep){
+  if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}
+  dId=id;
+  const r=R.find(x=>x.user_id===id);if(!r)return;
+  renderDrawerBody(id);
+  $('dr').classList.add('on');$('ov').classList.add('on');
+  odRef=db.ref('pos_data/'+id);
+  odCb=snap=>{
+    const e=$('od');if(!e||dId!==id)return;
+    const data=snap.val(),curR=R.find(x=>x.user_id===id)||r;
+    if(!data){e.innerHTML='<p style="color:var(--mu)">'+(curR.cloud_sync?'Abhi tak koi data sync nahi hua.':'Is restaurant ka data sirf offline hai.')+'</p>';return}
+    const v=data.value||{},m=Array.isArray(v.menu)?v.menu:Object.values(v.menu||{}),o=Array.isArray(v.orders)?v.orders:Object.values(v.orders||{}),td=new Date().toISOString().slice(0,10),sum=a=>a.reduce((x,y)=>x+(+y.netPayable||0),0);
+    e.innerHTML=`<div class="kv"><span>Last sync</span><b>${data.updated_at?new Date(data.updated_at).toLocaleString():'-'}</b></div><div class="kv"><span>Menu items</span><b>${m.length}</b></div><div class="kv"><span>Total bills</span><b>${o.length}</b></div><div class="kv"><span>Total sales</span><b>${money(sum(o))}</b></div><div class="kv"><span>Aaj ki sales</span><b>${money(sum(o.filter(x=>x.date===td)))}</b></div>`;
+  };
+  odRef.on('value',odCb,err=>{
+    const e=$('od');if(e&&dId===id)e.innerHTML='<p style="color:var(--rd)">'+esc(friendlyErr(err))+'</p>';
+  });
+}
+function closeD(){if(odRef&&odCb){odRef.off('value',odCb);odRef=null;odCb=null;}dId=null;$('dr').classList.remove('on');$('ov').classList.remove('on')}
 
 /* ---------- Payments ---------- */
 let pf='pending';
@@ -175,7 +301,7 @@ function vPay(){const L=P.filter(p=>pf==='all'||p.status===pf),ap=P.filter(p=>p.
 return`<h1><i class="fa-solid fa-money-bill-wave" style="color:var(--ac)"></i>Payments</h1><div class="grid g6" style="margin-bottom:14px"><div class="card"><div class="st"><div><b data-n="${ap}" data-p="Rs ">0</b><span>Approved total</span></div></div></div><div class="card"><div class="st"><div><b data-n="${pe}" data-p="Rs ">0</b><span>Pending amount</span></div></div></div></div>
 <div class="tools">${['pending','approved','rejected','all'].map(c=>`<button class="chip ${pf===c?'on':''}" onclick="pf='${c}';show()">${c}</button>`).join('')}</div>
 <div class="card w"><table><tr><th>Date</th><th>Restaurant</th><th>Method</th><th>Amount</th><th>TID</th><th>Status</th><th></th></tr>${L.map((p,i)=>`<tr class="rw" style="animation-delay:${i*40}ms"><td>${new Date(p.created_at).toLocaleString()}</td><td><b>${esc(p.restaurant_name)}</b></td><td>${esc(p.method)}</td><td>${money(p.amount)}</td><td><b>${esc(p.tid)}</b></td><td><span class="tag ${p.status==='approved'?'t-a':p.status==='rejected'?'t-b':'t-e'}">${p.status}</span></td>
-<td>${p.status==='pending'?`<button class="btn s g" onclick="dec('${esc(p.id)}',1)"><i class="fa-solid fa-check"></i> Approve +${p.plan_days}d</button><button class="btn s r" onclick="dec('${esc(p.id)}',0)"><i class="fa-solid fa-xmark"></i></button>`:''}</td></tr>`).join('')||'<tr><td colspan=7>Koi payment nahi</td></tr>'}</table></div>`}
+<td>${p.status==='pending'?`<button class="btn s g" onclick="dec('${esc(p.id)}',1)"><i class="fa-solid fa-check"></i> Approve +${p.plan_days||30}d</button><button class="btn s r" onclick="dec('${esc(p.id)}',0)"><i class="fa-solid fa-xmark"></i></button>`:''}</td></tr>`).join('')||'<tr><td colspan=7>Koi payment nahi</td></tr>'}</table></div>`}
 
 /* ---------- Settings ---------- */
 function pm(k,n,ic){const x=S[k]||{};return`<div class="card"><b><i class="${ic}"></i> ${n}</b><label>Type<select id="${k}_m" onchange="qrPrev()"><option value="till" ${x.mode!=='qr'?'selected':''}>Till ID - auto QR (amount auto)</option><option value="qr" ${x.mode==='qr'?'selected':''}>Simple QR image link</option></select></label>
@@ -186,43 +312,46 @@ const tlv=(t,v)=>t+String(v.length).padStart(2,'0')+v;
 function crc(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++)c=c&0x8000?((c<<1)^0x1021)&0xFFFF:(c<<1)&0xFFFF}return c.toString(16).toUpperCase().padStart(4,'0')}
 function emv(till,amt,name,brand){const m=tlv('00','com.'+brand)+tlv('01',till);const s=tlv('00','01')+tlv('01','12')+tlv('26',m)+tlv('52','5812')+tlv('53','586')+tlv('54',Number(amt).toFixed(2))+tlv('58','PK')+tlv('59',(name||'Merchant').slice(0,25))+tlv('60','Pakistan')+'6304';return s+crc(s)}
 function qrPrev(){['easypaisa','jazzcash'].forEach(k=>{const e=$(k+'_pv');if(!e)return;e.innerHTML='';const m=$(k+'_m').value,t=$(k+'_t').value.trim(),u=$(k+'_q').value.trim();
-if(m==='till'&&t){e.style.flexDirection='column';e.style.alignItems='center';e.innerHTML='<div style="color:var(--ac);font-weight:800;margin-bottom:8px">Scan only with '+(k==='easypaisa'?'Easypaisa':'JazzCash')+'</div><div id="'+k+'_c" style="background:#fff;padding:8px;border-radius:10px"></div><small style="color:var(--mu)">Preview (Rs 1000 sample)</small>';new QRCode($(k+'_c'),{text:emv(t,1000,$(k+'_n').value,k),width:150,height:150})}
+if(m==='till'&&t){if(typeof QRCode==='undefined'){e.innerHTML='<small style="color:var(--mu)">QR preview offline hai</small>';return}e.style.flexDirection='column';e.style.alignItems='center';e.innerHTML='<div style="color:var(--ac);font-weight:800;margin-bottom:8px">Scan only with '+(k==='easypaisa'?'Easypaisa':'JazzCash')+'</div><div id="'+k+'_c" style="background:#fff;padding:8px;border-radius:10px"></div><small style="color:var(--mu)">Preview (Rs 1000 sample)</small>';new QRCode($(k+'_c'),{text:emv(t,1000,$(k+'_n').value,k),width:150,height:150})}
 else if(m==='qr'&&u)e.innerHTML='<img src="'+esc(u)+'" style="max-width:170px;border-radius:10px;background:#fff;padding:6px">'})}
 async function saveSet(){const g=k=>({mode:$(k+'_m').value,till:$(k+'_t').value.trim(),name:$(k+'_n').value.trim(),qr:$(k+'_q').value.trim()});
 S={easypaisa:g('easypaisa'),jazzcash:g('jazzcash'),warn_days:+$('wd').value||7,instructions:$('ins').value.trim(),notice:$('gn').value.trim()};
-try{await db.ref('pay_settings').set(S);toast('Settings save ho gayi ✔')}catch(e){toast(e.message)}}
+try{await db.ref('pay_settings').set(S);toast('Settings save ho gayi ✔')}catch(e){toast(friendlyErr(e),true)}}
 
 /* ---------- Forms & actions ---------- */
 const mo=h=>{$('mb').innerHTML=h;$('md').style.display='flex'},cm=()=>$('md').style.display='none';
 function planF(r){r=r||{plan_name:'monthly',plan_days:30,fee:0,cloud_sync:true};const ex=r.expires_at?r.expires_at.slice(0,10):'';
 return`<label>Restaurant name<input id="f_n" value="${esc(r.name)}"></label><label>Phone<input id="f_p" value="${esc(r.phone)}"></label><label>Plan<select id="f_pl" onchange="pc()"><option value="weekly">Weekly (7 din)</option><option value="monthly">Monthly (30 din)</option><option value="custom">Custom days</option><option value="free">Permanent Free</option><option value="none">No plan (pehle payment karni hogi)</option></select></label>
-<label>Plan days<input id="f_d" type="number" value="${r.plan_days}"></label><label>Fee (Rs) - restaurant yehi amount pay karega<input id="f_f" type="number" value="${r.fee||0}"></label><label>Expiry date<input id="f_e" type="date" value="${ex}"></label>
+<label>Plan days<input id="f_d" type="number" value="${r.plan_days||30}"></label><label>Fee (Rs) - restaurant yehi amount pay karega<input id="f_f" type="number" value="${r.fee||0}"></label><label>Expiry date<input id="f_e" type="date" value="${ex}"></label>
 <label class="ck" style="margin-top:12px"><input id="f_c" type="checkbox" ${r.cloud_sync?'checked':''}> Data online (Firebase) rakhna hai</label><label>Notice (is restaurant ke liye)<textarea id="f_no" rows="2">${esc(r.notice)}</textarea></label><label>Admin notes (private)<textarea id="f_nt" rows="2">${esc(r.notes)}</textarea></label>`}
-function pc(){const v=$('f_pl').value;if(v==='weekly')$('f_d').value=7;if(v==='monthly')$('f_d').value=30;if(v==='none'||v==='free')$('f_e').value='';else $('f_e').value=new Date(Date.now()+$('f_d').value*864e5).toISOString().slice(0,10)}
-function addM(){mo(`<h3 style="margin-top:0">New Restaurant</h3><label>Login Email (Gmail)<input id="f_em" type="email"></label><label>Password (min 6)<input id="f_pw" type="text"></label>${planF()}<p><button class="btn g" onclick="addR()"><i class="fa-solid fa-check"></i> Create</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value='monthly';pc()}
-function editM(id){const r=R.find(x=>x.user_id===id);mo(`<h3 style="margin-top:0">Edit: ${esc(r.name)}</h3>${planF(r)}<p><button class="btn g" onclick="saveR('${id}')">Save</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value=r.is_free?'free':(!r.expires_at?'none':(['weekly','monthly'].includes(r.plan_name)?r.plan_name:'custom'))}
+function pc(){const v=$('f_pl').value;if(v==='weekly')$('f_d').value=7;if(v==='monthly')$('f_d').value=30;if(v==='none'||v==='free')$('f_e').value='';else $('f_e').value=new Date(Date.now()+(+$('f_d').value||30)*864e5).toISOString().slice(0,10)}
+function addM(){mo(`<h3 style="margin-top:0">New Restaurant</h3><label>Login Email (Gmail)<input id="f_em" type="email"></label><label>Password (min 6)<input id="f_pw" type="text"></label>${planF()}<p><button id="addBtn" class="btn g" onclick="addR()"><i class="fa-solid fa-check"></i> Create</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value='monthly';pc()}
+function editM(id){const r=R.find(x=>x.user_id===id);mo(`<h3 style="margin-top:0">Edit: ${esc(r.name)}</h3>${planF(r)}<p><button class="btn g" onclick="saveR('${esc(id)}')">Save</button><button class="btn" onclick="cm()">Cancel</button></p>`);$('f_pl').value=r.is_free?'free':(!r.expires_at?'none':(['weekly','monthly'].includes(r.plan_name)?r.plan_name:'custom'))}
 function vals(){const pl=$('f_pl').value,free=pl==='free';return{name:$('f_n').value.trim(),phone:$('f_p').value.trim(),plan_name:pl,plan_days:+$('f_d').value||30,fee:+$('f_f').value||0,is_free:free,expires_at:free||pl==='none'||!$('f_e').value?null:new Date($('f_e').value+'T23:59:59').toISOString(),cloud_sync:$('f_c').checked,notice:$('f_no').value.trim(),notes:$('f_nt').value.trim()}}
 
 async function addR(){
-  const em=$('f_em').value.trim(),pw=$('f_pw').value,v=vals();
-  if(!em||pw.length<6||!v.name)return toast('Name, email aur 6+ password zaroori hai');
+  const em=$('f_em').value.trim().toLowerCase(),pw=$('f_pw').value,v=vals(),btn=$('addBtn');
+  if(!em||pw.length<6||!v.name)return toast('Name, email aur 6+ password zaroori hai',true);
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> Saving...';}
   try{
+    await secAuth.setPersistence(firebase.auth.Auth.Persistence.NONE);
     await secAuth.signOut().catch(()=>{});
     const cred=await secAuth.createUserWithEmailAndPassword(em,pw);
     const uid=cred.user.uid;
     await secAuth.signOut().catch(()=>{});
     await db.ref('restaurants/'+uid).set({...v,user_id:uid,email:em,blocked:false,force_pay:false,last_seen:null,created_at:new Date().toISOString()});
-    cm();await load();show();toast('Restaurant ban gaya ✔  Email: '+em);
-  }catch(e){toast(e.message)}
+    cm();toast('Restaurant auto-save ho gaya ✔  Email: '+em);
+  }catch(e){toast(friendlyErr(e),true)}
+  finally{if(btn){btn.disabled=false;btn.innerHTML='<i class="fa-solid fa-check"></i> Create';}}
 }
 async function setPw(id){
-  const r=R.find(x=>x.user_id===id);if(!r||!r.email)return toast('Email nahi mila');
+  const r=R.find(x=>x.user_id===id);if(!r||!r.email)return toast('Email nahi mila',true);
   if(!confirm(r.email+' par password reset email bhejein?'))return;
   try{await auth.sendPasswordResetEmail(r.email);toast('Password reset link '+r.email+' par bhej diya gaya ✔')}
-  catch(e){toast(e.message)}
+  catch(e){toast(friendlyErr(e),true)}
 }
 async function delR(id){
-  const r=R.find(x=>x.user_id===id);
+  const r=R.find(x=>x.user_id===id);if(!r)return;
   if(!confirm(r.name+' ko HAMESHA ke liye delete karein? Uska online data aur payments bhi chale jayenge.'))return;
   try{
     const updates={};
@@ -230,19 +359,20 @@ async function delR(id){
     updates['pos_data/'+id]=null;
     P.filter(p=>p.user_id===id).forEach(p=>{updates['payments/'+p.id]=null});
     await db.ref().update(updates);
-    closeD();await refresh();toast('Delete ho gaya');
-  }catch(e){toast(e.message)}
+    closeD();toast('Delete ho gaya');
+  }catch(e){toast(friendlyErr(e),true)}
 }
-async function saveR(id){try{await db.ref('restaurants/'+id).update(vals());toast('Save ho gaya ✔');cm();await refresh()}catch(e){toast(e.message)}}
-async function blk(id){const r=R.find(x=>x.user_id===id);if(!confirm((r.blocked?'Unblock ':'Block ')+r.name+'?'))return;try{await db.ref('restaurants/'+id).update({blocked:!r.blocked});await refresh();toast(r.blocked?'Unblock ho gaya - user ko 30 sec mein pata chal jayega':'Block ho gaya - user ki screen 30 sec mein lock ho jayegi')}catch(e){toast('Block nahi hua: '+e.message)}}
-async function fp(id){const r=R.find(x=>x.user_id===id);try{await db.ref('restaurants/'+id).update({force_pay:!r.force_pay});await refresh()}catch(e){toast(e.message)}}
-function ext(r,days){const b=Math.max(Date.now(),r.expires_at?new Date(r.expires_at).getTime():0);return new Date(b+days*864e5).toISOString()}
-async function renew(id){const r=R.find(x=>x.user_id===id);if(!confirm(r.name+': '+r.plan_days+' din barhayein?'))return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,r.plan_days),is_free:false});await refresh();toast('Plan barh gaya ✔')}catch(e){toast(e.message)}}
-async function addDays(id){const r=R.find(x=>x.user_id===id),n=+prompt('Kitne din add karne hain?','30');if(!n)return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,n),is_free:false});await refresh();toast(n+' din add ho gaye ✔')}catch(e){toast(e.message)}}
-async function dec(id,ok){const p=P.find(x=>String(x.id)===String(id)),r=p&&R.find(x=>x.user_id===p.user_id);if(!p)return toast('Payment nahi mili');
-try{if(ok){if(!r)return toast('Restaurant nahi mila');await db.ref('restaurants/'+r.user_id).update({expires_at:ext(r,p.plan_days||r.plan_days),is_free:false,force_pay:false})}
-await db.ref('payments/'+id).update({status:ok?'approved':'rejected',decided_at:new Date().toISOString()});await refresh();toast(ok?'Approved - plan barh gaya ✔':'Reject ho gaya')}catch(e){toast(e.message)}}
+async function saveR(id){try{await db.ref('restaurants/'+id).update(vals());toast('Save ho gaya ✔');cm()}catch(e){toast(friendlyErr(e),true)}}
+async function blk(id){const r=R.find(x=>x.user_id===id);if(!r)return;if(!confirm((r.blocked?'Unblock ':'Block ')+r.name+'?'))return;try{await db.ref('restaurants/'+id).update({blocked:!r.blocked});toast(r.blocked?'Unblock ho gaya - user ko foran pata chal jayega':'Block ho gaya - user ki screen lock ho jayegi')}catch(e){toast('Block nahi hua: '+friendlyErr(e),true)}}
+async function fp(id){const r=R.find(x=>x.user_id===id);if(!r)return;try{await db.ref('restaurants/'+id).update({force_pay:!r.force_pay})}catch(e){toast(friendlyErr(e),true)}}
+function ext(r,days){const b=Math.max(Date.now(),r.expires_at?new Date(r.expires_at).getTime():0);return new Date(b+(days||30)*864e5).toISOString()}
+async function renew(id){const r=R.find(x=>x.user_id===id);if(!r)return;const d=r.plan_days||30;if(!confirm(r.name+': '+d+' din barhayein?'))return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,d),is_free:false});toast('Plan barh gaya ✔')}catch(e){toast(friendlyErr(e),true)}}
+async function addDays(id){const r=R.find(x=>x.user_id===id),n=+prompt('Kitne din add karne hain?','30');if(!r||!n)return;try{await db.ref('restaurants/'+id).update({expires_at:ext(r,n),is_free:false});toast(n+' din add ho gaye ✔')}catch(e){toast(friendlyErr(e),true)}}
+async function dec(id,ok){const p=P.find(x=>String(x.id)===String(id)),r=p&&R.find(x=>x.user_id===p.user_id);if(!p)return toast('Payment nahi mili',true);
+try{if(ok){if(!r)return toast('Restaurant nahi mila',true);await db.ref('restaurants/'+r.user_id).update({expires_at:ext(r,p.plan_days||r.plan_days||30),is_free:false,force_pay:false})}
+await db.ref('payments/'+id).update({status:ok?'approved':'rejected',decided_at:new Date().toISOString()});toast(ok?'Approved - plan barh gaya ✔':'Reject ho gaya')}catch(e){toast(friendlyErr(e),true)}}
 
-setInterval(async()=>{if(!$('app').classList.contains('hid')&&!$('md').style.display.includes('flex')&&!dId){await load();show()}},30000);
-const unsubAuth=auth.onAuthStateChanged(u=>{unsubAuth();if(u)init(u)});
+// Online/Last-seen timer UI refresh har 15 sec
+setInterval(()=>{if(!$('app').classList.contains('hid')&&!$('md').style.display.includes('flex')&&!(document.activeElement&&document.activeElement.closest('.tools'))){show();if(dId)renderDrawerBody(dId);}},15000);
+if(auth){const unsubAuth=auth.onAuthStateChanged(u=>{unsubAuth();if(u)init(u)});}
 </script></body></html>
