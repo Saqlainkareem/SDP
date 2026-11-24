@@ -3,120 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Restaurant POS - Login</title>
+    <title>POS Dashboard - Offline Edition</title>
 
     <link rel="stylesheet" href="assets/app.css">
     <link rel="stylesheet" href="assets/fontawesome/all.min.css">
 
     <style>
         :root {
-            --rest-dark: #230f0a;
-            --rest-mid: #3d1810;
-            --rest-warm: #5c2214;
-            --gold-600: #b45309;
-            --gold-500: #d97706;
-            --gold-400: #f59e0b;
-            --cream-bg: #faf5ef;
-            --card-white: #ffffff;
-            --text-dark: #23120b;
-            --text-muted: #6b5b53;
+            --nav-dark: #0b2b59;
+            --nav-mid: #103b7a;
+            --sky-500: #0ea5e9;
+            --blue-600: #0284c7;
+            --blue-800: #0c4a6e;
+            --bg-soft: #f1f6fb;
+            --card-border: #d8e7f5;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        * { box-sizing: border-box; }
 
         html, body {
-            width: 100%;
-            min-height: 100vh;
             margin: 0;
             padding: 0;
-            font-family: 'Segoe UI', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #fdf8f2 0%, #f7ebd9 50%, #fffdf9 100%);
-            color: var(--text-dark);
-            overflow-x: hidden;
-        }
-
-        .hidden-el {
-            display: none !important;
-        }
-
-        .page-wrap {
+            width: 100%;
             min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-soft);
+            color: var(--text-main);
+        }
+
+        .hidden-el { display: none !important; }
+
+        /* APP LAYOUT */
+        .app-shell {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px 14px;
+            min-height: 100vh;
+            width: 100%;
             transition: filter 0.3s ease;
         }
 
-        /* FULL FILE BLUR WHEN 3-DAY LICENSE IS EXPIRED */
-        .page-wrap.file-blurred {
+        .app-shell.file-blurred {
             filter: blur(15px) grayscale(25%);
             -webkit-filter: blur(15px) grayscale(25%);
             pointer-events: none !important;
             user-select: none !important;
-            -webkit-user-select: none !important;
         }
 
-        .portal-shell {
-            width: 100%;
-            max-width: 1120px;
-            background: var(--card-white);
-            border: 1.5px solid #f3d6ad;
-            border-radius: 26px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: row;
-            box-shadow: 0 24px 60px -15px rgba(61, 24, 16, 0.25), 0 0 0 1px rgba(217, 119, 6, 0.08);
-        }
-
-        /* LEFT RESTAURANT ESPRESSO-MAROON PANEL */
-        .left-rest-panel {
-            width: 44%;
-            background: linear-gradient(180deg, #230f0a 0%, #3d1810 55%, #5c2214 100%);
+        /* LEFT SIDEBAR (SCREENSHOT BLUE STYLE) */
+        .sidebar {
+            width: 268px;
+            flex-shrink: 0;
+            background: linear-gradient(180deg, #072047 0%, #0d3673 55%, #124999 100%);
             color: #ffffff;
-            padding: 32px 28px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
+            padding: 16px 14px;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
         }
 
-        .brand-row {
+        .sb-brand {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding-bottom: 18px;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.22);
+            gap: 11px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
         }
 
-        .dp-circle {
-            width: 70px;
-            height: 70px;
+        .sb-logo {
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            border: 2.5px solid #f59e0b;
+            border: 2px solid #38bdf8;
             background: #ffffff;
             object-fit: cover;
             flex-shrink: 0;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
-            cursor: pointer;
         }
 
-        .brand-badge {
-            display: inline-flex;
+        .sb-brand h2 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+
+        .sb-brand p {
+            margin: 2px 0 0;
+            font-size: 11px;
+            color: #bae6fd;
+        }
+
+        .sb-summary {
+            margin: 14px 0;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(125, 211, 252, 0.25);
+            border-radius: 14px;
+            padding: 11px 13px;
+            font-size: 12px;
+        }
+
+        .sb-kv {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            color: #cbd5e1;
+        }
+
+        .sb-kv b { color: #ffffff; }
+        .sb-kv b.cyan { color: #38bdf8; font-size: 13px; }
+
+        .sb-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-item {
+            width: 100%;
+            text-align: left;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #dbeafe;
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            font-size: 10.5px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: #fcd34d;
-            margin-bottom: 3px;
+            gap: 10px;
+            cursor: pointer;
+            transition: 0.18s ease;
         }
 
-        .pulse-dot {
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            color: #7dd3fc;
+        }
+
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+        }
+
+        .nav-item.active {
+            background: rgba(14, 165, 233, 0.22);
+            border: 1.5px solid #38bdf8;
+            color: #ffffff;
+            font-weight: 700;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.28);
+        }
+
+        .sb-footer {
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .sb-user-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-dot-ok {
             width: 8px;
             height: 8px;
             border-radius: 50%;
@@ -125,376 +181,477 @@
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
         }
 
-        .brand-title {
+        .sb-lang-btn {
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            border-radius: 999px;
+            padding: 4px 11px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sb-action-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .sb-mini-btn {
+            flex: 1;
+            padding: 7px 8px;
+            border-radius: 9px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 11.5px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .sb-mini-btn:hover { background: rgba(255, 255, 255, 0.18); }
+
+        /* RIGHT MAIN WORKSPACE */
+        .main-content {
+            flex: 1;
+            min-width: 0;
+            padding: 18px 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .topbar h1 {
             margin: 0;
             font-size: 21px;
             font-weight: 800;
-            color: #ffffff;
-            line-height: 1.2;
+            color: #0b2b59;
         }
 
-        .brand-sub {
+        .topbar p {
             margin: 2px 0 0;
             font-size: 12px;
-            color: #fde68a;
-            font-weight: 500;
+            color: #0284c7;
+            font-weight: 600;
         }
 
-        .rest-summary-box {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(251, 191, 36, 0.28);
-            border-radius: 16px;
-            padding: 14px 16px;
-            margin: 18px 0;
-        }
-
-        .rest-kv {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            padding: 5px 0;
-        }
-
-        .rest-kv span {
-            color: #fde68a;
-        }
-
-        .rest-kv b {
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .rest-kv b.gold {
-            color: #fbbf24;
-            font-size: 13px;
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin: 10px 0 18px;
-        }
-
-        .feature-pill {
-            background: rgba(255, 255, 255, 0.07);
-            border: 1px solid rgba(251, 191, 36, 0.16);
-            border-radius: 12px;
-            padding: 11px 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            transition: 0.2s ease;
-        }
-
-        .feature-pill:hover {
-            background: rgba(245, 158, 11, 0.16);
-            border-color: rgba(251, 191, 36, 0.5);
-        }
-
-        .feature-ico {
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
-            display: grid;
-            place-items: center;
-            font-size: 14px;
-            flex-shrink: 0;
-        }
-
-        .feature-pill h4 {
-            margin: 0;
-            font-size: 12px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-
-        .feature-pill p {
-            margin: 1px 0 0;
-            font-size: 10.5px;
-            color: #fed7aa;
-        }
-
-        .left-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 14px;
-            border-top: 1px solid rgba(251, 191, 36, 0.22);
-            font-size: 11.5px;
-            color: #fde68a;
-        }
-
-        .lang-pill {
-            background: rgba(255, 255, 255, 0.14);
-            border: 1px solid rgba(253, 230, 138, 0.4);
-            color: #ffffff;
-            padding: 5px 14px;
-            border-radius: 999px;
-            font-size: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .lang-pill:hover {
-            background: #d97706;
-            border-color: #d97706;
-        }
-
-        /* RIGHT WHITE PANEL */
-        .right-white-panel {
-            width: 56%;
-            background: #ffffff;
-            padding: 28px 36px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .top-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-            padding-bottom: 16px;
-            border-bottom: 1px solid #f1e6d8;
-        }
-
-        .status-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            padding: 6px 12px;
-            border-radius: 999px;
-            font-size: 11.5px;
-            font-weight: 700;
-            background: #ecfdf5;
-            color: #047857;
-            border: 1px solid #a7f3d0;
-        }
-
-        .status-chip.warn {
-            background: #fef2f2;
-            color: #b91c1c;
-            border-color: #fecaca;
-        }
-
-        .top-btn-group {
+        .topbar-actions {
             display: flex;
             align-items: center;
             gap: 8px;
+            flex-wrap: wrap;
         }
 
-        .btn-outline-warm {
-            background: #ffffff;
-            color: #3d1810;
-            border: 1.5px solid #e2d5c3;
-            border-radius: 10px;
-            padding: 7px 13px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-outline-warm:hover {
-            border-color: #d97706;
-            color: #b45309;
-            background: #fffbeb;
-        }
-
-        .btn-gold {
-            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-            color: #ffffff;
-            border: 0;
-            border-radius: 10px;
+        .btn-pill {
+            border-radius: 11px;
             padding: 8px 14px;
-            font-size: 12px;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(180, 83, 9, 0.28);
-            transition: 0.2s;
-        }
-
-        .btn-gold:hover {
-            filter: brightness(1.08);
-            transform: translateY(-1px);
-        }
-
-        .login-center {
-            max-width: 420px;
-            width: 100%;
-            margin: 24px auto;
-        }
-
-        .login-heading {
-            margin: 0 0 6px;
-            font-size: 24px;
-            font-weight: 800;
-            color: #230f0a;
-        }
-
-        .login-sub {
-            margin: 0 0 20px;
-            font-size: 13px;
-            color: #6b5b53;
-            line-height: 1.5;
-        }
-
-        .field-group {
-            margin-bottom: 16px;
-        }
-
-        .field-label {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 11px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #3d1810;
-            margin-bottom: 6px;
-        }
-
-        .input-wrap {
-            position: relative;
-        }
-
-        .input-ico {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #d97706;
-            font-size: 14px;
-            pointer-events: none;
-        }
-
-        .warm-input {
-            width: 100%;
-            padding: 12px 42px 12px 40px;
-            border: 1.5px solid #e2d5c3;
-            border-radius: 12px;
-            background: #fdfaf6;
-            color: #23120b;
-            font-size: 13.5px;
-            font-weight: 600;
-            outline: none;
-            transition: 0.2s;
-        }
-
-        .warm-input:focus {
-            background: #ffffff;
-            border-color: #d97706;
-            box-shadow: 0 0 0 4px rgba(217, 119, 6, 0.16);
-        }
-
-        .eye-btn {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: 0;
-            color: #6b5b53;
-            cursor: pointer;
-            padding: 4px;
-        }
-
-        .eye-btn:hover {
-            color: #b45309;
-        }
-
-        .btn-primary-rest {
-            width: 100%;
-            padding: 14px 18px;
-            border: 0;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #3d1810 0%, #9a3412 50%, #d97706 100%);
-            color: #ffffff;
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-            cursor: pointer;
-            box-shadow: 0 10px 25px -5px rgba(154, 52, 18, 0.42);
-            transition: 0.25s;
-        }
-
-        .btn-primary-rest:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px -5px rgba(217, 119, 6, 0.5);
-        }
-
-        .btn-primary-rest:active {
-            transform: translateY(0);
-        }
-
-        .alert-box {
-            padding: 11px 14px;
-            border-radius: 12px;
             font-size: 12.5px;
             font-weight: 700;
-            margin-bottom: 16px;
-            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            cursor: pointer;
+            transition: 0.18s;
         }
 
-        .alert-err {
+        .btn-white {
+            background: #ffffff;
+            border: 1.5px solid #cbd5e1;
+            color: #0b2b59;
+        }
+        .btn-white:hover { border-color: #0284c7; color: #0284c7; }
+
+        .btn-sky {
+            background: #0ea5e9;
+            border: 0;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+        }
+        .btn-sky:hover { filter: brightness(1.06); }
+
+        .btn-navy {
+            background: linear-gradient(135deg, #0b2b59 0%, #0284c7 100%);
+            border: 0;
+            color: #ffffff;
+            box-shadow: 0 4px 14px rgba(11, 43, 89, 0.25);
+        }
+        .btn-navy:hover { filter: brightness(1.08); }
+
+        .btn-danger {
             background: #fef2f2;
             border: 1px solid #fecaca;
             color: #b91c1c;
         }
 
-        .alert-ok {
-            background: #ecfdf5;
-            border: 1px solid #a7f3d0;
-            color: #047857;
-        }
-
-        .default-hint {
-            margin-top: 8px;
-            font-size: 11px;
-            color: #6b5b53;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .right-footer {
-            padding-top: 14px;
-            border-top: 1px solid #f1e6d8;
+        /* SUB-TABS BAR LIKE SCREENSHOT */
+        .subbar-card {
+            background: #ffffff;
+            border: 1.5px solid var(--card-border);
+            border-radius: 16px;
+            padding: 10px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 8px;
-            font-size: 11.5px;
-            color: #6b5b53;
+            gap: 10px;
+            box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
         }
+
+        .subtabs {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .subtab-btn {
+            background: #ffffff;
+            border: 1.5px solid #dbeafe;
+            color: #0b2b59;
+            padding: 8px 14px;
+            border-radius: 11px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .subtab-btn.active {
+            background: linear-gradient(135deg, #0b2b59 0%, #0284c7 100%);
+            color: #ffffff;
+            border-color: transparent;
+        }
+
+        /* CARDS & GRIDS */
+        .card {
+            background: #ffffff;
+            border: 1.5px solid var(--card-border);
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.04);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 1.5px solid var(--card-border);
+            border-radius: 16px;
+            padding: 16px;
+        }
+
+        .stat-lbl { font-size: 11.5px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .stat-val { font-size: 24px; font-weight: 800; color: #0b2b59; margin-top: 6px; }
+        .stat-sub { font-size: 11.5px; color: #0284c7; margin-top: 4px; font-weight: 600; }
+
+        /* POS SPLIT LAYOUT */
+        .pos-grid {
+            display: grid;
+            grid-template-columns: 1.65fr 1fr;
+            gap: 16px;
+            align-items: start;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+        }
+
+        .inp {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #0f172a;
+            background: #ffffff;
+            outline: none;
+        }
+
+        .inp:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+        }
+
+        .search-box .inp { padding-left: 36px; }
+
+        .cat-pills {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .cat-pill {
+            padding: 6px 12px;
+            border-radius: 999px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .cat-pill.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #0284c7;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            max-height: 540px;
+            overflow-y: auto;
+            padding-right: 3px;
+        }
+
+        .item-tile {
+            background: #f8fbff;
+            border: 1.5px solid #dbeafe;
+            border-radius: 14px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.16s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 6px;
+        }
+
+        .item-tile:hover {
+            border-color: #0ea5e9;
+            background: #eff6ff;
+            transform: translateY(-2px);
+        }
+
+        .item-tile-cat {
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0284c7;
+        }
+
+        .item-tile-name {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #0f172a;
+            line-height: 1.25;
+        }
+
+        .item-tile-foot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .item-tile-price {
+            font-size: 14px;
+            font-weight: 800;
+            color: #0b2b59;
+        }
+
+        .item-tile-stock {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #047857;
+            background: #ecfdf5;
+            padding: 2px 7px;
+            border-radius: 999px;
+        }
+
+        /* CURRENT BILL CARD */
+        .bill-card {
+            background: #ffffff;
+            border: 2px solid #0ea5e9;
+            border-radius: 18px;
+            padding: 16px;
+            box-shadow: 0 10px 28px rgba(14, 165, 233, 0.1);
+        }
+
+        .bill-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+
+        .bill-head h3 {
+            margin: 0;
+            font-size: 16px;
+            font-weight: 800;
+            color: #0b2b59;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge-soft {
+            background: #e0f2fe;
+            color: #0369a1;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .cart-list {
+            max-height: 220px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #cbd5e1;
+            padding-bottom: 8px;
+        }
+
+        .cart-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 12.5px;
+        }
+
+        .qty-ctrl {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .qty-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 7px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .form-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .fld-lbl {
+            display: block;
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #0b2b59;
+            margin-bottom: 4px;
+        }
+
+        .net-box {
+            background: linear-gradient(135deg, #0b2b59 0%, #0d4a8a 100%);
+            color: #ffffff;
+            border-radius: 14px;
+            padding: 13px 15px;
+            margin: 12px 0;
+        }
+
+        .net-row-sm {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #bae6fd;
+            margin-bottom: 4px;
+        }
+
+        .net-row-lg {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .net-row-lg span:last-child {
+            font-size: 22px;
+            color: #38bdf8;
+        }
+
+        /* TABLES */
+        .tbl-wrap {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f1f6fb;
+            color: #0b2b59;
+            text-align: left;
+            padding: 10px 12px;
+            font-size: 11.5px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #eef2f6;
+            vertical-align: middle;
+        }
+
+        tr:hover td { background: #f8fbff; }
+
+        .tag-green { background: #ecfdf5; color: #047857; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .tag-red { background: #fef2f2; color: #b91c1c; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
+        .tag-blue { background: #e0f2fe; color: #0369a1; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; }
 
         /* MODALS */
         .modal-backdrop {
             position: fixed;
             inset: 0;
-            background: rgba(35, 15, 10, 0.72);
+            background: rgba(11, 43, 89, 0.7);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -504,402 +661,667 @@
 
         .modal-card {
             width: 100%;
-            max-width: 500px;
+            max-width: 520px;
             max-height: 92vh;
             overflow-y: auto;
             background: #ffffff;
-            border: 2px solid #f3d6ad;
-            border-radius: 22px;
-            box-shadow: 0 25px 60px rgba(35, 15, 10, 0.45);
-            animation: popIn 0.25s ease-out;
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.93) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            border: 2px solid #bae6fd;
+            border-radius: 20px;
+            box-shadow: 0 24px 60px rgba(11, 43, 89, 0.4);
         }
 
         .modal-head {
-            background: linear-gradient(135deg, #230f0a 0%, #5c2214 100%);
+            background: linear-gradient(135deg, #0b2b59 0%, #0284c7 100%);
             color: #ffffff;
-            padding: 18px 22px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .modal-head h3 {
-            margin: 0;
-            font-size: 17px;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .modal-head h3 { margin: 0; font-size: 16px; font-weight: 800; }
 
         .modal-close {
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.16);
             border: 0;
             color: #ffffff;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
         }
 
-        .modal-body {
-            padding: 20px 22px;
-        }
+        .modal-body { padding: 18px 20px; }
 
-        .dp-edit-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 14px;
-            background: #fffbeb;
-            border: 1.5px dashed #fbbf24;
-            border-radius: 14px;
-            margin-bottom: 16px;
-        }
-
-        .dp-preview {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2.5px solid #d97706;
-            object-fit: cover;
-            background: #ffffff;
-            flex-shrink: 0;
-        }
-
-        .set-input {
-            width: 100%;
+        .alert-box {
             padding: 10px 12px;
-            border: 1.5px solid #e2d5c3;
             border-radius: 10px;
-            background: #fdfaf6;
-            color: #23120b;
-            font-size: 13px;
-            font-weight: 600;
-            outline: none;
+            font-size: 12.5px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
         }
+        .alert-err { background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+        .alert-ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #047857; }
 
-        .set-input:focus {
-            background: #ffffff;
-            border-color: #d97706;
-            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.16);
-        }
-
-        .set-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .license-box {
-            background: #fdfaf6;
-            border: 1.5px solid #f1e6d8;
-            border-radius: 12px;
-            padding: 12px 14px;
-            margin-top: 14px;
-            font-size: 12px;
-        }
-
-        .license-box-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            color: #6b5b53;
-        }
-
-        .license-box-row b {
-            color: #3d1810;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-7px); }
-            40%, 80% { transform: translateX(7px); }
-        }
-        .shake {
-            animation: shake 0.35s ease-in-out;
-        }
-
-        @media (max-width: 900px) {
-            .portal-shell {
-                flex-direction: column;
+        /* PRINT RECEIPT */
+        #print-area { display: none; }
+        @media print {
+            body * { visibility: hidden; }
+            #print-area, #print-area * { visibility: visible; }
+            #print-area {
+                display: block !important;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 78mm;
+                font-family: monospace;
+                color: #000000;
+                padding: 4mm;
             }
-            .left-rest-panel, .right-white-panel {
-                width: 100%;
-            }
-            .right-white-panel {
-                padding: 24px 20px;
-            }
-            .set-grid {
-                grid-template-columns: 1fr;
-            }
+        }
+
+        @media (max-width: 1000px) {
+            .app-shell { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: relative; }
+            .pos-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 560px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .form-2col { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div id="main-page-wrap" class="page-wrap">
-    <div class="portal-shell">
+<div id="app-shell" class="app-shell">
 
-        <!-- ================= LEFT RESTAURANT SHOWCASE PANEL ================= -->
-        <div class="left-rest-panel">
-            <div>
-                <div class="brand-row">
-                    <img id="ui-brand-dp" src="logo.svg" alt="DP" class="dp-circle" onclick="openSettings()" title="Click to change Restaurant Name & DP">
-                    <div style="min-width:0;">
-                        <div class="brand-badge">
-                            <span class="pulse-dot"></span>
-                            <span id="txt-badge">100% Offline Restaurant POS</span>
-                        </div>
-                        <h1 id="ui-brand-name" class="brand-title">MS Nihari &amp; Restaurant</h1>
-                        <p id="ui-brand-sub" class="brand-sub">Dine-In, Takeaway, Delivery &amp; Kitchen Tokens</p>
-                    </div>
-                </div>
-
-                <!-- Summary Card -->
-                <div class="rest-summary-box">
-                    <div class="rest-kv">
-                        <span id="txt-storage-lbl">Offline Storage:</span>
-                        <b>100% Offline (LocalStorage)</b>
-                    </div>
-                    <div class="rest-kv">
-                        <span id="txt-license-lbl">License Status:</span>
-                        <b id="ui-nav-license" class="gold">Active (3d 0h)</b>
-                    </div>
-                    <div class="rest-kv">
-                        <span id="txt-phone-lbl">Restaurant Phone:</span>
-                        <b id="ui-brand-phone">03162967150</b>
-                    </div>
-                </div>
-
-                <!-- Restaurant Capabilities -->
-                <div class="feature-grid">
-                    <div class="feature-pill">
-                        <div class="feature-ico"><i class="fa-solid fa-utensils"></i></div>
-                        <div>
-                            <h4 id="txt-f1-t">Dine-In &amp; Parcel</h4>
-                            <p id="txt-f1-s">Takeaway &amp; Delivery</p>
-                        </div>
-                    </div>
-                    <div class="feature-pill">
-                        <div class="feature-ico"><i class="fa-solid fa-receipt"></i></div>
-                        <div>
-                            <h4 id="txt-f2-t">Kitchen Tokens</h4>
-                            <p id="txt-f2-s">80mm Thermal Slips</p>
-                        </div>
-                    </div>
-                    <div class="feature-pill">
-                        <div class="feature-ico"><i class="fa-solid fa-fire-burner"></i></div>
-                        <div>
-                            <h4 id="txt-f3-t">Prepared Stock</h4>
-                            <p id="txt-f3-s">Cooked &amp; Sold Tracking</p>
-                        </div>
-                    </div>
-                    <div class="feature-pill">
-                        <div class="feature-ico"><i class="fa-solid fa-sliders"></i></div>
-                        <div>
-                            <h4 id="txt-f4-t">Custom Branding</h4>
-                            <p id="txt-f4-s">Edit Name &amp; DP</p>
-                        </div>
-                    </div>
+    <!-- ================= LEFT SIDEBAR ================= -->
+    <aside class="sidebar">
+        <div>
+            <div class="sb-brand">
+                <img id="sb-logo" src="logo.svg" alt="DP" class="sb-logo">
+                <div style="min-width:0;">
+                    <h2 id="sb-rest-name">MS Nihari &amp; Restaurant</h2>
+                    <p id="sb-rest-sub">Offline Management Portal</p>
                 </div>
             </div>
 
-            <div class="left-footer">
-                <div style="display:flex;align-items:center;gap:7px;">
-                    <i class="fa-regular fa-clock" style="color:#fbbf24;"></i>
-                    <span id="live-clock" style="font-family:monospace;font-weight:700;color:#ffffff;">--:--:--</span>
-                </div>
-                <button type="button" id="btn-lang-toggle" onclick="toggleLanguage()" class="lang-pill">اردو</button>
+            <div class="sb-summary">
+                <div class="sb-kv"><span>Today Sales:</span><b id="sb-today-sales">Rs. 0</b></div>
+                <div class="sb-kv"><span>Today Expenses:</span><b id="sb-today-exp">Rs. 0</b></div>
+                <div class="sb-kv"><span>Cash In Hand:</span><b id="sb-cash-hand" class="cyan">Rs. 0</b></div>
+                <div class="sb-kv"><span>License Left:</span><b id="sb-lic-rem" style="color:#fde047;">3d 0h</b></div>
             </div>
+
+            <nav class="sb-nav">
+                <button type="button" class="nav-item" data-tab="dashboard" onclick="switchTab('dashboard')">
+                    <i class="fa-solid fa-chart-pie"></i><span data-i18n="navDash">Dashboard Overview</span>
+                </button>
+                <button type="button" class="nav-item active" data-tab="pos" onclick="switchTab('pos')">
+                    <i class="fa-solid fa-cash-register"></i><span data-i18n="navPos">POS / Shop Billing</span>
+                </button>
+                <button type="button" class="nav-item" data-tab="list" onclick="switchTab('list')">
+                    <i class="fa-solid fa-list-check"></i><span data-i18n="navList">Items &amp; Rate List</span>
+                </button>
+                <button type="button" class="nav-item" data-tab="ledger" onclick="switchTab('ledger')">
+                    <i class="fa-solid fa-book"></i><span data-i18n="navLedger">Customers &amp; Suppliers Ledger</span>
+                </button>
+                <button type="button" class="nav-item" data-tab="bills" onclick="switchTab('bills')">
+                    <i class="fa-solid fa-receipt"></i><span data-i18n="navBills">Saved Bills &amp; Profit</span>
+                </button>
+                <button type="button" class="nav-item" data-tab="expenses" onclick="switchTab('expenses')">
+                    <i class="fa-solid fa-wallet"></i><span data-i18n="navExp">Expenses &amp; Staff</span>
+                </button>
+                <button type="button" class="nav-item" data-tab="settings" onclick="switchTab('settings')">
+                    <i class="fa-solid fa-sliders"></i><span data-i18n="navSet">Settings &amp; Backup</span>
+                </button>
+            </nav>
         </div>
 
-        <!-- ================= RIGHT WHITE LOGIN PANEL ================= -->
-        <div class="right-white-panel">
-            <!-- Top Bar -->
-            <div class="top-actions">
-                <div id="top-license-chip" class="status-chip">
-                    <i class="fa-solid fa-circle-check"></i>
-                    <span id="top-license-text">Offline Active · 3 Days Left</span>
+        <div class="sb-footer">
+            <div class="sb-user-row">
+                <div style="min-width:0;">
+                    <div style="font-size:11.5px;font-weight:800;display:flex;align-items:center;gap:6px;color:#a7f3d0;">
+                        <span class="status-dot-ok"></span>
+                        <span>Offline Active</span>
+                    </div>
+                    <div id="sb-user-email" style="font-size:11px;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;">scalesoft@gmail.com</div>
                 </div>
-                <div class="top-btn-group">
-                    <button type="button" onclick="openSettings()" class="btn-outline-warm">
-                        <i class="fa-solid fa-gear" style="color:#d97706;"></i>
-                        <span id="txt-btn-settings">Settings</span>
-                    </button>
-                    <button type="button" onclick="openActivateModalManual()" class="btn-gold">
-                        <i class="fa-solid fa-key"></i>
-                        <span id="txt-btn-activate">License</span>
-                    </button>
+                <button type="button" id="btn-lang" onclick="toggleLang()" class="sb-lang-btn">اردو</button>
+            </div>
+            <div class="sb-action-row">
+                <button type="button" onclick="openActivateModalManual()" class="sb-mini-btn"><i class="fa-solid fa-key"></i> License</button>
+                <button type="button" onclick="logoutPOS()" class="sb-mini-btn"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ================= MAIN WORKSPACE ================= -->
+    <main class="main-content">
+
+        <!-- TOP HEADER -->
+        <header class="topbar">
+            <div>
+                <h1 id="page-title">POS / Shop Billing</h1>
+                <p id="page-sub">100% Offline Billing, Menu List, Customers &amp; Suppliers Ledger</p>
+            </div>
+            <div class="topbar-actions">
+                <button type="button" onclick="switchTab('list')" class="btn-pill btn-white">
+                    <i class="fa-solid fa-list"></i><span>Items List</span>
+                </button>
+                <button type="button" onclick="switchTab('ledger')" class="btn-pill btn-white">
+                    <i class="fa-solid fa-book-open"></i><span>Ledgers (Khaata)</span>
+                </button>
+                <button type="button" onclick="switchTab('pos')" class="btn-pill btn-sky">
+                    <i class="fa-solid fa-cash-register"></i><span>POS</span>
+                </button>
+                <button type="button" onclick="exportAllCSV()" class="btn-pill btn-navy">
+                    <i class="fa-solid fa-file-csv"></i><span>Export CSV</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- QUICK SUB-BAR (LIKE SCREENSHOT) -->
+        <div class="subbar-card">
+            <div class="subtabs">
+                <button type="button" class="subtab-btn active" id="sub-pos" onclick="switchTab('pos')">
+                    <i class="fa-solid fa-cash-register"></i> POS Billing
+                </button>
+                <button type="button" class="subtab-btn" id="sub-list" onclick="switchTab('list')">
+                    <i class="fa-solid fa-boxes-stacked"></i> Items &amp; Rate List
+                </button>
+                <button type="button" class="subtab-btn" id="sub-ledger" onclick="switchTab('ledger')">
+                    <i class="fa-solid fa-book"></i> Customer / Supplier Ledger
+                </button>
+                <button type="button" class="subtab-btn" id="sub-bills" onclick="switchTab('bills')">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Saved Bills &amp; Profit
+                </button>
+            </div>
+            <button type="button" onclick="openItemModal()" class="btn-pill btn-sky">
+                <i class="fa-solid fa-plus"></i> Add Item
+            </button>
+        </div>
+
+        <!-- ========== TAB 1: DASHBOARD OVERVIEW ========== -->
+        <section id="tab-dashboard" class="hidden-el">
+            <div class="stats-grid" style="margin-bottom:14px;">
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Sales (All)</div>
+                    <div id="dash-total-sales" class="stat-val">Rs. 0</div>
+                    <div id="dash-total-bills" class="stat-sub">0 Bills Saved</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Estimated Profit</div>
+                    <div id="dash-total-profit" class="stat-val">Rs. 0</div>
+                    <div class="stat-sub">Sale minus Cost Price</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Customer Udhaar</div>
+                    <div id="dash-cust-udhaar" class="stat-val">Rs. 0</div>
+                    <div class="stat-sub">Receivable in Ledger</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Expenses</div>
+                    <div id="dash-total-exp" class="stat-val">Rs. 0</div>
+                    <div class="stat-sub">Shop &amp; Staff Costs</div>
                 </div>
             </div>
 
-            <!-- Login Form -->
-            <div class="login-center">
-                <h2 id="txt-login-title" class="login-heading">Sign In to Kitchen &amp; Counter POS</h2>
-                <p id="txt-login-desc" class="login-sub">
-                    Apna email aur password darj karke Offline Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.
-                </p>
+            <div class="card">
+                <h3 style="margin:0 0 12px;color:#0b2b59;">Recent Bills</h3>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Bill #</th><th>Date</th><th>Customer</th><th>Type</th><th>Payment</th><th>Net Total</th></tr>
+                        </thead>
+                        <tbody id="dash-recent-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
 
-                <div id="alert-box" class="alert-box hidden-el"></div>
-
-                <form id="login-form" onsubmit="event.preventDefault(); handleSystemLogin();">
-                    <div class="field-group">
-                        <div class="field-label">
-                            <span><i class="fa-solid fa-user" style="color:#d97706;margin-right:5px;"></i> <span id="txt-email-lbl">Account / Email</span></span>
+        <!-- ========== TAB 2: POS BILLING ========== -->
+        <section id="tab-pos">
+            <div class="pos-grid">
+                <!-- LEFT ITEMS PICKER -->
+                <div class="card">
+                    <div class="search-row">
+                        <div class="search-box">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <input type="text" id="pos-search" class="inp" placeholder="Search item name or category..." oninput="renderPOSItems()">
                         </div>
-                        <div class="input-wrap">
-                            <i class="fa-solid fa-at input-ico"></i>
-                            <input type="text" id="login-email" class="warm-input" autocomplete="username" placeholder="scalesoft@gmail.com" required>
+                        <button type="button" onclick="openCategoryModal()" class="btn-pill btn-white">
+                            <i class="fa-solid fa-tags"></i> Manage Categories
+                        </button>
+                    </div>
+
+                    <div id="pos-cat-pills" class="cat-pills"></div>
+                    <div id="pos-items-grid" class="items-grid"></div>
+                </div>
+
+                <!-- RIGHT CURRENT BILL -->
+                <div class="bill-card">
+                    <div class="bill-head">
+                        <h3><i class="fa-solid fa-basket-shopping" style="color:#0284c7;"></i> Current Bill</h3>
+                        <span id="cart-count-badge" class="badge-soft">0 items</span>
+                    </div>
+
+                    <div class="form-2col">
+                        <div>
+                            <label class="fld-lbl">Order Type</label>
+                            <select id="bill-order-type" class="inp">
+                                <option value="Dine-In">Dine-In</option>
+                                <option value="Takeaway">Takeaway / Parcel</option>
+                                <option value="Delivery">Delivery</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="fld-lbl">Table / Token Note</label>
+                            <input type="text" id="bill-table-no" class="inp" placeholder="e.g. Table 4">
                         </div>
                     </div>
 
-                    <div class="field-group">
-                        <div class="field-label">
-                            <span><i class="fa-solid fa-lock" style="color:#d97706;margin-right:5px;"></i> <span id="txt-pass-lbl">Password</span></span>
-                            <span id="txt-pass-req" style="color:#6b5b53;font-weight:600;text-transform:none;">Required</span>
+                    <div id="cart-items-list" class="cart-list">
+                        <div style="text-align:center;color:#94a3b8;padding:18px 0;font-size:12.5px;">Click any item on the left to add to bill</div>
+                    </div>
+
+                    <div class="form-2col">
+                        <div>
+                            <label class="fld-lbl">Customer</label>
+                            <select id="bill-customer" class="inp"></select>
                         </div>
-                        <div class="input-wrap">
-                            <i class="fa-solid fa-key input-ico"></i>
-                            <input type="password" id="login-password" class="warm-input" autocomplete="current-password" placeholder="Enter password..." autofocus required>
-                            <button type="button" onclick="togglePasswordVisibility()" class="eye-btn" title="Show / Hide Password">
-                                <i id="pass-icon" class="fa-solid fa-eye"></i>
+                        <div>
+                            <label class="fld-lbl">Payment</label>
+                            <select id="bill-payment" class="inp">
+                                <option value="Cash">Cash</option>
+                                <option value="Online">Online / Bank</option>
+                                <option value="Udhaar">Udhaar (Add to Ledger)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-2col">
+                        <div>
+                            <label class="fld-lbl">Discount (Rs)</label>
+                            <input type="number" id="bill-discount" class="inp" value="0" min="0" oninput="recalcBillTotals()">
+                        </div>
+                        <div>
+                            <label class="fld-lbl">Cash Received</label>
+                            <input type="number" id="bill-cash-rec" class="inp" placeholder="Optional" min="0" oninput="recalcBillTotals()">
+                        </div>
+                    </div>
+
+                    <div class="net-box">
+                        <div class="net-row-sm"><span>Subtotal</span><span id="bill-subtotal">Rs. 0</span></div>
+                        <div class="net-row-sm"><span>Change / Return</span><span id="bill-change">Rs. 0</span></div>
+                        <div class="net-row-lg"><span>NET TOTAL</span><span id="bill-net-total">Rs. 0</span></div>
+                    </div>
+
+                    <div style="display:flex;gap:8px;">
+                        <button type="button" onclick="clearCart()" class="btn-pill btn-white" style="justify-content:center;">Clear</button>
+                        <button type="button" onclick="completeSale(true)" class="btn-pill btn-navy" style="flex:1;justify-content:center;">
+                            <i class="fa-solid fa-print"></i> Complete Sale &amp; Print Bill
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TAB 3: SEPARATE ITEMS & RATE LIST ========== -->
+        <section id="tab-list" class="hidden-el">
+            <div class="card">
+                <div class="search-row" style="justify-content:space-between;">
+                    <div>
+                        <h3 style="margin:0;color:#0b2b59;">Items, Menu &amp; Rate List</h3>
+                        <p style="margin:2px 0 0;font-size:12px;color:#64748b;">Alag list section: yahan se items, cost/sale rates aur stock manage karein.</p>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <input type="text" id="list-search" class="inp" style="width:220px;" placeholder="Filter list..." oninput="renderItemsListTable()">
+                        <button type="button" onclick="openCategoryModal()" class="btn-pill btn-white"><i class="fa-solid fa-tags"></i> Categories</button>
+                        <button type="button" onclick="openItemModal()" class="btn-pill btn-sky"><i class="fa-solid fa-plus"></i> Add New Item</button>
+                    </div>
+                </div>
+
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Item Name</th>
+                                <th>Category</th>
+                                <th>Cost Price</th>
+                                <th>Sale Price</th>
+                                <th>Stock</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="items-list-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TAB 4: SEPARATE LEDGER (KHAATA) ========== -->
+        <section id="tab-ledger" class="hidden-el">
+            <div class="stats-grid" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:14px;">
+                <div class="stat-card">
+                    <div class="stat-lbl">Customers Receivable (Lena Hai)</div>
+                    <div id="led-cust-total" class="stat-val" style="color:#047857;">Rs. 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Suppliers Payable (Dena Hai)</div>
+                    <div id="led-supp-total" class="stat-val" style="color:#b91c1c;">Rs. 0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-lbl">Total Ledger Accounts</div>
+                    <div id="led-party-count" class="stat-val">0</div>
+                </div>
+            </div>
+
+            <div class="pos-grid" style="grid-template-columns:1fr 1.35fr;">
+                <!-- PARTY LIST -->
+                <div class="card">
+                    <div class="search-row" style="justify-content:space-between;">
+                        <h3 style="margin:0;color:#0b2b59;">Parties / Khaata List</h3>
+                        <button type="button" onclick="openPartyModal()" class="btn-pill btn-sky"><i class="fa-solid fa-user-plus"></i> New Party</button>
+                    </div>
+                    <div style="display:flex;gap:8px;margin-bottom:10px;">
+                        <select id="led-filter-type" class="inp" onchange="renderLedgerParties()">
+                            <option value="all">All (Customers &amp; Suppliers)</option>
+                            <option value="customer">Customers Only</option>
+                            <option value="supplier">Suppliers Only</option>
+                        </select>
+                        <input type="text" id="led-search" class="inp" placeholder="Search name/phone..." oninput="renderLedgerParties()">
+                    </div>
+                    <div class="tbl-wrap">
+                        <table>
+                            <thead><tr><th>Name</th><th>Type</th><th>Balance</th><th>Action</th></tr></thead>
+                            <tbody id="led-parties-tbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- SELECTED PARTY STATEMENT -->
+                <div class="card">
+                    <div id="led-detail-empty" style="text-align:center;padding:40px 10px;color:#64748b;">
+                        <i class="fa-solid fa-book-open" style="font-size:34px;color:#38bdf8;margin-bottom:10px;"></i>
+                        <div style="font-weight:700;">Left side se kisi Customer ya Supplier par click karein</div>
+                    </div>
+
+                    <div id="led-detail-box" class="hidden-el">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;padding-bottom:12px;border-bottom:1px solid #e2e8f0;margin-bottom:12px;">
+                            <div>
+                                <h3 id="led-sel-name" style="margin:0;color:#0b2b59;">Party Name</h3>
+                                <div id="led-sel-meta" style="font-size:12px;color:#64748b;">Phone &bull; Balance</div>
+                            </div>
+                            <button type="button" onclick="openLedgerEntryModal()" class="btn-pill btn-navy">
+                                <i class="fa-solid fa-plus-minus"></i> Add Entry (Bill / Cash)
                             </button>
                         </div>
-                        <div id="default-pass-hint" class="default-hint">
-                            <span>Default: <b>scalesoft@gmail.com</b> / <b>112233</b></span>
-                            <a href="javascript:void(0)" onclick="openSettings()" style="color:#b45309;font-weight:700;text-decoration:none;">Change in Settings</a>
+
+                        <div class="tbl-wrap">
+                            <table>
+                                <thead>
+                                    <tr><th>Date</th><th>Description</th><th>Debit (+)</th><th>Credit (-)</th><th>Balance</th></tr>
+                                </thead>
+                                <tbody id="led-txns-tbody"></tbody>
+                            </table>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
 
-                    <button type="submit" id="btn-login" class="btn-primary-rest">
-                        <i class="fa-solid fa-door-open"></i>
-                        <span id="txt-btn-login">Unlock Restaurant POS</span>
+        <!-- ========== TAB 5: SAVED BILLS & PROFIT ========== -->
+        <section id="tab-bills" class="hidden-el">
+            <div class="card">
+                <div class="search-row" style="justify-content:space-between;">
+                    <h3 style="margin:0;color:#0b2b59;">Saved Bills &amp; Profit History</h3>
+                    <input type="text" id="bills-search" class="inp" style="width:240px;" placeholder="Search bill # or customer..." oninput="renderBillsTable()">
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead>
+                            <tr><th>Bill #</th><th>Token</th><th>Date &amp; Time</th><th>Customer</th><th>Type</th><th>Payment</th><th>Net Total</th><th>Profit</th><th>Print / Del</th></tr>
+                        </thead>
+                        <tbody id="bills-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TAB 6: EXPENSES & STAFF ========== -->
+        <section id="tab-expenses" class="hidden-el">
+            <div class="card">
+                <div class="search-row" style="justify-content:space-between;">
+                    <h3 style="margin:0;color:#0b2b59;">Daily Expenses &amp; Staff Payments</h3>
+                    <button type="button" onclick="openExpenseModal()" class="btn-pill btn-sky"><i class="fa-solid fa-plus"></i> Add Expense</button>
+                </div>
+                <div class="tbl-wrap">
+                    <table>
+                        <thead><tr><th>Date</th><th>Title</th><th>Category</th><th>Amount</th><th>Note</th><th>Delete</th></tr></thead>
+                        <tbody id="exp-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== TAB 7: SETTINGS & OFFLINE BACKUP ========== -->
+        <section id="tab-settings" class="hidden-el">
+            <div class="pos-grid" style="grid-template-columns:1fr 1fr;">
+                <div class="card">
+                    <h3 style="margin:0 0 14px;color:#0b2b59;">Restaurant &amp; Login Settings</h3>
+                    <div class="form-2col">
+                        <div><label class="fld-lbl">Restaurant Name</label><input type="text" id="set-name" class="inp"></div>
+                        <div><label class="fld-lbl">Subtitle</label><input type="text" id="set-sub" class="inp"></div>
+                        <div><label class="fld-lbl">Phone</label><input type="text" id="set-phone" class="inp"></div>
+                        <div><label class="fld-lbl">Address</label><input type="text" id="set-address" class="inp"></div>
+                        <div><label class="fld-lbl">Login Email</label><input type="text" id="set-email" class="inp"></div>
+                        <div><label class="fld-lbl">New Password (Optional)</label><input type="password" id="set-pass" class="inp" placeholder="Leave blank to keep old"></div>
+                    </div>
+                    <button type="button" onclick="savePosSettings()" class="btn-pill btn-navy" style="margin-top:8px;">
+                        <i class="fa-solid fa-floppy-disk"></i> Save Settings
                     </button>
-                </form>
-            </div>
+                </div>
 
-            <!-- Footer -->
-            <div class="right-footer">
-                <span>Powered by <b style="color:#3d1810;">Scale Soft Group</b> (Offline Edition)</span>
-                <span><i class="fa-brands fa-whatsapp" style="color:#10b981;"></i> Support: <b style="color:#3d1810;">03162967150</b></span>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-<!-- ================= SETTINGS MODAL ================= -->
-<div id="modal-settings" class="modal-backdrop hidden-el">
-    <div class="modal-card">
-        <div class="modal-head">
-            <h3><i class="fa-solid fa-gear" style="color:#fbbf24;"></i> <span>Restaurant Settings (Name, DP &amp; Account)</span></h3>
-            <button type="button" onclick="closeSettings()" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="modal-body">
-            <div class="dp-edit-row">
-                <img id="set-dp-preview" src="logo.svg" alt="DP Preview" class="dp-preview">
-                <div style="flex:1;min-width:0;">
-                    <div style="font-size:12px;font-weight:800;color:#3d1810;margin-bottom:5px;">Restaurant Logo / DP</div>
-                    <input type="file" id="set-dp-file" accept="image/*" onchange="handleDpUpload(event)" style="font-size:11.5px;width:100%;">
-                    <div style="margin-top:6px;display:flex;gap:8px;align-items:center;">
-                        <button type="button" onclick="resetDp()" class="btn-outline-warm" style="padding:4px 10px;font-size:11px;">Reset Default DP</button>
-                        <span style="font-size:10.5px;color:#6b5b53;">Saved Offline in LocalStorage</span>
+                <div class="card">
+                    <h3 style="margin:0 0 14px;color:#0b2b59;">Offline Backup &amp; License</h3>
+                    <p style="font-size:12.5px;color:#64748b;margin-top:0;">
+                        Saara data aap ke computer/browser mein 100% offline save hota hai. Safety ke liye JSON backup download karke rakh sakte hain.
+                    </p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;">
+                        <button type="button" onclick="downloadJsonBackup()" class="btn-pill btn-sky"><i class="fa-solid fa-download"></i> Download Full Backup (.json)</button>
+                        <label class="btn-pill btn-white" style="cursor:pointer;">
+                            <i class="fa-solid fa-upload"></i> Restore Backup
+                            <input type="file" accept=".json" onchange="restoreJsonBackup(event)" style="display:none;">
+                        </label>
+                    </div>
+                    <div style="background:#f8fbff;border:1px solid #dbeafe;border-radius:12px;padding:12px;font-size:12.5px;">
+                        <div><b>License Mode:</b> 3-Day Offline Cycle (Code Required Every 3 Days)</div>
+                        <div style="margin-top:4px;"><b>Expires At:</b> <span id="set-lic-exp">-</span></div>
+                        <div style="margin-top:8px;">
+                            <button type="button" onclick="openActivateModalManual()" class="btn-pill btn-white"><i class="fa-solid fa-key"></i> Enter / Renew Activation Code</button>
+                        </div>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="set-grid">
-                <div>
-                    <div class="field-label">Restaurant Name</div>
-                    <input type="text" id="set-name" class="set-input" placeholder="MS Nihari &amp; Restaurant">
-                </div>
-                <div>
-                    <div class="field-label">Subtitle / Tagline</div>
-                    <input type="text" id="set-sub" class="set-input" placeholder="Dine-In, Takeaway &amp; Delivery">
-                </div>
-                <div>
-                    <div class="field-label">Owner Phone (on Bill)</div>
-                    <input type="text" id="set-phone" class="set-input" placeholder="03162967150">
-                </div>
-                <div>
-                    <div class="field-label">Restaurant Address</div>
-                    <input type="text" id="set-address" class="set-input" placeholder="Main Bazar / City">
-                </div>
+    </main>
+</div>
+
+<!-- ================= MODALS ================= -->
+<!-- ITEM MODAL -->
+<div id="modal-item" class="modal-backdrop hidden-el">
+    <div class="modal-card">
+        <div class="modal-head">
+            <h3 id="modal-item-title">Add / Edit Item</h3>
+            <button type="button" onclick="closeModal('modal-item')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <input type="hidden" id="itm-id">
+            <div class="form-2col">
+                <div><label class="fld-lbl">Item Name</label><input type="text" id="itm-name" class="inp" placeholder="e.g. Chicken Nihari Full"></div>
+                <div><label class="fld-lbl">Category</label><select id="itm-cat" class="inp"></select></div>
+                <div><label class="fld-lbl">Cost Price (Rs)</label><input type="number" id="itm-cost" class="inp" value="0" min="0"></div>
+                <div><label class="fld-lbl">Sale Price (Rs)</label><input type="number" id="itm-sale" class="inp" value="0" min="0"></div>
+                <div><label class="fld-lbl">Prepared Stock</label><input type="number" id="itm-stock" class="inp" value="50" min="0"></div>
+                <div><label class="fld-lbl">Unit</label><input type="text" id="itm-unit" class="inp" value="Plate"></div>
             </div>
-
-            <hr style="border:0;border-top:1px solid #f1e6d8;margin:16px 0;">
-
-            <div class="set-grid">
-                <div>
-                    <div class="field-label">Login Email / Username</div>
-                    <input type="text" id="set-email" class="set-input" placeholder="scalesoft@gmail.com">
-                </div>
-                <div>
-                    <div class="field-label">New Password (Optional)</div>
-                    <input type="password" id="set-pass" class="set-input" placeholder="Leave blank to keep old">
-                </div>
-            </div>
-
-            <div class="license-box">
-                <div class="license-box-row"><span>License Mode:</span><b>3-Day Offline Auto Cycle</b></div>
-                <div class="license-box-row"><span>Expiry Time:</span><b id="set-lic-exp">-</b></div>
-                <div class="license-box-row"><span>Remaining Time:</span><b id="set-lic-rem" style="color:#b45309;">-</b></div>
-                <div class="license-box-row"><span>Total Renewals:</span><b id="set-lic-cnt">0</b></div>
-            </div>
-
-            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:18px;">
-                <button type="button" onclick="closeSettings()" class="btn-outline-warm">Cancel</button>
-                <button type="button" onclick="saveSettings()" class="btn-gold"><i class="fa-solid fa-floppy-disk"></i> Save Changes</button>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                <button type="button" onclick="closeModal('modal-item')" class="btn-pill btn-white">Cancel</button>
+                <button type="button" onclick="saveItem()" class="btn-pill btn-navy">Save Item</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ================= 3-DAY EXPIRY ACTIVATION LOCK MODAL ================= -->
+<!-- CATEGORY MODAL -->
+<div id="modal-category" class="modal-backdrop hidden-el">
+    <div class="modal-card" style="max-width:420px;">
+        <div class="modal-head">
+            <h3>Manage Categories</h3>
+            <button type="button" onclick="closeModal('modal-category')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input type="text" id="new-cat-name" class="inp" placeholder="New Category Name...">
+                <button type="button" onclick="addCategory()" class="btn-pill btn-sky">Add</button>
+            </div>
+            <div id="cat-manage-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- PARTY MODAL -->
+<div id="modal-party" class="modal-backdrop hidden-el">
+    <div class="modal-card" style="max-width:440px;">
+        <div class="modal-head">
+            <h3>Add Customer / Supplier</h3>
+            <button type="button" onclick="closeModal('modal-party')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="form-2col">
+                <div><label class="fld-lbl">Party Name</label><input type="text" id="pty-name" class="inp" placeholder="Full Name"></div>
+                <div><label class="fld-lbl">Phone</label><input type="text" id="pty-phone" class="inp" placeholder="0300..."></div>
+                <div>
+                    <label class="fld-lbl">Account Type</label>
+                    <select id="pty-type" class="inp">
+                        <option value="customer">Customer (Gahak)</option>
+                        <option value="supplier">Supplier (Vendor)</option>
+                    </select>
+                </div>
+                <div><label class="fld-lbl">Opening Balance (Rs)</label><input type="number" id="pty-open" class="inp" value="0"></div>
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px;">
+                <button type="button" onclick="closeModal('modal-party')" class="btn-pill btn-white">Cancel</button>
+                <button type="button" onclick="saveParty()" class="btn-pill btn-navy">Save Party</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- LEDGER ENTRY MODAL -->
+<div id="modal-led-entry" class="modal-backdrop hidden-el">
+    <div class="modal-card" style="max-width:430px;">
+        <div class="modal-head">
+            <h3>New Ledger Entry</h3>
+            <button type="button" onclick="closeModal('modal-led-entry')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:10px;">
+                <label class="fld-lbl">Entry Type</label>
+                <select id="le-type" class="inp">
+                    <option value="debit">Udhaar / Bill Added (+ Balance)</option>
+                    <option value="credit">Cash Received / Payment (- Balance)</option>
+                </select>
+            </div>
+            <div style="margin-bottom:10px;">
+                <label class="fld-lbl">Amount (Rs)</label>
+                <input type="number" id="le-amount" class="inp" min="1" placeholder="0">
+            </div>
+            <div style="margin-bottom:14px;">
+                <label class="fld-lbl">Description / Note</label>
+                <input type="text" id="le-desc" class="inp" placeholder="e.g. Cash Wasooli">
+            </div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <button type="button" onclick="closeModal('modal-led-entry')" class="btn-pill btn-white">Cancel</button>
+                <button type="button" onclick="saveLedgerEntry()" class="btn-pill btn-navy">Save Entry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- EXPENSE MODAL -->
+<div id="modal-expense" class="modal-backdrop hidden-el">
+    <div class="modal-card" style="max-width:430px;">
+        <div class="modal-head">
+            <h3>Add Expense</h3>
+            <button type="button" onclick="closeModal('modal-expense')" class="modal-close"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom:10px;"><label class="fld-lbl">Expense Title</label><input type="text" id="exp-title" class="inp" placeholder="e.g. Gas Cylinder / Staff Salary"></div>
+            <div class="form-2col">
+                <div>
+                    <label class="fld-lbl">Category</label>
+                    <select id="exp-cat" class="inp">
+                        <option value="Kitchen">Kitchen / Ration</option>
+                        <option value="Staff">Staff Salary / Advance</option>
+                        <option value="Utility">Electricity / Gas / Rent</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div><label class="fld-lbl">Amount (Rs)</label><input type="number" id="exp-amt" class="inp" min="1" placeholder="0"></div>
+            </div>
+            <div style="margin-bottom:14px;"><label class="fld-lbl">Note</label><input type="text" id="exp-note" class="inp" placeholder="Optional"></div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <button type="button" onclick="closeModal('modal-expense')" class="btn-pill btn-white">Cancel</button>
+                <button type="button" onclick="saveExpense()" class="btn-pill btn-navy">Save Expense</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3-DAY ACTIVATION LOCK MODAL -->
 <div id="modal-activation" class="modal-backdrop hidden-el">
-    <div id="act-card" class="modal-card" style="max-width:440px;">
-        <div class="modal-head" style="background:linear-gradient(135deg,#230f0a 0%,#991b1b 100%);">
-            <h3><i class="fa-solid fa-lock"></i> <span id="act-modal-title">Activation Required (3 Days Over)</span></h3>
+    <div id="act-card" class="modal-card" style="max-width:430px;">
+        <div class="modal-head" style="background:linear-gradient(135deg,#0b2b59 0%,#991b1b 100%);">
+            <h3 id="act-modal-title">Activation Required (3 Days Over)</h3>
             <button type="button" id="act-close-btn" onclick="closeActivateModal()" class="modal-close hidden-el"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div class="modal-body" style="text-align:center;">
-            <div style="width:64px;height:64px;border-radius:16px;background:#fef3c7;color:#b45309;display:grid;place-items:center;font-size:28px;margin:0 auto 12px;border:2px solid #fbbf24;">
-                <i class="fa-solid fa-key"></i>
-            </div>
-            <h4 id="act-heading" style="margin:0 0 6px;font-size:17px;color:#230f0a;font-weight:800;">3-Day Access Period Expired</h4>
-            <p id="act-desc" style="margin:0 0 16px;font-size:12.5px;color:#6b5b53;line-height:1.5;">
-                Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.
+            <p id="act-desc" style="font-size:13px;color:#475569;margin-top:0;">
+                Aap ke 3 din poore ho chuke hain. Sari file blur ho gayi hai. Dobara <b>3 din</b> chalane ke liye Activation Code darj karein.
             </p>
-
             <div id="act-alert" class="alert-box hidden-el"></div>
-
             <form onsubmit="event.preventDefault(); submitActivationCode();">
-                <input type="text" id="act-code-input" class="set-input" placeholder="Enter Activation Code..." style="text-align:center;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:12px;">
-                <button type="submit" class="btn-primary-rest" style="margin-top:12px;">
+                <input type="text" id="act-code-input" class="inp" placeholder="Enter Activation Code..." style="text-align:center;font-size:15px;font-weight:800;letter-spacing:2px;text-transform:uppercase;">
+                <button type="submit" class="btn-pill btn-navy" style="width:100%;justify-content:center;margin-top:12px;padding:12px;">
                     <i class="fa-solid fa-unlock-keyhole"></i> Activate for 3 Days
                 </button>
             </form>
-
-            <div style="margin-top:16px;padding-top:12px;border-top:1px dashed #e2d5c3;font-size:11.5px;color:#6b5b53;">
-                Code hasil karne ke liye rabta karein: <b style="color:#3d1810;">03162967150</b>
-            </div>
+            <div style="margin-top:12px;font-size:11.5px;color:#64748b;">Support: <b>03162967150</b></div>
         </div>
     </div>
 </div>
 
+<!-- THERMAL 80MM PRINT AREA -->
+<div id="print-area"></div>
+
 <script>
-    const STORAGE_KEYS = {
+    const KEYS = {
         LICENSE: 'ms_pos_license_v1',
         BRANDING: 'ms_pos_branding_v1',
         AUTH: 'ms_pos_auth_v1',
-        LEGACY_SETTINGS: 'ms_pos_settings'
+        SESSION: 'ms_pos_session_v1',
+        ITEMS: 'ms_pos_items_v1',
+        CATS: 'ms_pos_categories_v1',
+        BILLS: 'ms_pos_bills_v1',
+        PARTIES: 'ms_pos_ledger_parties_v1',
+        TXNS: 'ms_pos_ledger_txns_v1',
+        EXPENSES: 'ms_pos_expenses_v1'
     };
 
     const THREE_DAYS_MS = 3 * 24 * 60 * 60 * 1000;
@@ -907,70 +1329,17 @@
 
     const FALLBACK_SVG_LOGO = 'data:image/svg+xml;utf8,' + encodeURIComponent(
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">' +
-        '<rect width="120" height="120" rx="60" fill="#3d1810"/>' +
-        '<circle cx="60" cy="60" r="52" fill="none" stroke="#f59e0b" stroke-width="4"/>' +
-        '<text x="60" y="70" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="bold" fill="#fbbf24">POS</text>' +
+        '<rect width="120" height="120" rx="60" fill="#0b2b59"/>' +
+        '<circle cx="60" cy="60" r="52" fill="none" stroke="#38bdf8" stroke-width="4"/>' +
+        '<text x="60" y="70" text-anchor="middle" font-family="Arial,sans-serif" font-size="34" font-weight="bold" fill="#38bdf8">POS</text>' +
         '</svg>'
     );
 
-    const DEFAULT_BRANDING = {
-        name: 'MS Nihari & Restaurant',
-        subtitle: 'Dine-In, Takeaway, Delivery & Kitchen Tokens',
-        phone: '03162967150',
-        address: '',
-        dp: 'logo.svg'
-    };
-
-    const DEFAULT_AUTH = {
-        email: 'scalesoft@gmail.com',
-        pass: '112233',
-        isDefault: true
-    };
-
-    let currentLang = 'en';
-    let tempDpDataUrl = null;
+    let activeCategory = 'All';
+    let cart = [];
+    let selectedPartyId = null;
     let manualActivationOpen = false;
-
-    const I18N = {
-        en: {
-            langBtn: 'اردو',
-            badge: '100% Offline Restaurant POS',
-            storageLbl: 'Offline Storage:',
-            licenseLbl: 'License Status:',
-            phoneLbl: 'Restaurant Phone:',
-            f1t: 'Dine-In & Parcel', f1s: 'Takeaway & Delivery',
-            f2t: 'Kitchen Tokens', f2s: '80mm Thermal Slips',
-            f3t: 'Prepared Stock', f3s: 'Cooked & Sold Tracking',
-            f4t: 'Custom Branding', f4s: 'Edit Name & DP',
-            btnSettings: 'Settings',
-            btnActivate: 'License',
-            loginTitle: 'Sign In to Kitchen & Counter POS',
-            loginDesc: 'Apna email aur password darj karke Offline Restaurant Billing Terminal kholein. Settings se aap Restaurant Name, DP aur Password badal sakte hain.',
-            emailLbl: 'Account / Email',
-            passLbl: 'Password',
-            passReq: 'Required',
-            btnLogin: 'Unlock Restaurant POS'
-        },
-        ur: {
-            langBtn: 'English',
-            badge: 'مکمل آف لائن ریسٹورنٹ پی او ایس',
-            storageLbl: 'آف لائن اسٹوریج:',
-            licenseLbl: 'لائسنس اسٹیٹس:',
-            phoneLbl: 'ریسٹورنٹ فون:',
-            f1t: 'ڈائن ان اور پارسل', f1s: 'ٹیک اوے اور ڈیلیوری',
-            f2t: 'کچن ٹوکن', f2s: 'تھرمل رسید پرنٹ',
-            f3t: 'تیار اسٹاک', f3s: 'پلیٹوں کا مکمل حساب',
-            f4t: 'کسٹم سیٹنگز', f4s: 'نام اور ڈی پی بدلیں',
-            btnSettings: 'سیٹنگز',
-            btnActivate: 'لائسنس',
-            loginTitle: 'ریسٹورنٹ بلنگ لاگ ان',
-            loginDesc: 'آف لائن بلنگ سسٹم کھولنے کے لیے ای میل اور پاسورڈ درج کریں۔ سیٹنگز سے ریسٹورنٹ کا نام، ڈی پی اور پاسورڈ تبدیل کریں۔',
-            emailLbl: 'اکاؤنٹ / ای میل',
-            passLbl: 'پاسورڈ',
-            passReq: 'لازمی',
-            btnLogin: 'ریسٹورنٹ پی او ایس کھولیں'
-        }
-    };
+    let currentLang = 'en';
 
     function safeRead(key, fallback) {
         try {
@@ -979,19 +1348,42 @@
         } catch (e) { return fallback; }
     }
 
-    function safeWrite(key, obj) {
-        try {
-            localStorage.setItem(key, JSON.stringify(obj));
-            return true;
-        } catch (e) { return false; }
+    function safeWrite(key, val) {
+        try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+        catch (e) { return false; }
     }
 
+    function esc(str) {
+        return String(str || '').replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    }
+
+    function uid() {
+        return Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    }
+
+    /* ================= SESSION GUARD (NEVER KICKS BACK IF LOGGED IN) ================= */
+    function checkSession() {
+        const sess = safeRead(KEYS.SESSION, null);
+        if (!sess || !sess.loggedIn) {
+            window.location.replace('index.html');
+            return false;
+        }
+        document.getElementById('sb-user-email').textContent = sess.email || 'scalesoft@gmail.com';
+        return true;
+    }
+
+    function logoutPOS() {
+        localStorage.removeItem(KEYS.SESSION);
+        window.location.replace('index.html');
+    }
+
+    /* ================= 3-DAY LICENSE BLUR LOCK ================= */
     function getLicense() {
-        let lic = safeRead(STORAGE_KEYS.LICENSE, null);
+        let lic = safeRead(KEYS.LICENSE, null);
         const now = Date.now();
-        if (!lic || typeof lic.expiresAt !== 'number' || typeof lic.installedAt !== 'number') {
-            lic = { installedAt: now, expiresAt: now + THREE_DAYS_MS, activations: 0, lastActivatedAt: null };
-            safeWrite(STORAGE_KEYS.LICENSE, lic);
+        if (!lic || typeof lic.expiresAt !== 'number') {
+            lic = { installedAt: now, expiresAt: now + THREE_DAYS_MS, activations: 0 };
+            safeWrite(KEYS.LICENSE, lic);
         }
         return lic;
     }
@@ -1001,91 +1393,49 @@
     }
 
     function formatRemaining(ms) {
-        if (ms <= 0) return 'Expired (0h 0m)';
-        const totalSec = Math.floor(ms / 1000);
-        const days = Math.floor(totalSec / 86400);
-        const hrs = Math.floor((totalSec % 86400) / 3600);
-        const mins = Math.floor((totalSec % 3600) / 60);
-        const secs = totalSec % 60;
-        if (days > 0) return `${days}d ${hrs}h ${mins}m`;
-        if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
-        return `${mins}m ${secs}s`;
+        if (ms <= 0) return 'Expired!';
+        const s = Math.floor(ms / 1000);
+        const d = Math.floor(s / 86400), h = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
+        if (d > 0) return `${d}d ${h}h ${m}m`;
+        if (h > 0) return `${h}h ${m}m`;
+        return `${m}m ${s % 60}s`;
     }
 
     function updateLicenseUI() {
         const lic = getLicense();
-        const remMs = lic.expiresAt - Date.now();
-        const expired = remMs <= 0;
-        const remTxt = formatRemaining(remMs);
-
-        const navEl = document.getElementById('ui-nav-license');
-        const chipEl = document.getElementById('top-license-chip');
-        const chipTxt = document.getElementById('top-license-text');
-        const pageWrap = document.getElementById('main-page-wrap');
-
-        if (navEl) {
-            navEl.textContent = expired ? 'Expired!' : `Active (${remTxt})`;
-            navEl.style.color = expired ? '#fca5a5' : '#fbbf24';
-        }
-        if (chipEl && chipTxt) {
-            chipEl.className = expired ? 'status-chip warn' : 'status-chip';
-            chipTxt.textContent = expired ? 'Expired · File Blurred' : `Offline Active · ${remTxt} left`;
-        }
-
-        const setExp = document.getElementById('set-lic-exp');
-        const setRem = document.getElementById('set-lic-rem');
-        const setCnt = document.getElementById('set-lic-cnt');
-        if (setExp) setExp.textContent = new Date(lic.expiresAt).toLocaleString();
-        if (setRem) setRem.textContent = remTxt;
-        if (setCnt) setCnt.textContent = String(lic.activations || 0);
-
+        const rem = lic.expiresAt - Date.now();
+        const expired = rem <= 0;
+        const shell = document.getElementById('app-shell');
         const modal = document.getElementById('modal-activation');
         const closeBtn = document.getElementById('act-close-btn');
 
-        if (expired) {
-            // Blur the entire file when 3-day activation expires
-            if (pageWrap) pageWrap.classList.add('file-blurred');
-            try { localStorage.removeItem('ms_pos_session_v1'); } catch (e) {}
+        document.getElementById('sb-lic-rem').textContent = formatRemaining(rem);
+        const expEl = document.getElementById('set-lic-exp');
+        if (expEl) expEl.textContent = new Date(lic.expiresAt).toLocaleString();
 
-            document.getElementById('modal-settings').classList.add('hidden-el');
-            document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
-            document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
-            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
+        if (expired) {
+            shell.classList.add('file-blurred');
             closeBtn.classList.add('hidden-el');
+            document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
             if (modal.classList.contains('hidden-el')) {
                 modal.classList.remove('hidden-el');
                 setTimeout(() => document.getElementById('act-code-input').focus(), 80);
             }
             manualActivationOpen = false;
         } else {
-            if (pageWrap) pageWrap.classList.remove('file-blurred');
-            if (!manualActivationOpen) {
-                modal.classList.add('hidden-el');
-            }
+            shell.classList.remove('file-blurred');
+            if (!manualActivationOpen) modal.classList.add('hidden-el');
         }
     }
 
     function openActivateModalManual() {
         const expired = isLicenseExpired();
         manualActivationOpen = !expired;
-        const modal = document.getElementById('modal-activation');
-        const closeBtn = document.getElementById('act-close-btn');
         document.getElementById('act-alert').classList.add('hidden-el');
         document.getElementById('act-code-input').value = '';
-
-        if (expired) {
-            document.getElementById('act-modal-title').textContent = 'Activation Required (3 Days Over)';
-            document.getElementById('act-heading').textContent = '3-Day Access Period Expired';
-            document.getElementById('act-desc').innerHTML = 'Aap ke 3 din poore ho chuke hain. Sari file lock/blur ho gayi hai. Dobara <b>3 din</b> ke liye system on karne ke liye Activation Code darj karein.';
-            closeBtn.classList.add('hidden-el');
-        } else {
-            document.getElementById('act-modal-title').textContent = 'License & Activation';
-            document.getElementById('act-heading').textContent = 'Renew / Extend for 3 Days';
-            document.getElementById('act-desc').innerHTML = 'Agar aap ke paas Activation Code hai to darj karke apna <b>3-din ka timer</b> abhi reset kar sakte hain.';
-            closeBtn.classList.remove('hidden-el');
-        }
-        modal.classList.remove('hidden-el');
-        setTimeout(() => document.getElementById('act-code-input').focus(), 80);
+        document.getElementById('act-close-btn').classList.toggle('hidden-el', expired);
+        document.getElementById('act-modal-title').textContent = expired ? 'Activation Required (3 Days Over)' : 'Renew License (3 Days)';
+        document.getElementById('modal-activation').classList.remove('hidden-el');
     }
 
     function closeActivateModal() {
@@ -1095,238 +1445,810 @@
     }
 
     function submitActivationCode() {
-        const inputEl = document.getElementById('act-code-input');
+        const code = (document.getElementById('act-code-input').value || '').trim().toUpperCase();
         const alertEl = document.getElementById('act-alert');
-        const cardEl = document.getElementById('act-card');
-        const code = (inputEl.value || '').trim().toUpperCase();
-
         if (code !== VALID_CODE) {
             alertEl.className = 'alert-box alert-err';
             alertEl.textContent = 'Ghalat Activation Code! Sahih code darj karein.';
             alertEl.classList.remove('hidden-el');
-            cardEl.classList.remove('shake');
-            void cardEl.offsetWidth;
-            cardEl.classList.add('shake');
             return;
         }
-
         const lic = getLicense();
-        const now = Date.now();
-        lic.expiresAt = now + THREE_DAYS_MS;
+        lic.expiresAt = Date.now() + THREE_DAYS_MS;
         lic.activations = (lic.activations || 0) + 1;
-        lic.lastActivatedAt = now;
-        safeWrite(STORAGE_KEYS.LICENSE, lic);
-
+        safeWrite(KEYS.LICENSE, lic);
         manualActivationOpen = false;
-        inputEl.value = '';
         alertEl.className = 'alert-box alert-ok';
-        alertEl.textContent = 'Code Verified! System aglay 3 din ke liye on ho gaya hai ✔';
+        alertEl.textContent = 'Activated for 3 Days ✔';
         alertEl.classList.remove('hidden-el');
-
         updateLicenseUI();
-        showLoginAlert('System aglay 3 din ke liye activate ho gaya hai ✔', 'success');
-        setTimeout(() => { document.getElementById('modal-activation').classList.add('hidden-el'); }, 700);
+        setTimeout(() => document.getElementById('modal-activation').classList.add('hidden-el'), 600);
     }
 
-    function getBranding() {
-        return Object.assign({}, DEFAULT_BRANDING, safeRead(STORAGE_KEYS.BRANDING, {}));
-    }
-
-    function getAuthCreds() {
-        const saved = safeRead(STORAGE_KEYS.AUTH, null);
-        if (!saved) {
-            const fresh = Object.assign({}, DEFAULT_AUTH);
-            safeWrite(STORAGE_KEYS.AUTH, fresh);
-            return fresh;
+    /* ================= SEED DATA ================= */
+    function initDefaultData() {
+        if (!safeRead(KEYS.CATS, null)) {
+            safeWrite(KEYS.CATS, ['Nihari', 'Karahi', 'BBQ', 'Roti & Naan', 'Drinks']);
         }
-        // Auto-upgrade previous default credentials if untouched
-        if (saved.isDefault && saved.email === 'admin@gmail.com' && saved.pass === '123456') {
-            const migrated = Object.assign({}, DEFAULT_AUTH);
-            safeWrite(STORAGE_KEYS.AUTH, migrated);
-            return migrated;
+        if (!safeRead(KEYS.ITEMS, null)) {
+            safeWrite(KEYS.ITEMS, [
+                { id: uid(), name: 'Special Beef Nihari', category: 'Nihari', costPrice: 320, salePrice: 480, stock: 40, unit: 'Plate' },
+                { id: uid(), name: 'Maghaz Nihari', category: 'Nihari', costPrice: 450, salePrice: 680, stock: 25, unit: 'Plate' },
+                { id: uid(), name: 'Chicken Karahi Half', category: 'Karahi', costPrice: 650, salePrice: 950, stock: 20, unit: 'Plate' },
+                { id: uid(), name: 'Seekh Kabab (4 Pcs)', category: 'BBQ', costPrice: 280, salePrice: 450, stock: 35, unit: 'Plate' },
+                { id: uid(), name: 'Roghani Naan', category: 'Roti & Naan', costPrice: 35, salePrice: 60, stock: 120, unit: 'Pc' },
+                { id: uid(), name: 'Cold Drink 1.5L', category: 'Drinks', costPrice: 160, salePrice: 220, stock: 50, unit: 'Bottle' }
+            ]);
         }
-        return Object.assign({}, DEFAULT_AUTH, saved);
+        if (!safeRead(KEYS.BILLS, null)) safeWrite(KEYS.BILLS, []);
+        if (!safeRead(KEYS.PARTIES, null)) safeWrite(KEYS.PARTIES, []);
+        if (!safeRead(KEYS.TXNS, null)) safeWrite(KEYS.TXNS, []);
+        if (!safeRead(KEYS.EXPENSES, null)) safeWrite(KEYS.EXPENSES, []);
     }
 
-    function setSafeImgSrc(imgEl, src) {
-        imgEl.onerror = function() {
-            imgEl.onerror = null;
-            imgEl.src = FALLBACK_SVG_LOGO;
-        };
-        imgEl.src = src || FALLBACK_SVG_LOGO;
-    }
+    /* ================= TABS & BRANDING ================= */
+    function loadBranding() {
+        const b = safeRead(KEYS.BRANDING, { name: 'MS Nihari & Restaurant', subtitle: 'Offline Management Portal', phone: '03162967150', address: '', dp: 'logo.svg' });
+        const a = safeRead(KEYS.AUTH, { email: 'scalesoft@gmail.com', pass: '112233' });
 
-    function applyBrandingToUI() {
-        const b = getBranding();
-        const authCreds = getAuthCreds();
+        document.getElementById('sb-rest-name').textContent = b.name || 'MS Nihari & Restaurant';
+        document.getElementById('sb-rest-sub').textContent = b.subtitle || 'Offline Management Portal';
+        const img = document.getElementById('sb-logo');
+        img.onerror = function() { img.onerror = null; img.src = FALLBACK_SVG_LOGO; };
+        img.src = b.dp || FALLBACK_SVG_LOGO;
 
-        document.title = (b.name || 'Restaurant POS') + ' - Login';
-        document.getElementById('ui-brand-name').textContent = b.name || DEFAULT_BRANDING.name;
-        document.getElementById('ui-brand-sub').textContent = b.subtitle || DEFAULT_BRANDING.subtitle;
-        document.getElementById('ui-brand-phone').textContent = b.phone || DEFAULT_BRANDING.phone;
-
-        setSafeImgSrc(document.getElementById('ui-brand-dp'), b.dp || 'logo.svg');
-
-        const emailInp = document.getElementById('login-email');
-        if (emailInp && !emailInp.value) emailInp.value = authCreds.email || 'scalesoft@gmail.com';
-
-        const hintEl = document.getElementById('default-pass-hint');
-        if (hintEl) hintEl.style.display = authCreds.isDefault ? 'flex' : 'none';
-    }
-
-    function openSettings() {
-        if (isLicenseExpired()) { updateLicenseUI(); return; }
-        const b = getBranding(), a = getAuthCreds();
-        tempDpDataUrl = null;
-        setSafeImgSrc(document.getElementById('set-dp-preview'), b.dp || 'logo.svg');
-        document.getElementById('set-dp-file').value = '';
         document.getElementById('set-name').value = b.name || '';
         document.getElementById('set-sub').value = b.subtitle || '';
         document.getElementById('set-phone').value = b.phone || '';
         document.getElementById('set-address').value = b.address || '';
-        document.getElementById('set-email').value = a.email || '';
-        document.getElementById('set-pass').value = '';
-        updateLicenseUI();
-        document.getElementById('modal-settings').classList.remove('hidden-el');
+        document.getElementById('set-email').value = a.email || 'scalesoft@gmail.com';
     }
 
-    function closeSettings() {
-        document.getElementById('modal-settings').classList.add('hidden-el');
+    const TAB_META = {
+        dashboard: ['Dashboard Overview', 'Daily Sales, Profit, Receivables & Cash Summary'],
+        pos: ['POS / Shop Billing', 'Fast Offline Billing, Kitchen Tokens & Udhaar'],
+        list: ['Items & Rate List', 'Alag List Section: Manage Menu Items, Cost/Sale Rates & Stock'],
+        ledger: ['Customers & Suppliers Ledger', 'Alag Ledger Section: Khaata, Udhaar & Cash Wasooli'],
+        bills: ['Saved Bills & Profit', 'All Saved Invoices, Token Numbers & Thermal Reprints'],
+        expenses: ['Expenses & Staff', 'Daily Shop Expenses & Staff Advances'],
+        settings: ['Settings & Backup', 'Branding, Account Credentials & Offline JSON Backup']
+    };
+
+    function switchTab(tab) {
+        if (isLicenseExpired()) return;
+        ['dashboard', 'pos', 'list', 'ledger', 'bills', 'expenses', 'settings'].forEach(t => {
+            document.getElementById('tab-' + t).classList.toggle('hidden-el', t !== tab);
+        });
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.tab === tab);
+        });
+        ['pos', 'list', 'ledger', 'bills'].forEach(st => {
+            const el = document.getElementById('sub-' + st);
+            if (el) el.classList.toggle('active', st === tab);
+        });
+        document.getElementById('page-title').textContent = TAB_META[tab][0];
+        document.getElementById('page-sub').textContent = TAB_META[tab][1];
+
+        if (tab === 'dashboard') renderDashboard();
+        if (tab === 'pos') { renderPOSCategories(); renderPOSItems(); renderCustomerSelect(); }
+        if (tab === 'list') renderItemsListTable();
+        if (tab === 'ledger') renderLedgerSection();
+        if (tab === 'bills') renderBillsTable();
+        if (tab === 'expenses') renderExpensesTable();
     }
 
-    function handleDpUpload(event) {
+    function openModal(id) { document.getElementById(id).classList.remove('hidden-el'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden-el'); }
+
+    /* ================= POS BILLING ================= */
+    function renderPOSCategories() {
+        const cats = ['All', ...safeRead(KEYS.CATS, [])];
+        const wrap = document.getElementById('pos-cat-pills');
+        wrap.innerHTML = cats.map(c =>
+            `<button type="button" class="cat-pill ${activeCategory === c ? 'active' : ''}" onclick="setCategory('${esc(c)}')">${esc(c)}</button>`
+        ).join('');
+    }
+
+    function setCategory(c) {
+        activeCategory = c;
+        renderPOSCategories();
+        renderPOSItems();
+    }
+
+    function renderPOSItems() {
+        const q = (document.getElementById('pos-search').value || '').trim().toLowerCase();
+        const items = safeRead(KEYS.ITEMS, []);
+        const filtered = items.filter(it => {
+            const okCat = activeCategory === 'All' || it.category === activeCategory;
+            const okQ = !q || it.name.toLowerCase().includes(q) || it.category.toLowerCase().includes(q);
+            return okCat && okQ;
+        });
+
+        const grid = document.getElementById('pos-items-grid');
+        if (!filtered.length) {
+            grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:#94a3b8;padding:30px;">No items found. Click "+ Add Item" to create one.</div>`;
+            return;
+        }
+        grid.innerHTML = filtered.map(it => `
+            <div class="item-tile" onclick="addToCart('${esc(it.id)}')">
+                <div>
+                    <div class="item-tile-cat">${esc(it.category)}</div>
+                    <div class="item-tile-name">${esc(it.name)}</div>
+                </div>
+                <div class="item-tile-foot">
+                    <span class="item-tile-price">Rs. ${Number(it.salePrice)}</span>
+                    <span class="item-tile-stock">${Number(it.stock)} ${esc(it.unit || '')}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderCustomerSelect() {
+        const parties = safeRead(KEYS.PARTIES, []).filter(p => p.type === 'customer');
+        const sel = document.getElementById('bill-customer');
+        const cur = sel.value;
+        sel.innerHTML = `<option value="">Walk-in Customer</option>` +
+            parties.map(p => `<option value="${esc(p.id)}">${esc(p.name)} (${esc(p.phone || '-')})</option>`).join('');
+        if (cur) sel.value = cur;
+    }
+
+    function addToCart(itemId) {
+        const items = safeRead(KEYS.ITEMS, []);
+        const it = items.find(x => x.id === itemId);
+        if (!it) return;
+        const ex = cart.find(c => c.id === itemId);
+        if (ex) ex.qty += 1;
+        else cart.push({ id: it.id, name: it.name, costPrice: Number(it.costPrice) || 0, salePrice: Number(it.salePrice) || 0, qty: 1 });
+        renderCart();
+    }
+
+    function changeCartQty(idx, delta) {
+        if (!cart[idx]) return;
+        cart[idx].qty += delta;
+        if (cart[idx].qty <= 0) cart.splice(idx, 1);
+        renderCart();
+    }
+
+    function clearCart() {
+        cart = [];
+        document.getElementById('bill-discount').value = 0;
+        document.getElementById('bill-cash-rec').value = '';
+        document.getElementById('bill-table-no').value = '';
+        renderCart();
+    }
+
+    function renderCart() {
+        const list = document.getElementById('cart-items-list');
+        const totalQty = cart.reduce((s, x) => s + x.qty, 0);
+        document.getElementById('cart-count-badge').textContent = `${totalQty} items`;
+
+        if (!cart.length) {
+            list.innerHTML = `<div style="text-align:center;color:#94a3b8;padding:18px 0;font-size:12.5px;">Click any item on the left to add to bill</div>`;
+        } else {
+            list.innerHTML = cart.map((c, idx) => `
+                <div class="cart-row">
+                    <div style="flex:1;min-width:0;">
+                        <div style="font-weight:700;color:#0f172a;">${esc(c.name)}</div>
+                        <div style="font-size:11px;color:#64748b;">Rs. ${c.salePrice} x ${c.qty} = <b>Rs. ${c.salePrice * c.qty}</b></div>
+                    </div>
+                    <div class="qty-ctrl">
+                        <button type="button" class="qty-btn" onclick="changeCartQty(${idx},-1)">-</button>
+                        <b style="min-width:18px;text-align:center;">${c.qty}</b>
+                        <button type="button" class="qty-btn" onclick="changeCartQty(${idx},1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        recalcBillTotals();
+    }
+
+    function recalcBillTotals() {
+        const sub = cart.reduce((s, c) => s + (c.salePrice * c.qty), 0);
+        const disc = Math.max(0, Number(document.getElementById('bill-discount').value) || 0);
+        const net = Math.max(0, sub - disc);
+        const cash = Number(document.getElementById('bill-cash-rec').value) || 0;
+        const chg = cash > net ? (cash - net) : 0;
+        document.getElementById('bill-subtotal').textContent = `Rs. ${sub}`;
+        document.getElementById('bill-net-total').textContent = `Rs. ${net}`;
+        document.getElementById('bill-change').textContent = `Rs. ${chg}`;
+    }
+
+    function completeSale(shouldPrint) {
+        if (isLicenseExpired()) return;
+        if (!cart.length) { alert('Pehle kam az kam 1 item bill mein add karein.'); return; }
+
+        const custId = document.getElementById('bill-customer').value;
+        const payMode = document.getElementById('bill-payment').value;
+        if (payMode === 'Udhaar' && !custId) {
+            alert('Udhaar bill ke liye Customer select karein (Ledger section se customer banayein).');
+            return;
+        }
+
+        const sub = cart.reduce((s, c) => s + (c.salePrice * c.qty), 0);
+        const totalCost = cart.reduce((s, c) => s + (c.costPrice * c.qty), 0);
+        const disc = Math.max(0, Number(document.getElementById('bill-discount').value) || 0);
+        const net = Math.max(0, sub - disc);
+        const cash = Number(document.getElementById('bill-cash-rec').value) || net;
+        const chg = cash > net ? (cash - net) : 0;
+
+        const parties = safeRead(KEYS.PARTIES, []);
+        const custObj = parties.find(p => p.id === custId);
+        const bills = safeRead(KEYS.BILLS, []);
+        const billNo = 'INV-' + String(bills.length + 1).padStart(4, '0');
+        const todayStr = new Date().toISOString().slice(0, 10);
+        const todayBills = bills.filter(b => (b.date || '').slice(0, 10) === todayStr).length;
+        const tokenNo = todayBills + 1;
+
+        const bill = {
+            id: uid(),
+            billNo,
+            tokenNo,
+            date: new Date().toISOString(),
+            orderType: document.getElementById('bill-order-type').value,
+            tableNo: document.getElementById('bill-table-no').value.trim(),
+            customerId: custId || null,
+            customerName: custObj ? custObj.name : 'Walk-in Customer',
+            paymentMode: payMode,
+            items: JSON.parse(JSON.stringify(cart)),
+            subtotal: sub,
+            discount: disc,
+            netTotal: net,
+            totalCost,
+            profit: net - totalCost,
+            cashReceived: cash,
+            change: chg
+        };
+
+        // Deduct stock
+        const items = safeRead(KEYS.ITEMS, []);
+        cart.forEach(c => {
+            const idx = items.findIndex(x => x.id === c.id);
+            if (idx > -1) items[idx].stock = Math.max(0, (Number(items[idx].stock) || 0) - c.qty);
+        });
+        safeWrite(KEYS.ITEMS, items);
+
+        // Save bill
+        bills.unshift(bill);
+        safeWrite(KEYS.BILLS, bills);
+
+        // If Udhaar, add ledger debit entry
+        if (payMode === 'Udhaar' && custId) {
+            const txns = safeRead(KEYS.TXNS, []);
+            txns.push({
+                id: uid(),
+                partyId: custId,
+                date: new Date().toISOString(),
+                desc: `POS Bill ${billNo} (${bill.orderType})`,
+                debit: net,
+                credit: 0
+            });
+            safeWrite(KEYS.TXNS, txns);
+        }
+
+        clearCart();
+        renderPOSItems();
+        refreshSidebarStats();
+        if (shouldPrint) printBillReceipt(bill);
+    }
+
+    function printBillReceipt(bill) {
+        const b = safeRead(KEYS.BRANDING, { name: 'MS Nihari & Restaurant', phone: '03162967150', address: '' });
+        const area = document.getElementById('print-area');
+        area.innerHTML = `
+            <div style="text-align:center;border-bottom:1px dashed #000;padding-bottom:6px;margin-bottom:6px;">
+                <div style="font-size:16px;font-weight:bold;">${esc(b.name)}</div>
+                ${b.address ? `<div style="font-size:11px;">${esc(b.address)}</div>` : ''}
+                <div style="font-size:11px;">Ph: ${esc(b.phone)}</div>
+            </div>
+            <div style="font-size:11px;margin-bottom:6px;">
+                <div><b>Bill:</b> ${esc(bill.billNo)} &nbsp; <b>Token:</b> #${bill.tokenNo}</div>
+                <div><b>Date:</b> ${new Date(bill.date).toLocaleString()}</div>
+                <div><b>Type:</b> ${esc(bill.orderType)} ${bill.tableNo ? '(' + esc(bill.tableNo) + ')' : ''}</div>
+                <div><b>Customer:</b> ${esc(bill.customerName)} (${esc(bill.paymentMode)})</div>
+            </div>
+            <table style="width:100%;font-size:11px;border-collapse:collapse;border-top:1px dashed #000;border-bottom:1px dashed #000;">
+                <thead><tr><th style="text-align:left;padding:3px 0;">Item</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Amt</th></tr></thead>
+                <tbody>
+                    ${bill.items.map(i => `<tr><td style="padding:2px 0;">${esc(i.name)}</td><td style="text-align:center;">${i.qty}</td><td style="text-align:right;">${i.salePrice * i.qty}</td></tr>`).join('')}
+                </tbody>
+            </table>
+            <div style="font-size:12px;margin-top:6px;">
+                <div style="display:flex;justify-content:space-between;"><span>Subtotal:</span><span>Rs. ${bill.subtotal}</span></div>
+                <div style="display:flex;justify-content:space-between;"><span>Discount:</span><span>Rs. ${bill.discount}</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:bold;border-top:1px solid #000;padding-top:3px;margin-top:3px;">
+                    <span>NET TOTAL:</span><span>Rs. ${bill.netTotal}</span>
+                </div>
+            </div>
+            <div style="text-align:center;font-size:10px;margin-top:10px;border-top:1px dashed #000;padding-top:5px;">
+                Thank you for visiting!<br>Powered by Scale Soft Group
+            </div>
+        `;
+        window.print();
+    }
+
+    /* ================= ITEMS LIST SECTION ================= */
+    function renderItemsListTable() {
+        const q = (document.getElementById('list-search').value || '').trim().toLowerCase();
+        const items = safeRead(KEYS.ITEMS, []).filter(it => !q || it.name.toLowerCase().includes(q) || it.category.toLowerCase().includes(q));
+        const tbody = document.getElementById('items-list-tbody');
+        if (!items.length) {
+            tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:#94a3b8;padding:24px;">No items in list.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = items.map((it, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td><b>${esc(it.name)}</b></td>
+                <td><span class="tag-blue">${esc(it.category)}</span></td>
+                <td>Rs. ${Number(it.costPrice)}</td>
+                <td><b>Rs. ${Number(it.salePrice)}</b></td>
+                <td><span class="tag-green">${Number(it.stock)} ${esc(it.unit || '')}</span></td>
+                <td>
+                    <button type="button" class="btn-pill btn-white" style="padding:4px 9px;font-size:11px;" onclick="openItemModal('${esc(it.id)}')">Edit</button>
+                    <button type="button" class="btn-pill btn-danger" style="padding:4px 9px;font-size:11px;" onclick="deleteItem('${esc(it.id)}')">Del</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function openItemModal(editId) {
+        const cats = safeRead(KEYS.CATS, ['General']);
+        document.getElementById('itm-cat').innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+
+        if (editId) {
+            const it = safeRead(KEYS.ITEMS, []).find(x => x.id === editId);
+            if (!it) return;
+            document.getElementById('modal-item-title').textContent = 'Edit Item';
+            document.getElementById('itm-id').value = it.id;
+            document.getElementById('itm-name').value = it.name;
+            document.getElementById('itm-cat').value = it.category;
+            document.getElementById('itm-cost').value = it.costPrice;
+            document.getElementById('itm-sale').value = it.salePrice;
+            document.getElementById('itm-stock').value = it.stock;
+            document.getElementById('itm-unit').value = it.unit || 'Plate';
+        } else {
+            document.getElementById('modal-item-title').textContent = 'Add New Item';
+            document.getElementById('itm-id').value = '';
+            document.getElementById('itm-name').value = '';
+            document.getElementById('itm-cost').value = 0;
+            document.getElementById('itm-sale').value = 0;
+            document.getElementById('itm-stock').value = 50;
+            document.getElementById('itm-unit').value = 'Plate';
+        }
+        openModal('modal-item');
+    }
+
+    function saveItem() {
+        const id = document.getElementById('itm-id').value;
+        const name = document.getElementById('itm-name').value.trim();
+        if (!name) { alert('Item name likhein.'); return; }
+        const obj = {
+            id: id || uid(),
+            name,
+            category: document.getElementById('itm-cat').value || 'General',
+            costPrice: Number(document.getElementById('itm-cost').value) || 0,
+            salePrice: Number(document.getElementById('itm-sale').value) || 0,
+            stock: Number(document.getElementById('itm-stock').value) || 0,
+            unit: document.getElementById('itm-unit').value.trim() || 'Plate'
+        };
+        const items = safeRead(KEYS.ITEMS, []);
+        if (id) {
+            const idx = items.findIndex(x => x.id === id);
+            if (idx > -1) items[idx] = obj;
+        } else {
+            items.push(obj);
+        }
+        safeWrite(KEYS.ITEMS, items);
+        closeModal('modal-item');
+        renderPOSItems();
+        renderItemsListTable();
+    }
+
+    function deleteItem(id) {
+        if (!confirm('Is item ko list se delete karein?')) return;
+        const items = safeRead(KEYS.ITEMS, []).filter(x => x.id !== id);
+        safeWrite(KEYS.ITEMS, items);
+        renderPOSItems();
+        renderItemsListTable();
+    }
+
+    /* ================= CATEGORIES ================= */
+    function openCategoryModal() {
+        renderCategoryManageList();
+        openModal('modal-category');
+    }
+
+    function renderCategoryManageList() {
+        const cats = safeRead(KEYS.CATS, []);
+        document.getElementById('cat-manage-list').innerHTML = cats.map((c, idx) => `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#f8fafc;border-radius:9px;">
+                <b>${esc(c)}</b>
+                <button type="button" class="btn-pill btn-danger" style="padding:3px 9px;font-size:11px;" onclick="deleteCategory(${idx})">Remove</button>
+            </div>
+        `).join('');
+    }
+
+    function addCategory() {
+        const name = document.getElementById('new-cat-name').value.trim();
+        if (!name) return;
+        const cats = safeRead(KEYS.CATS, []);
+        if (!cats.includes(name)) cats.push(name);
+        safeWrite(KEYS.CATS, cats);
+        document.getElementById('new-cat-name').value = '';
+        renderCategoryManageList();
+        renderPOSCategories();
+    }
+
+    function deleteCategory(idx) {
+        const cats = safeRead(KEYS.CATS, []);
+        cats.splice(idx, 1);
+        safeWrite(KEYS.CATS, cats);
+        renderCategoryManageList();
+        renderPOSCategories();
+    }
+
+    /* ================= SEPARATE LEDGER (KHAATA) SECTION ================= */
+    function getPartyBalance(partyId) {
+        const party = safeRead(KEYS.PARTIES, []).find(p => p.id === partyId);
+        const open = party ? (Number(party.openingBalance) || 0) : 0;
+        const txns = safeRead(KEYS.TXNS, []).filter(t => t.partyId === partyId);
+        return txns.reduce((bal, t) => bal + (Number(t.debit) || 0) - (Number(t.credit) || 0), open);
+    }
+
+    function renderLedgerSection() {
+        renderLedgerParties();
+        if (selectedPartyId) renderPartyStatement(selectedPartyId);
+    }
+
+    function renderLedgerParties() {
+        const parties = safeRead(KEYS.PARTIES, []);
+        const typeF = document.getElementById('led-filter-type').value;
+        const q = (document.getElementById('led-search').value || '').trim().toLowerCase();
+
+        let custTotal = 0, suppTotal = 0;
+        parties.forEach(p => {
+            const bal = getPartyBalance(p.id);
+            if (p.type === 'customer') custTotal += bal;
+            else suppTotal += bal;
+        });
+
+        document.getElementById('led-cust-total').textContent = `Rs. ${custTotal}`;
+        document.getElementById('led-supp-total').textContent = `Rs. ${suppTotal}`;
+        document.getElementById('led-party-count').textContent = String(parties.length);
+
+        const filtered = parties.filter(p => {
+            const okT = typeF === 'all' || p.type === typeF;
+            const okQ = !q || p.name.toLowerCase().includes(q) || (p.phone || '').includes(q);
+            return okT && okQ;
+        });
+
+        const tbody = document.getElementById('led-parties-tbody');
+        if (!filtered.length) {
+            tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#94a3b8;padding:24px;">No parties added yet.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = filtered.map(p => {
+            const bal = getPartyBalance(p.id);
+            return `
+                <tr style="cursor:pointer;${selectedPartyId === p.id ? 'background:#e0f2fe;' : ''}" onclick="renderPartyStatement('${esc(p.id)}')">
+                    <td><b>${esc(p.name)}</b><div style="font-size:11px;color:#64748b;">${esc(p.phone || '-')}</div></td>
+                    <td><span class="${p.type === 'customer' ? 'tag-blue' : 'tag-red'}">${p.type === 'customer' ? 'Customer' : 'Supplier'}</span></td>
+                    <td><b>Rs. ${bal}</b></td>
+                    <td><button type="button" class="btn-pill btn-white" style="padding:4px 8px;font-size:11px;">Open</button></td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    function renderPartyStatement(partyId) {
+        selectedPartyId = partyId;
+        const party = safeRead(KEYS.PARTIES, []).find(p => p.id === partyId);
+        if (!party) return;
+
+        document.getElementById('led-detail-empty').classList.add('hidden-el');
+        document.getElementById('led-detail-box').classList.remove('hidden-el');
+
+        const bal = getPartyBalance(partyId);
+        document.getElementById('led-sel-name').textContent = `${party.name} (${party.type === 'customer' ? 'Customer' : 'Supplier'})`;
+        document.getElementById('led-sel-meta').textContent = `Phone: ${party.phone || '-'} • Opening: Rs. ${party.openingBalance || 0} • Current Balance: Rs. ${bal}`;
+
+        const txns = safeRead(KEYS.TXNS, []).filter(t => t.partyId === partyId);
+        let runBal = Number(party.openingBalance) || 0;
+        const rows = [
+            `<tr><td>-</td><td><i>Opening Balance</i></td><td>-</td><td>-</td><td><b>Rs. ${runBal}</b></td></tr>`
+        ];
+        txns.forEach(t => {
+            runBal += (Number(t.debit) || 0) - (Number(t.credit) || 0);
+            rows.push(`
+                <tr>
+                    <td>${new Date(t.date).toLocaleDateString()}</td>
+                    <td>${esc(t.desc)}</td>
+                    <td style="color:#b91c1c;">${t.debit ? 'Rs. ' + t.debit : '-'}</td>
+                    <td style="color:#047857;">${t.credit ? 'Rs. ' + t.credit : '-'}</td>
+                    <td><b>Rs. ${runBal}</b></td>
+                </tr>
+            `);
+        });
+        document.getElementById('led-txns-tbody').innerHTML = rows.join('');
+        renderLedgerParties();
+    }
+
+    function openPartyModal() {
+        document.getElementById('pty-name').value = '';
+        document.getElementById('pty-phone').value = '';
+        document.getElementById('pty-open').value = 0;
+        openModal('modal-party');
+    }
+
+    function saveParty() {
+        const name = document.getElementById('pty-name').value.trim();
+        if (!name) { alert('Party name darj karein.'); return; }
+        const parties = safeRead(KEYS.PARTIES, []);
+        const newParty = {
+            id: uid(),
+            name,
+            phone: document.getElementById('pty-phone').value.trim(),
+            type: document.getElementById('pty-type').value,
+            openingBalance: Number(document.getElementById('pty-open').value) || 0
+        };
+        parties.push(newParty);
+        safeWrite(KEYS.PARTIES, parties);
+        closeModal('modal-party');
+        renderCustomerSelect();
+        renderLedgerSection();
+        renderPartyStatement(newParty.id);
+    }
+
+    function openLedgerEntryModal() {
+        if (!selectedPartyId) return;
+        document.getElementById('le-amount').value = '';
+        document.getElementById('le-desc').value = '';
+        openModal('modal-led-entry');
+    }
+
+    function saveLedgerEntry() {
+        if (!selectedPartyId) return;
+        const amt = Number(document.getElementById('le-amount').value) || 0;
+        if (amt <= 0) { alert('Sahih amount darj karein.'); return; }
+        const type = document.getElementById('le-type').value;
+        const desc = document.getElementById('le-desc').value.trim() || (type === 'debit' ? 'Manual Bill / Udhaar' : 'Cash Received / Paid');
+        const txns = safeRead(KEYS.TXNS, []);
+        txns.push({
+            id: uid(),
+            partyId: selectedPartyId,
+            date: new Date().toISOString(),
+            desc,
+            debit: type === 'debit' ? amt : 0,
+            credit: type === 'credit' ? amt : 0
+        });
+        safeWrite(KEYS.TXNS, txns);
+        closeModal('modal-led-entry');
+        renderLedgerSection();
+        refreshSidebarStats();
+    }
+
+    /* ================= BILLS, EXPENSES, DASHBOARD ================= */
+    function renderBillsTable() {
+        const q = (document.getElementById('bills-search').value || '').trim().toLowerCase();
+        const bills = safeRead(KEYS.BILLS, []).filter(b => !q || b.billNo.toLowerCase().includes(q) || (b.customerName || '').toLowerCase().includes(q));
+        const tbody = document.getElementById('bills-tbody');
+        if (!bills.length) {
+            tbody.innerHTML = `<tr><td colspan="9" style="text-align:center;color:#94a3b8;padding:24px;">No bills saved yet.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = bills.map(b => `
+            <tr>
+                <td><b>${esc(b.billNo)}</b></td>
+                <td>#${b.tokenNo}</td>
+                <td>${new Date(b.date).toLocaleString()}</td>
+                <td>${esc(b.customerName)}</td>
+                <td>${esc(b.orderType)}</td>
+                <td><span class="${b.paymentMode === 'Udhaar' ? 'tag-red' : 'tag-green'}">${esc(b.paymentMode)}</span></td>
+                <td><b>Rs. ${b.netTotal}</b></td>
+                <td style="color:#047857;">Rs. ${b.profit || 0}</td>
+                <td>
+                    <button type="button" class="btn-pill btn-white" style="padding:4px 8px;font-size:11px;" onclick="reprintBill('${esc(b.id)}')">Print</button>
+                    <button type="button" class="btn-pill btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteBill('${esc(b.id)}')">Del</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function reprintBill(id) {
+        const b = safeRead(KEYS.BILLS, []).find(x => x.id === id);
+        if (b) printBillReceipt(b);
+    }
+
+    function deleteBill(id) {
+        if (!confirm('Is bill ko delete karein?')) return;
+        safeWrite(KEYS.BILLS, safeRead(KEYS.BILLS, []).filter(x => x.id !== id));
+        renderBillsTable();
+        refreshSidebarStats();
+    }
+
+    function openExpenseModal() {
+        document.getElementById('exp-title').value = '';
+        document.getElementById('exp-amt').value = '';
+        document.getElementById('exp-note').value = '';
+        openModal('modal-expense');
+    }
+
+    function saveExpense() {
+        const title = document.getElementById('exp-title').value.trim();
+        const amount = Number(document.getElementById('exp-amt').value) || 0;
+        if (!title || amount <= 0) { alert('Title aur sahih amount darj karein.'); return; }
+        const exps = safeRead(KEYS.EXPENSES, []);
+        exps.unshift({
+            id: uid(),
+            date: new Date().toISOString(),
+            title,
+            category: document.getElementById('exp-cat').value,
+            amount,
+            note: document.getElementById('exp-note').value.trim()
+        });
+        safeWrite(KEYS.EXPENSES, exps);
+        closeModal('modal-expense');
+        renderExpensesTable();
+        refreshSidebarStats();
+    }
+
+    function renderExpensesTable() {
+        const exps = safeRead(KEYS.EXPENSES, []);
+        const tbody = document.getElementById('exp-tbody');
+        if (!exps.length) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:24px;">No expenses recorded.</td></tr>`;
+            return;
+        }
+        tbody.innerHTML = exps.map(e => `
+            <tr>
+                <td>${new Date(e.date).toLocaleDateString()}</td>
+                <td><b>${esc(e.title)}</b></td>
+                <td><span class="tag-blue">${esc(e.category)}</span></td>
+                <td style="color:#b91c1c;"><b>Rs. ${e.amount}</b></td>
+                <td>${esc(e.note || '-')}</td>
+                <td><button type="button" class="btn-pill btn-danger" style="padding:4px 8px;font-size:11px;" onclick="deleteExpense('${esc(e.id)}')">Del</button></td>
+            </tr>
+        `).join('');
+    }
+
+    function deleteExpense(id) {
+        safeWrite(KEYS.EXPENSES, safeRead(KEYS.EXPENSES, []).filter(x => x.id !== id));
+        renderExpensesTable();
+        refreshSidebarStats();
+    }
+
+    function renderDashboard() {
+        const bills = safeRead(KEYS.BILLS, []);
+        const exps = safeRead(KEYS.EXPENSES, []);
+        const parties = safeRead(KEYS.PARTIES, []).filter(p => p.type === 'customer');
+        const totalSales = bills.reduce((s, b) => s + (Number(b.netTotal) || 0), 0);
+        const totalProfit = bills.reduce((s, b) => s + (Number(b.profit) || 0), 0);
+        const totalExp = exps.reduce((s, e) => s + (Number(e.amount) || 0), 0);
+        const custUdhaar = parties.reduce((s, p) => s + getPartyBalance(p.id), 0);
+
+        document.getElementById('dash-total-sales').textContent = `Rs. ${totalSales}`;
+        document.getElementById('dash-total-bills').textContent = `${bills.length} Bills Saved`;
+        document.getElementById('dash-total-profit').textContent = `Rs. ${totalProfit}`;
+        document.getElementById('dash-cust-udhaar').textContent = `Rs. ${custUdhaar}`;
+        document.getElementById('dash-total-exp').textContent = `Rs. ${totalExp}`;
+
+        document.getElementById('dash-recent-body').innerHTML = bills.slice(0, 8).map(b => `
+            <tr>
+                <td><b>${esc(b.billNo)}</b></td>
+                <td>${new Date(b.date).toLocaleString()}</td>
+                <td>${esc(b.customerName)}</td>
+                <td>${esc(b.orderType)}</td>
+                <td>${esc(b.paymentMode)}</td>
+                <td><b>Rs. ${b.netTotal}</b></td>
+            </tr>
+        `).join('') || `<tr><td colspan="6" style="text-align:center;color:#94a3b8;padding:18px;">No bills yet.</td></tr>`;
+    }
+
+    function refreshSidebarStats() {
+        const today = new Date().toISOString().slice(0, 10);
+        const bills = safeRead(KEYS.BILLS, []);
+        const exps = safeRead(KEYS.EXPENSES, []);
+        const todaySales = bills.filter(b => (b.date || '').slice(0, 10) === today).reduce((s, b) => s + (Number(b.netTotal) || 0), 0);
+        const todayCashSales = bills.filter(b => (b.date || '').slice(0, 10) === today && b.paymentMode !== 'Udhaar').reduce((s, b) => s + (Number(b.netTotal) || 0), 0);
+        const todayExp = exps.filter(e => (e.date || '').slice(0, 10) === today).reduce((s, e) => s + (Number(e.amount) || 0), 0);
+
+        document.getElementById('sb-today-sales').textContent = `Rs. ${todaySales}`;
+        document.getElementById('sb-today-exp').textContent = `Rs. ${todayExp}`;
+        document.getElementById('sb-cash-hand').textContent = `Rs. ${todayCashSales - todayExp}`;
+    }
+
+    /* ================= SETTINGS & EXPORT/BACKUP ================= */
+    function savePosSettings() {
+        const oldB = safeRead(KEYS.BRANDING, {});
+        const newB = {
+            name: document.getElementById('set-name').value.trim() || 'MS Nihari & Restaurant',
+            subtitle: document.getElementById('set-sub').value.trim() || 'Offline Management Portal',
+            phone: document.getElementById('set-phone').value.trim() || '03162967150',
+            address: document.getElementById('set-address').value.trim(),
+            dp: oldB.dp || 'logo.svg'
+        };
+        safeWrite(KEYS.BRANDING, newB);
+
+        const oldA = safeRead(KEYS.AUTH, { email: 'scalesoft@gmail.com', pass: '112233' });
+        const newEmail = document.getElementById('set-email').value.trim().toLowerCase() || oldA.email;
+        const newPass = document.getElementById('set-pass').value;
+        safeWrite(KEYS.AUTH, {
+            email: newEmail,
+            pass: newPass ? newPass : oldA.pass,
+            isDefault: (newEmail === 'scalesoft@gmail.com' && (newPass || oldA.pass) === '112233')
+        });
+
+        loadBranding();
+        alert('Settings offline save ho gayi ✔');
+    }
+
+    function exportAllCSV() {
+        const bills = safeRead(KEYS.BILLS, []);
+        const rows = [['BillNo', 'Date', 'Customer', 'OrderType', 'Payment', 'Subtotal', 'Discount', 'NetTotal', 'Profit']];
+        bills.forEach(b => rows.push([b.billNo, b.date, b.customerName, b.orderType, b.paymentMode, b.subtotal, b.discount, b.netTotal, b.profit]));
+        const csv = rows.map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `pos-bills-${new Date().toISOString().slice(0, 10)}.csv`;
+        a.click();
+    }
+
+    function downloadJsonBackup() {
+        const data = {};
+        Object.values(KEYS).forEach(k => { data[k] = safeRead(k, null); });
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `pos-full-backup-${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+    }
+
+    function restoreJsonBackup(event) {
         const file = event.target.files && event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(ev) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas'), size = 240;
-                canvas.width = size; canvas.height = size;
-                const ctx = canvas.getContext('2d');
-                const minSide = Math.min(img.width, img.height);
-                const sx = (img.width - minSide) / 2, sy = (img.height - minSide) / 2;
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(0, 0, size, size);
-                ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, size, size);
-                tempDpDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                document.getElementById('set-dp-preview').src = tempDpDataUrl;
-            };
-            img.src = ev.target.result;
+            try {
+                const parsed = JSON.parse(ev.target.result);
+                Object.keys(parsed).forEach(k => {
+                    if (parsed[k] !== null && Object.values(KEYS).includes(k)) safeWrite(k, parsed[k]);
+                });
+                alert('Backup restore ho gaya! Page reload ho raha hai.');
+                location.reload();
+            } catch (e) {
+                alert('Invalid backup JSON file.');
+            }
         };
-        reader.readAsDataURL(file);
+        reader.readAsText(file);
     }
 
-    function resetDp() {
-        tempDpDataUrl = 'logo.svg';
-        setSafeImgSrc(document.getElementById('set-dp-preview'), 'logo.svg');
-        document.getElementById('set-dp-file').value = '';
-    }
-
-    function saveSettings() {
-        const oldB = getBranding();
-        const newName = document.getElementById('set-name').value.trim() || DEFAULT_BRANDING.name;
-        const newSub = document.getElementById('set-sub').value.trim() || DEFAULT_BRANDING.subtitle;
-        const newPhone = document.getElementById('set-phone').value.trim() || DEFAULT_BRANDING.phone;
-        const newAddr = document.getElementById('set-address').value.trim();
-        const newDp = tempDpDataUrl !== null ? tempDpDataUrl : (oldB.dp || 'logo.svg');
-
-        safeWrite(STORAGE_KEYS.BRANDING, { name: newName, subtitle: newSub, phone: newPhone, address: newAddr, dp: newDp });
-
-        const legacy = safeRead(STORAGE_KEYS.LEGACY_SETTINGS, {});
-        legacy.name = newName; legacy.tagline = newSub; legacy.phone = newPhone; legacy.address = newAddr; legacy.dp = newDp;
-        safeWrite(STORAGE_KEYS.LEGACY_SETTINGS, legacy);
-
-        const oldA = getAuthCreds();
-        const newEmail = document.getElementById('set-email').value.trim().toLowerCase() || oldA.email;
-        const newPass = document.getElementById('set-pass').value;
-        const finalPass = newPass ? newPass : oldA.pass;
-        safeWrite(STORAGE_KEYS.AUTH, {
-            email: newEmail,
-            pass: finalPass,
-            isDefault: (newEmail === DEFAULT_AUTH.email && finalPass === DEFAULT_AUTH.pass)
-        });
-
-        document.getElementById('login-email').value = newEmail;
-        applyBrandingToUI();
-        closeSettings();
-        showLoginAlert('Settings (Name, DP & Account) save ho gayi ✔', 'success');
-    }
-
-    function showLoginAlert(message, type) {
-        const box = document.getElementById('alert-box');
-        box.className = 'alert-box ' + (type === 'success' ? 'alert-ok' : 'alert-err');
-        box.textContent = message;
-        box.classList.remove('hidden-el');
-    }
-
-    function handleSystemLogin() {
-        if (isLicenseExpired()) { updateLicenseUI(); return; }
-        const email = document.getElementById('login-email').value.trim().toLowerCase();
-        const password = document.getElementById('login-password').value;
-        const creds = getAuthCreds();
-
-        if (!email || !password) { showLoginAlert('Email aur password darj karein.', 'error'); return; }
-        if (email !== (creds.email || '').toLowerCase() || password !== creds.pass) {
-            showLoginAlert('Ghalat Email ya Password! (Settings se check/change kar sakte hain)', 'error');
-            return;
-        }
-
-        safeWrite('ms_pos_session_v1', { loggedIn: true, email: email, loginAt: new Date().toISOString() });
-        showLoginAlert('لاگ ان کامیاب! Offline POS khul raha hai...', 'success');
-        setTimeout(() => { window.location.href = 'pos.html'; }, 250);
-    }
-
-    function togglePasswordVisibility() {
-        const inp = document.getElementById('login-password'), icon = document.getElementById('pass-icon');
-        if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
-        else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
-    }
-
-    function toggleLanguage() {
+    function toggleLang() {
         currentLang = currentLang === 'en' ? 'ur' : 'en';
-        const t = I18N[currentLang];
-        document.getElementById('btn-lang-toggle').textContent = t.langBtn;
-        document.getElementById('txt-badge').textContent = t.badge;
-        document.getElementById('txt-storage-lbl').textContent = t.storageLbl;
-        document.getElementById('txt-license-lbl').textContent = t.licenseLbl;
-        document.getElementById('txt-phone-lbl').textContent = t.phoneLbl;
-        document.getElementById('txt-f1-t').textContent = t.f1t;
-        document.getElementById('txt-f1-s').textContent = t.f1s;
-        document.getElementById('txt-f2-t').textContent = t.f2t;
-        document.getElementById('txt-f2-s').textContent = t.f2s;
-        document.getElementById('txt-f3-t').textContent = t.f3t;
-        document.getElementById('txt-f3-s').textContent = t.f3s;
-        document.getElementById('txt-f4-t').textContent = t.f4t;
-        document.getElementById('txt-f4-s').textContent = t.f4s;
-        document.getElementById('txt-btn-settings').textContent = t.btnSettings;
-        document.getElementById('txt-btn-activate').textContent = t.btnActivate;
-        document.getElementById('txt-login-title').textContent = t.loginTitle;
-        document.getElementById('txt-login-desc').textContent = t.loginDesc;
-        document.getElementById('txt-email-lbl').textContent = t.emailLbl;
-        document.getElementById('txt-pass-lbl').textContent = t.passLbl;
-        document.getElementById('txt-pass-req').textContent = t.passReq;
-        document.getElementById('txt-btn-login').textContent = t.btnLogin;
+        document.getElementById('btn-lang').textContent = currentLang === 'en' ? 'اردو' : 'English';
+        const map = {
+            en: { navDash:'Dashboard Overview', navPos:'POS / Shop Billing', navList:'Items & Rate List', navLedger:'Customers & Suppliers Ledger', navBills:'Saved Bills & Profit', navExp:'Expenses & Staff', navSet:'Settings & Backup' },
+            ur: { navDash:'ڈیش بورڈ اوور ویو', navPos:'پی او ایس / بلنگ', navList:'آئٹمز اور ریٹ لسٹ', navLedger:'کسٹمر و سپلائر کھاتہ', navBills:'محفوظ بل اور منافع', navExp:'اخراجات اور اسٹاف', navSet:'سیٹنگز اور بیک اپ' }
+        }[currentLang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const k = el.getAttribute('data-i18n');
+            if (map[k]) el.textContent = map[k];
+        });
     }
 
-    function updateClock() {
-        const el = document.getElementById('live-clock');
-        if (el) el.textContent = new Date().toLocaleTimeString('en-US', { hour12: true });
-    }
-
-    // Prevent Escape key from closing expired activation lock
     document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && isLicenseExpired()) {
-            e.preventDefault();
-        }
+        if (e.key === 'Escape' && isLicenseExpired()) e.preventDefault();
     });
 
-    (function initIndex() {
-        getLicense();
-        applyBrandingToUI();
-        updateClock();
+    /* ================= INIT ================= */
+    (function initPOS() {
+        if (!checkSession()) return;
+        initDefaultData();
+        loadBranding();
+        switchTab('pos');
+        refreshSidebarStats();
         updateLicenseUI();
-        setInterval(() => { updateClock(); updateLicenseUI(); }, 1000);
+        setInterval(updateLicenseUI, 1000);
     })();
 </script>
 </body>
