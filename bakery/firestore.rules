@@ -1,0 +1,105 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Only the owner (logged-in bakery account) gets full access. To add another admin, add the email to this list.
+    function isOwner() {
+      return request.auth != null
+          && request.auth.token.email in ['scalesoft@gmail.com'];
+    }
+
+    // POS / stock / staff / accounts / kitchen ... all back-office data (owner only)
+    match /tree/{id} {
+      allow read, write: if isOwner();
+    }
+
+    // ---- Online ordering: customer website (order.html) + admin (ordermanage.html) ----
+
+    // Menu, profile and delivery areas: everybody can read, only the owner can change.
+    match /bk_profile/{id}        { allow read: if true; allow write: if isOwner(); }
+    match /bk_categories/{id}     { allow read: if true; allow write: if isOwner(); }
+    match /bk_items/{id}          { allow read: if true; allow write: if isOwner(); }
+    match /bk_delivery_areas/{id} { allow read: if true; allow write: if isOwner(); }
+
+    // Orders
+    //  - a customer can CREATE an order (always as "pending", never overwrite an existing one)
+    //  - a customer can read ONE order only if they know its random id (order tracking); listing is owner only
+    //  - a customer can only change a shipped order to "delivered" (Delivery Success button)
+    //  - everything else (accept, prepare, edit, delete) is owner only
+    match /bk_orders/{id} {
+      allow get: if true;
+      allow list: if isOwner();
+      allow create: if validNewOrder(id);
+      allow update: if isOwner() || customerConfirmsDelivery();
+      allow delete: if isOwner();
+
+      function validNewOrder(id) {
+        let d = request.resource.data;
+        return d.keys().hasOnly(['id', 'data', 'updated_at'])
+            && d.id == id
+            && d.data is map
+            && d.data.orderId == id
+            && d.data.orderStatus == 'pending'
+            && d.data.get('paymentStatus', 'unpaid') == 'unpaid'
+            && d.data.items is list
+            && d.data.items.size() > 0 && d.data.items.size() <= 100
+            && d.data.total is number && d.data.total >= 0
+            && d.data.subtotal is number && d.data.deliveryFee is number && d.data.discount is number
+            && d.data.subtotal >= 0 && d.data.deliveryFee >= 0 && d.data.discount >= 0
+            && d.data.total == d.data.subtotal + d.data.deliveryFee - d.data.discount
+            && d.data.customerName is string && d.data.customerName.size() <= 120
+            && d.data.phone is string && d.data.phone.size() <= 30
+            && d.data.address is string && d.data.address.size() <= 500
+            && d.data.get('area', '') is string && d.data.get('area', '').size() <= 120
+            && d.data.get('houseNumber', '') is string && d.data.get('houseNumber', '').size() <= 100
+            && d.data.get('streetNumber', '') is string && d.data.get('streetNumber', '').size() <= 100
+            && d.data.get('landmark', '') is string && d.data.get('landmark', '').size() <= 200
+            && d.data.get('specialInstructions', '') is string && d.data.get('specialInstructions', '').size() <= 500
+            && d.data.get('trxId', '') is string && d.data.get('trxId', '').size() <= 100
+            && d.data.get('paymentMethod', '') is string && d.data.get('paymentMethod', '').size() <= 40;
+      }
+
+      function customerConfirmsDelivery() {
+        let before = resource.data;
+        let after = request.resource.data;
+        return after.diff(before).affectedKeys().hasOnly(['data', 'updated_at'])
+            && after.data.diff(before.data).affectedKeys().hasOnly(['orderStatus', 'updatedAt'])
+            && after.data.orderStatus == 'delivered'
+            && !(before.data.orderStatus in ['pending', 'cancelled', 'rejected']);
+      }
+    }
+
+    // Customer records are written by the website only when the row does not exist yet; read by the owner only.
+    match /bk_customers/{id} {
+      allow read, update, delete: if isOwner();
+      allow create: if request.resource.data.keys().hasOnly(['id', 'data', 'updated_at'])
+                    && request.resource.data.id == id
+                    && request.resource.data.data is map;
+    }
+
+    // Reviews: the public can only LIST approved reviews (pending ones and phone numbers stay private).
+    // A customer can read their own review by id and create a new one that is NOT approved.
+    match /bk_reviews/{id} {
+      allow get: if true;
+      allow list: if isOwner() || resource.data.data.approved == true;
+      allow create: if request.resource.data.keys().hasOnly(['id', 'data', 'updated_at'])
+                    && request.resource.data.id == id
+                    && request.resource.data.data is map
+                    && request.resource.data.data.approved == false
+                    && request.resource.data.data.get('showOnHome', false) == false
+                    && request.resource.data.data.text is string
+                    && request.resource.data.data.text.size() <= 1000;
+      allow update, delete: if isOwner();
+    }
+
+    // Complaints: customers can send, only the owner can read or manage them.
+    match /bk_complaints/{id} {
+      allow read, update, delete: if isOwner();
+      allow create: if request.resource.data.keys().hasOnly(['id', 'data', 'updated_at'])
+                    && request.resource.data.id == id
+                    && request.resource.data.data is map
+                    && request.resource.data.data.details is string
+                    && request.resource.data.data.details.size() <= 2000;
+    }
+  }
+}

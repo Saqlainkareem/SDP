@@ -1,0 +1,3377 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>Alpha Bakers — Online Orders Manager</title>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        ink: {
+          950:'#05070d', 900:'#0a0d16', 850:'#0f1320', 800:'#141a2a',
+          750:'#1b2233', 700:'#242c41', 600:'#333c56', 500:'#4d5876',
+          400:'#7d89a8', 300:'#aab4cb', 200:'#d8deea', 100:'#f1f4fa'
+        },
+        gold: { 200:'#f8ecd0', 300:'#f0d9a4', 400:'#e5c179', 500:'#d4a34e', 600:'#b07f2c', 700:'#8a611d' },
+        mint: { 400:'#4ade80', 500:'#22c55e', 600:'#16a34a' },
+        sky:  { 400:'#56ccf2', 500:'#38bdf8' },
+        plum: { 400:'#a78bfa', 500:'#8b5cf6' },
+        rose: { 400:'#fb7185', 500:'#f43f5e' }
+      },
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"','sans-serif'],
+        mono: ['"JetBrains Mono"','monospace'],
+        display: ['"Playfair Display"','serif']
+      }
+    }
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+  :root{
+    --bg:#05070d;
+    --panel:#0a0d16;
+    --panel-2:#0f1320;
+    --line:#1b2233;
+    --gold:#d4a34e;
+    --gold-soft:#e5c179;
+    --primary:#e8783d;
+  }
+  html,body{height:100%}
+  body{
+    font-family:'Plus Jakarta Sans',sans-serif;
+    color:#f1f4fa;
+    background:
+      radial-gradient(1100px 620px at 12% -12%, rgba(212,163,78,.14), transparent 60%),
+      radial-gradient(900px 560px at 92% 0%, rgba(139,92,246,.10), transparent 58%),
+      radial-gradient(760px 520px at 50% 110%, rgba(56,189,248,.07), transparent 60%),
+      #05070d;
+    background-attachment:fixed;
+    -webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color: transparent;
+    transition: background-color .25s ease, color .25s ease;
+  }
+
+  /* WHITE / LIGHT DESIGN THEME OVERRIDES */
+  body.theme-white {
+    background: #f4f6fb !important;
+    color: #1a202c !important;
+  }
+  body.theme-white .glass {
+    background: rgba(255, 255, 255, 0.90) !important;
+    border-color: rgba(226, 232, 240, 0.9) !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), inset 0 1px 0 #ffffff !important;
+  }
+  body.theme-white .glass-soft {
+    background: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+  }
+  body.theme-white .hair { border-color: #e2e8f0 !important; }
+  body.theme-white .input-clean {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+  }
+  body.theme-white .input-clean::placeholder { color: #94a3b8 !important; }
+  body.theme-white header.sticky {
+    background: rgba(255, 255, 255, 0.94) !important;
+    border-color: #e2e8f0 !important;
+  }
+  body.theme-white nav.border-b {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+  }
+  body.theme-white .nav-link { color: #64748b !important; }
+  body.theme-white .nav-link.active {
+    color: #b07f2c !important;
+    background: rgba(212,163,78,.14) !important;
+  }
+  body.theme-white .btn-ghost {
+    background: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #334155 !important;
+  }
+  body.theme-white .text-white { color: #0f172a !important; }
+  body.theme-white .text-ink-400, body.theme-white .text-ink-300 { color: #64748b !important; }
+  body.theme-white .text-ink-500 { color: #94a3b8 !important; }
+  body.theme-white .switch { background: #e2e8f0 !important; }
+  body.theme-white .switch.on { background: linear-gradient(135deg,#e5c179,#b07f2c) !important; }
+
+  /* SPECIAL GRAPH FIX: in white mode the graph background stays dark and the labels stay white */
+  body.theme-white #daily-chart-card,
+  body.theme-white #payment-split-card {
+    background: #0a0d16 !important;
+    border: 1px solid #1e2638 !important;
+    color: #ffffff !important;
+    box-shadow: 0 16px 36px -12px rgba(0,0,0,0.35) !important;
+  }
+  body.theme-white #daily-chart-card .text-white,
+  body.theme-white #payment-split-card .text-white { color: #ffffff !important; }
+  body.theme-white #daily-chart-card .text-ink-400,
+  body.theme-white #daily-chart-card .text-ink-500,
+  body.theme-white #payment-split-card .text-ink-300,
+  body.theme-white #payment-split-card .text-ink-400 { color: #94a3b8 !important; }
+  body.theme-white #daily-chart-card .text-ink-200,
+  body.theme-white #payment-split-card .text-ink-200 { color: #cbd5e1 !important; }
+  body.theme-white #daily-chart-card .bar-track,
+  body.theme-white #payment-split-card .bar-track { background: rgba(255,255,255,0.08) !important; }
+  body.theme-white #daily-chart-card .tbl th { color: #aab4cb !important; border-bottom: 1px solid rgba(255,255,255,0.08) !important; }
+  body.theme-white #daily-chart-card .tbl td { border-top: 1px solid rgba(255,255,255,0.06) !important; color: #f1f4fa !important; }
+  body.theme-white #daily-chart-card .tbl tbody tr:hover { background: rgba(255,255,255,0.04) !important; }
+  body.theme-white #daily-chart-card .chip-mute { background: rgba(255,255,255,0.08) !important; border-color: rgba(255,255,255,0.15) !important; color: #cbd5e1 !important; }
+
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::-webkit-scrollbar-thumb{background:#242c41;border-radius:99px}
+  ::-webkit-scrollbar-thumb:hover{background:#39415c}
+
+  .glass{
+    background:linear-gradient(180deg, rgba(20,26,42,.86) 0%, rgba(10,13,22,.92) 100%);
+    border:1px solid rgba(255,255,255,.06);
+    box-shadow:0 18px 44px -24px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.045);
+    backdrop-filter:blur(14px);
+  }
+  .glass-soft{
+    background:linear-gradient(180deg, rgba(27,34,51,.55) 0%, rgba(10,13,22,.75) 100%);
+    border:1px solid rgba(255,255,255,.055);
+  }
+  .hair{border-color:rgba(255,255,255,.07)}
+
+  .gold-text{
+    background:linear-gradient(92deg,#f8ecd0 0%,#e5c179 40%,#d4a34e 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+
+  .input-clean{
+    background:rgba(5,7,13,.72);
+    border:1px solid rgba(255,255,255,.08);
+    color:#f1f4fa;
+    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .input-clean::placeholder{color:#4d5876}
+  .input-clean:focus{
+    outline:none;
+    border-color:rgba(212,163,78,.75);
+    box-shadow:0 0 0 3px rgba(212,163,78,.14);
+    background:rgba(5,7,13,.95);
+  }
+  select.input-clean option{background:#0a0d16;color:#f1f4fa}
+
+  .btn-gold{
+    background:linear-gradient(135deg,#f0d9a4 0%,#d4a34e 46%,#b07f2c 100%);
+    color:#14100a;font-weight:800;letter-spacing:.01em;
+    box-shadow:0 10px 26px -14px rgba(212,163,78,.85);
+    transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
+  }
+  .btn-gold:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 16px 34px -14px rgba(212,163,78,.95);filter:brightness(1.04)}
+  .btn-gold:disabled{opacity:.6;cursor:not-allowed}
+
+  .btn-ghost{
+    background:rgba(255,255,255,.03);
+    border:1px solid rgba(255,255,255,.09);
+    color:#d8deea;font-weight:600;
+    transition:all .15s ease;
+  }
+  .btn-ghost:hover:not(:disabled){background:rgba(255,255,255,.07);border-color:rgba(212,163,78,.4);color:#fff}
+
+  .btn-mint{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.34);color:#7ee2a8;font-weight:700;transition:all .15s}
+  .btn-mint:hover{background:rgba(34,197,94,.24);color:#fff}
+
+  .btn-danger{background:rgba(244,63,94,.16);border:1px solid rgba(244,63,94,.42);color:#fb7185;font-weight:800;transition:all .15s}
+  .btn-danger:hover{background:rgba(244,63,94,.32);color:#fff}
+
+  .nav-link{position:relative;color:#7d89a8;font-weight:600;transition:all .15s ease;white-space:nowrap}
+  .nav-link:hover{color:#f1f4fa;background:rgba(255,255,255,.04)}
+  .nav-link.active{
+    color:#f0d9a4;background:rgba(212,163,78,.10);
+    box-shadow:inset 0 -2px 0 0 #d4a34e;
+  }
+
+  .switch{
+    width:46px;height:24px;border-radius:999px;background:#141a2a;
+    border:1px solid rgba(255,255,255,.12);position:relative;cursor:pointer;
+    transition:.25s ease;flex-shrink:0;
+  }
+  .switch.on{
+    background:linear-gradient(135deg,#e5c179,#b07f2c);
+    border-color:rgba(212,163,78,.7);
+    box-shadow:0 0 12px rgba(212,163,78,.35);
+  }
+  .switch::after{
+    content:'';position:absolute;top:2px;left:2px;width:18px;height:18px;
+    border-radius:50%;background:#f1f4fa;transition:.22s ease;
+    box-shadow:0 2px 5px rgba(0,0,0,.5);
+  }
+  .switch.on::after{left:24px;background:#0a0d16}
+
+  .chip{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid}
+  .chip-gold{background:rgba(212,163,78,.12);border-color:rgba(212,163,78,.34);color:#f0d9a4}
+  .chip-mint{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.32);color:#7ee2a8}
+  .chip-sky{background:rgba(56,189,248,.10);border-color:rgba(56,189,248,.30);color:#8ad9fb}
+  .chip-plum{background:rgba(139,92,246,.12);border-color:rgba(139,92,246,.32);color:#c4b5fd}
+  .chip-rose{background:rgba(244,63,94,.10);border-color:rgba(244,63,94,.30);color:#fda4af}
+  .chip-mute{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.10);color:#aab4cb}
+
+  .order-card{position:relative;border-radius:20px;overflow:hidden;transition:border-color .18s ease, transform .18s ease}
+  .order-card:hover{transform:translateY(-1px)}
+  .repeat-card{
+    background:linear-gradient(180deg, rgba(212,163,78,.13) 0%, rgba(120,84,26,.05) 45%, rgba(10,13,22,.92) 100%);
+    border:1px solid rgba(212,163,78,.34);
+    box-shadow:0 18px 44px -26px rgba(212,163,78,.5);
+  }
+  .vip-rail{
+    position:absolute;left:0;top:0;bottom:0;width:26px;
+    background:linear-gradient(180deg,#f0d9a4,#d4a34e 45%,#8a611d);
+    display:flex;align-items:center;justify-content:center;
+  }
+  .vip-rail span{
+    writing-mode:vertical-rl;transform:rotate(180deg);
+    font-size:10px;font-weight:900;letter-spacing:.28em;color:#14100a;
+  }
+  .rail-pad{padding-left:38px}
+
+  .bar-track{background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden}
+  .bar-fill{background:linear-gradient(180deg,#f0d9a4,#d4a34e);border-radius:6px;transition:height .4s ease, width .4s ease}
+  .bar-fill-sky{background:linear-gradient(180deg,#8ad9fb,#38bdf8)}
+  .bar-fill-mint{background:linear-gradient(180deg,#7ee2a8,#22c55e)}
+
+  #toast-container{position:fixed;top:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+  .toast-card{pointer-events:auto;transform:translateX(130%);transition:transform .28s cubic-bezier(.16,1,.3,1)}
+  .toast-card.show{transform:translateX(0)}
+
+  .fade-in{animation:fadeIn .22s ease both}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  .pulse-dot{width:7px;height:7px;border-radius:99px;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.6);animation:pulse 1.8s infinite}
+  @keyframes pulse{70%{box-shadow:0 0 0 8px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+
+  .tbl th{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:#7d89a8;font-weight:700;padding:10px 12px;text-align:left}
+  .tbl td{padding:10px 12px;font-size:12px;border-top:1px solid rgba(255,255,255,.05)}
+  .tbl tbody tr:hover{background:rgba(255,255,255,.025)}
+
+  .color-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    flex-shrink: 0;
+  }
+  .color-badge input[type="color"] {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  /* BLUR BACKGROUND EFFECT FOR EXPIRED APP */
+  .app-locked {
+    filter: blur(14px) grayscale(0.4) !important;
+    pointer-events: none !important;
+    user-select: none !important;
+    transition: filter 0.3s ease;
+  }
+
+  /* LUXURY PLAN VERIFICATION LOADER */
+  .loader-ring {
+    display: inline-block;
+    width: 68px;
+    height: 68px;
+    border: 4px solid rgba(212,163,78,0.18);
+    border-radius: 50%;
+    border-top-color: #d4a34e;
+    animation: spin 1s ease-in-out infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+<script src="ab-sync.js" data-sync="0"></script><script src="frame.js"></script><script type="module" src="firebase-core.js"></script>
+</head>
+<body class="min-h-full antialiased selection:bg-gold-500 selection:text-black">
+
+<div id="toast-container"></div>
+
+<!-- ============ 3. DASHBOARD MAIN ============ -->
+<div id="view-owner-dashboard" class="min-h-screen flex flex-col transition-all duration-300">
+
+  <!-- TOP BAR -->
+  <header class="sticky top-0 z-30 glass border-b hair px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-3 min-w-0">
+      <img id="top-bar-logo" class="h-10 w-10 rounded-2xl object-cover border hair hidden" alt="">
+      <div id="top-bar-logo-fallback" class="h-10 w-10 rounded-2xl flex items-center justify-center font-black text-sm"
+           style="background:linear-gradient(135deg,#f0d9a4,#d4a34e 55%,#b07f2c);color:#14100a">R</div>
+      <div class="min-w-0">
+        <div class="flex items-center gap-2">
+          <span id="top-bar-rest-name" class="text-sm font-bold tracking-tight text-white truncate">Bakery</span>
+        </div>
+        <p class="text-[10px] text-ink-500 font-mono truncate" id="top-bar-store-id">Online Orders</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      
+      <!-- EMERGENCY STOP ALARM BUTTON -->
+      <button onclick="window.stopAlarm()" id="btn-stop-alarm" class="hidden btn-danger px-3.5 py-2 rounded-xl text-[11px] font-bold shadow-lg animate-pulse flex items-center gap-1.5" title="Click to Stop Current Alarm Siren">
+        <i class="fa-solid fa-bell-slash text-rose-300"></i>
+        <span id="stop-alarm-text">Stop Alarm (10s)</span>
+      </button>
+
+      <!-- TEST ALARM BUTTON -->
+      <button onclick="window.testAlarmSound()" class="btn-ghost px-2.5 py-2 rounded-xl text-[11px] text-ink-400 hover:text-gold-300" title="Test 10s Alarm Sound">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+
+      <!-- ADMIN WHITE / LIGHT THEME TOGGLE BUTTON -->
+      <button onclick="window.toggleAdminTheme()" id="btn-admin-theme-toggle" class="btn-ghost px-3 py-2 rounded-xl text-[11px] flex items-center gap-1.5 border-ink-500/40 text-ink-300" title="Switch between Dark & White Admin Design">
+        <i class="fa-solid fa-sun text-[10px]" id="admin-theme-icon"></i>
+        <span id="admin-theme-text" class="hidden sm:inline">White Mode</span>
+      </button>
+
+      <!-- Live Preview & Website Links -->
+      <button onclick="window.previewClientWebsite()" class="btn-ghost px-3 py-2 rounded-xl text-[11px] flex items-center gap-1.5 border-gold-500/40 text-gold-300">
+        <i class="fa-solid fa-eye text-[10px]"></i><span class="hidden sm:inline">Preview</span>
+      </button>
+      <button onclick="window.openClientInNewTab()" class="btn-ghost px-3 py-2 rounded-xl text-[11px] flex items-center gap-1.5 border-gold-500/40 text-gold-300">
+        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i><span class="hidden sm:inline">Live Site</span>
+      </button>
+      
+      <!-- Open/Close Switch -->
+      <div class="hidden sm:flex items-center gap-2 glass-soft rounded-xl px-3 py-2">
+        <span id="top-open-status-text" class="text-[10px] font-extrabold tracking-wider text-gold-300">OPEN</span>
+        <div id="top-open-switch" class="switch on" onclick="window.toggleRestaurantOpen()"></div>
+      </div>
+
+
+      <a href="index.html" class="btn-ghost px-3 py-2 rounded-xl text-[11px] flex items-center gap-1.5" title="Bakery POS dashboard"><i class="fa-solid fa-house text-[10px]"></i><span class="hidden md:inline">Bakery POS</span></a>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <nav class="border-b hair bg-ink-950/70 backdrop-blur px-3 sm:px-6 flex items-center gap-1 overflow-x-auto text-[11px]">
+    <button onclick="window.switchTab('tab-overview')" id="nav-tab-overview" class="nav-link active px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-chart-pie text-[11px]"></i> Overview
+    </button>
+    <button onclick="window.switchTab('tab-orders')" id="nav-tab-orders" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-bell-concierge text-[11px]"></i> Live Orders
+      <span id="badge-live-orders-count" class="hidden chip chip-gold">0</span>
+    </button>
+    <button onclick="window.switchTab('tab-notebook')" id="nav-tab-notebook" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-book text-[11px]"></i> Notebook
+      <span id="badge-notebook-count" class="hidden chip chip-mute">0</span>
+    </button>
+    <button onclick="window.switchTab('tab-menu')" id="nav-tab-menu" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-utensils text-[11px]"></i> Menu Items
+    </button>
+    <button onclick="window.switchTab('tab-categories')" id="nav-tab-categories" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-tags text-[11px]"></i> Categories
+    </button>
+
+    <!-- THEME/COLORS & ON/OFF TOGGLES -->
+    <button onclick="window.switchTab('tab-theme-customizer')" id="nav-tab-theme-customizer" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0 text-gold-300">
+      <i class="fa-solid fa-palette text-[11px]"></i> Colors &amp; Theme
+    </button>
+    <button onclick="window.switchTab('tab-section-toggles')" id="nav-tab-section-toggles" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0 text-sky-400">
+      <i class="fa-solid fa-toggle-on text-[11px]"></i> Page Options (On/Off)
+    </button>
+
+    <button onclick="window.switchTab('tab-website-editor')" id="nav-tab-website-editor" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-globe text-[11px]"></i> Website Details
+    </button>
+    <button onclick="window.switchTab('tab-customers')" id="nav-tab-customers" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-users text-[11px]"></i> Customers
+      <span id="badge-vip-count" class="hidden chip chip-gold">0</span>
+    </button>
+    <button onclick="window.switchTab('tab-reviews')" id="nav-tab-reviews" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-star text-[11px]"></i> Reviews
+      <span id="badge-reviews-count" class="hidden chip chip-gold">0</span>
+    </button>
+    <button onclick="window.switchTab('tab-complaints')" id="nav-tab-complaints" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-triangle-exclamation text-[11px]"></i> Complaints / Return
+      <span id="badge-complaints-count" class="hidden chip chip-rose">0</span>
+    </button>
+    <button onclick="window.switchTab('tab-settings')" id="nav-tab-settings" class="nav-link px-3.5 py-3 rounded-t-lg flex items-center gap-2 shrink-0">
+      <i class="fa-solid fa-gear text-[11px]"></i> Delivery &amp; Areas
+    </button>
+  </nav>
+
+  <main class="flex-1 p-4 sm:p-6 max-w-7xl w-full mx-auto space-y-6">
+
+    <!-- ====== TAB: OVERVIEW ====== -->
+    <div id="tab-overview" class="tab-pane space-y-6 fade-in">
+      <div class="glass rounded-3xl p-5 space-y-4">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h2 class="text-sm font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-calendar-range text-gold-400 text-[11px]"></i> Sales Report — Date Range
+            </h2>
+            <p class="text-[11px] text-ink-400">Pick a date range to see the number of orders, total cash, and COD vs online payments.</p>
+          </div>
+          <div class="flex gap-1.5 flex-wrap">
+            <button onclick="window.setQuickRange('today')" id="qr-today" class="btn-gold px-3 py-1.5 rounded-lg text-[11px]">Today</button>
+            <button onclick="window.setQuickRange('yesterday')" id="qr-yesterday" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px]">Yesterday</button>
+            <button onclick="window.setQuickRange('7d')" id="qr-7d" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px]">Last 7 Days</button>
+            <button onclick="window.setQuickRange('30d')" id="qr-30d" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px]">30 Days</button>
+            <button onclick="window.setQuickRange('month')" id="qr-month" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px]">This Month</button>
+            <button onclick="window.setQuickRange('all')" id="qr-all" class="btn-ghost px-3 py-1.5 rounded-lg text-[11px]">All Time</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label class="block text-[10px] font-semibold text-ink-400 mb-1.5 uppercase tracking-wider">From Date</label>
+            <input type="date" id="range-from" onchange="window.onCustomRangeChange()" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div>
+            <label class="block text-[10px] font-semibold text-ink-400 mb-1.5 uppercase tracking-wider">To Date</label>
+            <input type="date" id="range-to" onchange="window.onCustomRangeChange()" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div class="flex items-end">
+            <div class="w-full glass-soft rounded-xl px-3 py-2.5">
+              <p class="text-[10px] text-ink-400 uppercase tracking-wider">Selected Period</p>
+              <p id="range-label" class="text-[11px] font-bold text-gold-300 font-mono">Today</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MONEY CARDS -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="glass rounded-3xl p-5 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-ink-400 font-medium">Total Sales</span>
+            <i class="fa-solid fa-sack-dollar text-gold-400 text-xs"></i>
+          </div>
+          <div class="text-2xl font-extrabold gold-text font-mono" id="kpi-total-sales">Rs. 0</div>
+          <span class="text-[10px] text-ink-500" id="kpi-total-orders">0 orders</span>
+        </div>
+        <div class="glass rounded-3xl p-5 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-ink-400 font-medium">COD Cash</span>
+            <i class="fa-solid fa-money-bill-wave text-mint-400 text-xs"></i>
+          </div>
+          <div class="text-2xl font-extrabold text-mint-400 font-mono" id="kpi-cod-cash">Rs. 0</div>
+          <span class="text-[10px] text-ink-500" id="kpi-cod-count">0 COD orders</span>
+        </div>
+        <div class="glass rounded-3xl p-5 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-ink-400 font-medium">Online Payments</span>
+            <i class="fa-solid fa-mobile-screen-button text-sky-400 text-xs"></i>
+          </div>
+          <div class="text-2xl font-extrabold text-sky-400 font-mono" id="kpi-online-cash">Rs. 0</div>
+          <span class="text-[10px] text-ink-500" id="kpi-online-count">0 online orders</span>
+        </div>
+        <div class="glass rounded-3xl p-5 space-y-1.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] text-ink-400 font-medium">Avg Order Value</span>
+            <i class="fa-solid fa-chart-line text-plum-400 text-xs"></i>
+          </div>
+          <div class="text-2xl font-extrabold text-white font-mono" id="kpi-aov">Rs. 0</div>
+          <span class="text-[10px] text-ink-500" id="kpi-delivered-count">0 delivered</span>
+        </div>
+      </div>
+
+      <!-- SECOND ROW -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div class="glass-soft rounded-2xl p-4">
+          <p class="text-[10px] text-ink-400 uppercase tracking-wider">Pending Now</p>
+          <p class="text-xl font-bold text-gold-300 font-mono" id="kpi-pending">0</p>
+        </div>
+        <div class="glass-soft rounded-2xl p-4">
+          <p class="text-[10px] text-ink-400 uppercase tracking-wider">Cancelled / Return</p>
+          <p class="text-xl font-bold text-rose-400 font-mono" id="kpi-cancelled">0</p>
+        </div>
+        <div class="glass-soft rounded-2xl p-4">
+          <p class="text-[10px] text-ink-400 uppercase tracking-wider">Repeat Customers</p>
+          <p class="text-xl font-bold text-plum-400 font-mono" id="kpi-repeat">0</p>
+        </div>
+        <div class="glass-soft rounded-2xl p-4">
+          <p class="text-[10px] text-ink-400 uppercase tracking-wider">Active Items</p>
+          <p class="text-xl font-bold text-white font-mono" id="kpi-menu-count">0</p>
+        </div>
+      </div>
+
+      <!-- DAY WISE CHART + PAYMENT SPLIT -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div id="daily-chart-card" class="glass rounded-3xl p-5 lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white">Day-wise Sales</h3>
+            <span class="chip chip-mute" id="chart-days-label">—</span>
+          </div>
+          <div id="daily-chart" class="flex items-end gap-1.5 h-44 overflow-x-auto pb-1"></div>
+          <div class="overflow-x-auto">
+            <table class="tbl w-full">
+              <thead><tr><th>Date</th><th>Orders</th><th>COD</th><th>Online</th><th class="text-right">Total</th></tr></thead>
+              <tbody id="daily-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="payment-split-card" class="glass rounded-3xl p-5 space-y-4">
+          <h3 class="text-sm font-bold text-white">Payment Split</h3>
+          <div id="payment-split" class="space-y-3"></div>
+          <div class="pt-3 border-t hair space-y-2">
+            <h4 class="text-[11px] font-bold text-ink-300 uppercase tracking-wider">Top Items (range)</h4>
+            <div id="top-items" class="space-y-1.5"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECENT ORDERS -->
+      <div class="glass rounded-3xl p-5 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-sm font-bold text-white">Recent Orders</h2>
+            <p class="text-[11px] text-ink-400">Golden card = repeat / VIP customer</p>
+          </div>
+          <button onclick="window.switchTab('tab-orders')" class="text-[11px] text-gold-300 hover:text-gold-200">View All →</button>
+        </div>
+        <div id="overview-recent-orders-list" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: LIVE ORDERS ====== -->
+    <div id="tab-orders" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-4 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex gap-1.5 overflow-x-auto">
+          <button onclick="window.filterOrders('all')" id="btn-order-all" class="btn-gold text-[11px] px-3 py-1.5 rounded-lg">All Live</button>
+          <button onclick="window.filterOrders('pending')" id="btn-order-pending" class="btn-ghost text-[11px] px-3 py-1.5 rounded-lg">Pending</button>
+          <button onclick="window.filterOrders('accepted')" id="btn-order-accepted" class="btn-ghost text-[11px] px-3 py-1.5 rounded-lg">Accepted</button>
+          <button onclick="window.filterOrders('preparing')" id="btn-order-preparing" class="btn-ghost text-[11px] px-3 py-1.5 rounded-lg">Preparing</button>
+          <button onclick="window.filterOrders('on_the_way')" id="btn-order-on_the_way" class="btn-ghost text-[11px] px-3 py-1.5 rounded-lg">On The Way</button>
+        </div>
+        <div class="flex items-center gap-2 text-[10px] text-ink-400">
+          <span class="pulse-dot"></span>
+          An accepted order moves to the Notebook automatically after <strong class="text-gold-300">1 minute</strong>
+        </div>
+      </div>
+      <div id="orders-full-list" class="space-y-3"></div>
+    </div>
+
+    <!-- ====== TAB: NOTEBOOK ====== -->
+    <div id="tab-notebook" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 space-y-4">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-book text-gold-400 text-sm"></i> Order Notebook
+            </h2>
+            <p class="text-[11px] text-ink-400">Permanent record of accepted orders. You can also update the status from here.</p>
+          </div>
+          <div class="flex gap-2 flex-wrap">
+            <input type="text" id="notebook-search" oninput="window.renderNotebook()" placeholder="Search name / phone / order id…"
+                   class="rounded-xl px-3 py-2 text-[11px] input-clean w-56">
+            <button onclick="window.exportNotebookCSV()" class="btn-ghost px-3 py-2 rounded-xl text-[11px]">
+              <i class="fa-solid fa-file-csv text-[10px]"></i> Export CSV
+            </button>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="glass-soft rounded-2xl p-3.5">
+            <p class="text-[10px] text-ink-400 uppercase tracking-wider">Notebook Orders</p>
+            <p class="text-lg font-bold text-white font-mono" id="nb-count">0</p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3.5">
+            <p class="text-[10px] text-ink-400 uppercase tracking-wider">Notebook Cash</p>
+            <p class="text-lg font-bold gold-text font-mono" id="nb-total">Rs. 0</p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3.5">
+            <p class="text-[10px] text-ink-400 uppercase tracking-wider">COD</p>
+            <p class="text-lg font-bold text-mint-400 font-mono" id="nb-cod">Rs. 0</p>
+          </div>
+          <div class="glass-soft rounded-2xl p-3.5">
+            <p class="text-[10px] text-ink-400 uppercase tracking-wider">Online</p>
+            <p class="text-lg font-bold text-sky-400 font-mono" id="nb-online">Rs. 0</p>
+          </div>
+        </div>
+      </div>
+      <div id="notebook-list" class="space-y-3"></div>
+    </div>
+
+    <!-- ====== TAB: MENU ====== -->
+    <div id="tab-menu" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-base font-display font-bold text-white">Menu Items</h2>
+          <p class="text-[11px] text-ink-400">Use image URLs (Unsplash / ImgBB) to keep the database light.</p>
+        </div>
+        <button onclick="window.openItemModal()" class="btn-gold text-[11px] px-4 py-2.5 rounded-xl flex items-center gap-1.5">
+          <i class="fa-solid fa-plus text-[10px]"></i> Add Food Item
+        </button>
+      </div>
+      <div id="menu-items-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
+    </div>
+
+    <!-- ====== TAB: CATEGORIES ====== -->
+    <div id="tab-categories" class="tab-pane hidden max-w-xl space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 space-y-4">
+        <div>
+          <h2 class="text-base font-display font-bold text-white">Menu Categories</h2>
+          <p class="text-[11px] text-ink-400">Biryani, Burgers, BBQ, Drinks, Desserts…</p>
+        </div>
+        <div class="flex gap-2">
+          <input type="text" id="input-new-category" placeholder="e.g. Biryani" class="flex-1 rounded-xl px-3.5 py-2.5 text-xs input-clean">
+          <button onclick="window.addCategory()" class="btn-gold px-5 py-2.5 rounded-xl text-[11px]">Add</button>
+        </div>
+        <div id="categories-list-box" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- ====== TAB: THEME & COLOR CUSTOMIZER ====== -->
+    <div id="tab-theme-customizer" class="tab-pane hidden max-w-5xl space-y-6 fade-in">
+      <div class="glass rounded-3xl p-6 space-y-6">
+        <div class="flex items-start justify-between flex-wrap gap-3">
+          <div>
+            <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+              <i class="fa-solid fa-palette text-gold-400"></i> Website Color Customizer &amp; Styling Suite
+            </h2>
+            <p class="text-[11px] text-ink-400 mt-1">
+              Customize the colors of every part of the customer website. Changes are applied instantly on the live site.
+            </p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="window.resetColorsToDeveloperDefault()" class="btn-ghost px-3 py-1.5 rounded-xl text-[11px] text-amber-400 border-amber-400/40">
+              <i class="fa-solid fa-rotate-left mr-1"></i> Reset to Original Developer Colors
+            </button>
+            <button onclick="window.resetColorsToDefault()" class="btn-ghost px-3 py-1.5 rounded-xl text-[11px] text-ink-300">
+              <i class="fa-solid fa-crown mr-1"></i> Royal Gold Default
+            </button>
+          </div>
+        </div>
+
+        <!-- READY PALETTES -->
+        <div class="p-4 rounded-2xl glass-soft space-y-2.5">
+          <p class="text-[11px] font-bold text-ink-300 uppercase tracking-wider">1-Click Luxury Theme Presets</p>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <button type="button" onclick="window.applyPresetPalette('gold')" class="p-2.5 rounded-xl border hair text-left hover:border-gold-500/60 bg-ink-900/60 transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-[#d4a34e]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#05070d]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#e8783d]"></span>
+              </div>
+              <p class="text-xs font-bold text-white">Royal Gold</p>
+              <p class="text-[9px] text-ink-400">Dark &amp; Premium Gold</p>
+            </button>
+            <button type="button" onclick="window.applyPresetPalette('ruby')" class="p-2.5 rounded-xl border hair text-left hover:border-rose-500/60 bg-ink-900/60 transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-[#f43f5e]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#0a0507]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#fb7185]"></span>
+              </div>
+              <p class="text-xs font-bold text-white">Crimson Ruby</p>
+              <p class="text-[9px] text-ink-400">Spicy &amp; Fast Food</p>
+            </button>
+            <button type="button" onclick="window.applyPresetPalette('emerald')" class="p-2.5 rounded-xl border hair text-left hover:border-mint-500/60 bg-ink-900/60 transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-[#22c55e]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#040e08]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#4ade80]"></span>
+              </div>
+              <p class="text-xs font-bold text-white">Fresh Emerald</p>
+              <p class="text-[9px] text-ink-400">Organic &amp; Mint Fresh</p>
+            </button>
+            <button type="button" onclick="window.applyPresetPalette('sapphire')" class="p-2.5 rounded-xl border hair text-left hover:border-sky-500/60 bg-ink-900/60 transition">
+              <div class="flex items-center gap-2 mb-1.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-[#38bdf8]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#050b14]"></span>
+                <span class="w-3.5 h-3.5 rounded-full bg-[#818cf8]"></span>
+              </div>
+              <p class="text-xs font-bold text-white">Deep Sapphire</p>
+              <p class="text-[9px] text-ink-400">Modern Ocean Lounge</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- GRANULAR COLOR PICKERS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Primary Brand Color</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-primary" style="background:#d4a34e">
+                <input type="color" id="clr-primary" value="#d4a34e" oninput="window.updateColorInput('clr-primary')">
+              </div>
+              <input type="text" id="clr-primary-hex" value="#d4a34e" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-primary')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Secondary Accent Color</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-secondary" style="background:#b07f2c">
+                <input type="color" id="clr-secondary" value="#b07f2c" oninput="window.updateColorInput('clr-secondary')">
+              </div>
+              <input type="text" id="clr-secondary-hex" value="#b07f2c" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-secondary')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Main Website Background</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-bg" style="background:#05070d">
+                <input type="color" id="clr-bg" value="#05070d" oninput="window.updateColorInput('clr-bg')">
+              </div>
+              <input type="text" id="clr-bg-hex" value="#05070d" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-bg')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Header / Navbar BG</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-nav" style="background:#0a0d16">
+                <input type="color" id="clr-nav" value="#0a0d16" oninput="window.updateColorInput('clr-nav')">
+              </div>
+              <input type="text" id="clr-nav-hex" value="#0a0d16" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-nav')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Item Cards &amp; Modals BG</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-card" style="background:#0f1320">
+                <input type="color" id="clr-card" value="#0f1320" oninput="window.updateColorInput('clr-card')">
+              </div>
+              <input type="text" id="clr-card-hex" value="#0f1320" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-card')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Menu Section Background</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-menu" style="background:#070911">
+                <input type="color" id="clr-menu" value="#070911" oninput="window.updateColorInput('clr-menu')">
+              </div>
+              <input type="text" id="clr-menu-hex" value="#070911" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-menu')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">About Story Section BG</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-about" style="background:#0a0d16">
+                <input type="color" id="clr-about" value="#0a0d16" oninput="window.updateColorInput('clr-about')">
+              </div>
+              <input type="text" id="clr-about-hex" value="#0a0d16" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-about')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Contact &amp; Location BG</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-contact" style="background:#05070d">
+                <input type="color" id="clr-contact" value="#05070d" oninput="window.updateColorInput('clr-contact')">
+              </div>
+              <input type="text" id="clr-contact-hex" value="#05070d" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-contact')">
+            </div>
+          </div>
+
+          <div class="glass-soft rounded-2xl p-4 space-y-2">
+            <span class="text-[10px] text-ink-400 font-bold uppercase tracking-wider block">Headings &amp; Text Color</span>
+            <div class="flex items-center gap-3">
+              <div class="color-badge" id="preview-box-clr-text" style="background:#f1f4fa">
+                <input type="color" id="clr-text" value="#f1f4fa" oninput="window.updateColorInput('clr-text')">
+              </div>
+              <input type="text" id="clr-text-hex" value="#f1f4fa" class="w-28 rounded-xl px-2.5 py-1.5 text-xs input-clean font-mono" onchange="window.syncHexToColor('clr-text')">
+            </div>
+          </div>
+        </div>
+
+        <button onclick="window.saveThemeColors()" class="w-full btn-gold py-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Save Color Theme (Live Sync to Website)
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== TAB: PAGE SECTIONS & ON/OFF TOGGLES ====== -->
+    <div id="tab-section-toggles" class="tab-pane hidden max-w-4xl space-y-6 fade-in">
+      <div class="glass rounded-3xl p-6 space-y-5">
+        <div>
+          <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-toggle-on text-sky-400"></i> Website Sections &amp; Feature Controls (On / Off)
+          </h2>
+          <p class="text-[11px] text-ink-400 mt-1">
+            Switch a section OFF here to hide it immediately on the customer website.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Online Ordering Active</span>
+                <span id="badge-toggle-allowOrders" class="chip chip-mint">ACTIVE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">When switched off, customers cannot add to cart or place orders (a Store Closed message is shown).</p>
+            </div>
+            <div id="toggle-allowOrders" class="switch on" onclick="window.handleSwitchClick('allowOrders')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Hero / Main Top Banner</span>
+                <span id="badge-toggle-showHero" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Show or hide the main banner heading and image at the top of the website.</p>
+            </div>
+            <div id="toggle-showHero" class="switch on" onclick="window.handleSwitchClick('showHero')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Popular / Trending Items Slider</span>
+                <span id="badge-toggle-showPopular" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Section for top-selling and featured items.</p>
+            </div>
+            <div id="toggle-showPopular" class="switch on" onclick="window.handleSwitchClick('showPopular')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Categories Bar</span>
+                <span id="badge-toggle-showCategories" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Biryani, Burgers, BBQ wagera ke tags.</p>
+            </div>
+            <div id="toggle-showCategories" class="switch on" onclick="window.handleSwitchClick('showCategories')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Full Menu Section</span>
+                <span id="badge-toggle-showMenu" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Customer website par pura khana/items list dikhana.</p>
+            </div>
+            <div id="toggle-showMenu" class="switch on" onclick="window.handleSwitchClick('showMenu')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">About Us &amp; Bakery Story Section</span>
+                <span id="badge-toggle-showAbout" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Written history and photo about the bakery.</p>
+            </div>
+            <div id="toggle-showAbout" class="switch on" onclick="window.handleSwitchClick('showAbout')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Customer Reviews &amp; Testimonials</span>
+                <span id="badge-toggle-showReviews" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Show the stars and customer reviews section on the website.</p>
+            </div>
+            <div id="toggle-showReviews" class="switch on" onclick="window.handleSwitchClick('showReviews')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Complaints &amp; Support Form</span>
+                <span id="badge-toggle-showComplaints" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Option for customers to submit an issue / complaint.</p>
+            </div>
+            <div id="toggle-showComplaints" class="switch on" onclick="window.handleSwitchClick('showComplaints')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Contact &amp; Location Map Section</span>
+                <span id="badge-toggle-showContact" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Address, phone number and opening hours section.</p>
+            </div>
+            <div id="toggle-showContact" class="switch on" onclick="window.handleSwitchClick('showContact')"></div>
+          </div>
+
+          <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+            <div class="space-y-0.5">
+              <div class="flex items-center gap-2">
+                <span class="text-xs font-bold text-white">Floating WhatsApp Chat Button</span>
+                <span id="badge-toggle-showFloatingWhatsapp" class="chip chip-mint">VISIBLE</span>
+              </div>
+              <p class="text-[11px] text-ink-400">Show or hide the WhatsApp chat button in the corner of the website.</p>
+            </div>
+            <div id="toggle-showFloatingWhatsapp" class="switch on" onclick="window.handleSwitchClick('showFloatingWhatsapp')"></div>
+          </div>
+        </div>
+
+        <button onclick="window.saveSectionToggles()" class="w-full btn-gold py-3.5 rounded-2xl text-xs font-bold flex items-center justify-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up"></i> Save Options &amp; Apply Immediately
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== TAB: WEBSITE DETAILS / CONTENT EDITOR ====== -->
+    <div id="tab-website-editor" class="tab-pane hidden max-w-4xl space-y-5 fade-in">
+      <div class="glass rounded-3xl p-6 space-y-4">
+        <h3 class="text-[11px] font-extrabold gold-text uppercase tracking-[.14em]">Customer Website Branding &amp; Hero</h3>
+        
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Bakery Name *</label>
+            <input type="text" id="edit-rest-name" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-semibold">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Owner Contact / WhatsApp *</label>
+            <input type="tel" id="edit-owner-phone" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+        </div>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Bakery Logo URL</label>
+            <input type="url" id="edit-logo-url" placeholder="https://.../logo.png" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Hero Item Image URL</label>
+            <input type="url" id="edit-hero-image" placeholder="https://.../item.jpg" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+        </div>
+
+        <div class="space-y-3 pt-2">
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Hero Heading (HTML allowed: &lt;span&gt;)</label>
+            <input type="text" id="edit-hero-heading" placeholder="Good Food.<br>&lt;span&gt;Good Mood&lt;/span&gt;." class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Hero Subtitle</label>
+            <textarea id="edit-hero-subtitle" rows="2" placeholder="Craving authentic meals? Order freshly baked favorites..." class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-3xl p-6 space-y-4">
+        <h3 class="text-[11px] font-extrabold gold-text uppercase tracking-[.14em]">About &amp; Story Section</h3>
+        <div>
+          <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">About Section Image URL</label>
+          <input type="url" id="edit-about-image" placeholder="https://.../bakery.jpg" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+        </div>
+        <div>
+          <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Bakery Description</label>
+          <textarea id="edit-about-desc" rows="3" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean" placeholder="Welcome to our bakery..."></textarea>
+        </div>
+        <div>
+          <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Custom Story / Quality Note</label>
+          <textarea id="edit-about-custom" rows="2" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean" placeholder="Every item is prepared fresh..."></textarea>
+        </div>
+
+        <button onclick="window.saveWebsiteEditor()" class="w-full btn-gold py-3.5 rounded-2xl text-xs mt-2">
+          Save Website Details (Sync to Customer Site)
+        </button>
+      </div>
+    </div>
+
+    <!-- ====== TAB: CUSTOMERS ====== -->
+    <div id="tab-customers" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 flex items-start justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-users text-gold-400 text-sm"></i> Saved Customers
+          </h2>
+          <p class="text-[11px] text-ink-400">Each customer is saved by phone number. 2+ orders = <span class="text-gold-300 font-bold">VIP</span>.</p>
+        </div>
+        <div class="flex gap-2 flex-wrap">
+          <input type="text" id="customer-search" oninput="window.renderCustomers()" placeholder="Search name / phone…"
+                 class="rounded-xl px-3 py-2 text-[11px] input-clean w-56">
+          <select id="customer-filter" onchange="window.renderCustomers()" class="rounded-xl px-3 py-2 text-[11px] input-clean">
+            <option value="all">All Customers</option>
+            <option value="vip">VIP Only (2+)</option>
+            <option value="new">New (1 order)</option>
+          </select>
+          <button onclick="window.exportCustomersCSV()" class="btn-ghost px-3 py-2 rounded-xl text-[11px]">
+            <i class="fa-solid fa-file-csv text-[10px]"></i> Export
+          </button>
+        </div>
+      </div>
+      <div id="customers-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3"></div>
+    </div>
+
+    <!-- ====== TAB: REVIEWS ====== -->
+    <div id="tab-reviews" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-star text-gold-400 text-sm"></i> Customer Ratings &amp; Reviews Manager
+          </h2>
+          <p class="text-[11px] text-ink-400">Approve reviews, pin them to the home page, or delete them.</p>
+        </div>
+      </div>
+      <div id="reviews-list-box" class="space-y-3"></div>
+    </div>
+
+    <!-- ====== TAB: COMPLAINTS & RETURNS ====== -->
+    <div id="tab-complaints" class="tab-pane hidden space-y-4 fade-in">
+      <div class="glass rounded-3xl p-5 flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h2 class="text-base font-display font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-triangle-exclamation text-rose-400 text-sm"></i> Order Returns &amp; Customer Complaints
+          </h2>
+          <p class="text-[11px] text-ink-400">A loud 10-second alert sounds when a customer registers a return or complaint.</p>
+        </div>
+      </div>
+      <div id="complaints-list-box" class="space-y-3"></div>
+    </div>
+
+    <!-- ====== TAB: SETTINGS ====== -->
+    <div id="tab-settings" class="tab-pane hidden max-w-4xl space-y-5 fade-in">
+      
+      <!-- DELIVERY AREAS MANAGEMENT BOX -->
+      <div class="glass rounded-3xl p-6 space-y-4 border border-gold-500/30">
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <div>
+            <h3 class="text-[12px] font-extrabold gold-text uppercase tracking-[.14em] flex items-center gap-2">
+              <i class="fa-solid fa-map-location-dot text-gold-400"></i> Delivery Areas &amp; Different Charges
+            </h3>
+            <p class="text-[11px] text-ink-400">Set a separate delivery fee for each area. Customers choose from these areas at checkout.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <input type="text" id="new-area-name" placeholder="Area Name (e.g. Sector 1 / Town)" class="rounded-xl px-3 py-2.5 text-xs input-clean">
+          <input type="number" id="new-area-fee" placeholder="Delivery Fee (e.g. 150)" class="rounded-xl px-3 py-2.5 text-xs input-clean font-mono">
+          <button onclick="window.addDeliveryArea()" class="btn-gold px-4 py-2.5 rounded-xl text-xs font-bold">
+            <i class="fa-solid fa-plus mr-1"></i> Add Delivery Area
+          </button>
+        </div>
+
+        <div id="delivery-areas-list-box" class="space-y-2 pt-2"></div>
+      </div>
+
+      <div class="glass rounded-3xl p-6 space-y-4">
+        <h3 class="text-[11px] font-extrabold gold-text uppercase tracking-[.14em]">Alpha Bakersfile &amp; Location</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Bakery Name *</label>
+            <input type="text" id="set-rest-name" placeholder="e.g. Alpha Bakers" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Owner WhatsApp / Contact Number *</label>
+            <input type="tel" id="set-owner-phone" placeholder="03001234567" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Full Location / Address *</label>
+            <input type="text" id="set-location" placeholder="Main Food Street, Lahore" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Default Delivery Fee (PKR) *</label>
+            <input type="number" id="set-delivery-fee" placeholder="150" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Opening Time</label>
+            <input type="time" id="set-open-time" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+          <div>
+            <label class="block text-[11px] text-ink-300 mb-1.5 font-semibold">Closing Time</label>
+            <input type="time" id="set-close-time" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+          </div>
+        </div>
+
+        <!-- LIVE GPS LOCATION TRIGGER -->
+        <div class="pt-3 border-t hair">
+          <div class="p-4 rounded-2xl glass-soft flex items-center justify-between flex-wrap gap-3">
+            <div class="space-y-0.5">
+              <span class="text-xs font-bold text-white flex items-center gap-1.5">
+                <i class="fa-solid fa-location-crosshairs text-gold-400"></i> Admin / Bakery Live GPS Coordinates
+              </span>
+              <p class="text-[11px] text-ink-400">
+                This is used to calculate the real-time distance (KM) and route between the customer and the bakery.
+              </p>
+              <p id="gps-coords-display" class="text-[10px] font-mono text-gold-300 pt-1">
+                Lat: — | Lon: —
+              </p>
+            </div>
+            <button type="button" onclick="window.fetchAdminLiveGPS()" id="btn-fetch-gps" class="btn-gold px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
+              <i class="fa-solid fa-location-arrow"></i> Update Current Live Location
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass rounded-3xl p-6 space-y-4">
+        <h3 class="text-[11px] font-extrabold gold-text uppercase tracking-[.14em]">Customer Payment Gateways</h3>
+        <div class="flex items-center justify-between p-4 rounded-2xl glass-soft">
+          <div>
+            <span class="text-xs font-bold text-white block">Cash on Delivery (COD)</span>
+            <span class="text-[10px] text-ink-400">Customer can pay cash on delivery</span>
+          </div>
+          <div id="set-cod-switch" class="switch on" onclick="this.classList.toggle('on')"></div>
+        </div>
+
+        <div class="p-4 rounded-2xl glass-soft space-y-3">
+          <div class="flex items-center justify-between">
+            <div>
+              <span class="text-xs font-bold text-white block">EasyPaisa / JazzCash / Bank Transfer</span>
+              <span class="text-[10px] text-ink-400">Manual transfer with receipt screenshot</span>
+            </div>
+            <div id="set-online-switch" class="switch on" onclick="window.toggleSetOnline(this)"></div>
+          </div>
+          <div id="set-online-box" class="space-y-3 pt-3 border-t hair">
+            <div>
+              <label class="block text-[11px] text-ink-300 mb-1.5">Payment Method Name</label>
+              <input type="text" id="set-online-method" value="EasyPaisa" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[11px] text-ink-300 mb-1.5">Account Title</label>
+                <input type="text" id="set-account-title" placeholder="Alehdaam Food" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean">
+              </div>
+              <div>
+                <label class="block text-[11px] text-ink-300 mb-1.5">Account Number</label>
+                <input type="tel" id="set-account-number" placeholder="03001234567" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean font-mono">
+              </div>
+            </div>
+            <div>
+              <label class="block text-[11px] text-ink-300 mb-1.5">Customer Instructions</label>
+              <textarea id="set-instructions" rows="2" class="w-full rounded-xl px-3 py-2.5 text-xs input-clean">Send exact bill amount and upload screenshot.</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="window.saveSettings()" class="w-full btn-gold py-3.5 rounded-2xl text-xs font-bold">
+        Save All Settings (Sync to Firebase)
+      </button>
+    </div>
+
+  </main>
+</div>
+
+<!-- ============ PREVIEW CLIENT WEBSITE MODAL ============ -->
+<div id="modal-preview-website" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4">
+  <div class="w-full max-w-4xl h-[90vh] glass rounded-3xl overflow-hidden flex flex-col">
+    <div class="p-3.5 border-b hair flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <span class="chip chip-gold">Client Live Preview</span>
+        <span class="text-xs font-mono text-ink-400" id="preview-url-text">index.html</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="window.openClientInNewTab()" class="btn-ghost px-3 py-1.5 rounded-lg text-xs">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Tab
+        </button>
+        <button onclick="window.closePreviewModal()" class="text-ink-400 hover:text-white text-base px-2">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+    </div>
+    <iframe id="preview-iframe" src="about:blank" class="w-full flex-1 border-0 bg-white"></iframe>
+  </div>
+</div>
+
+<!-- ============ ORDER DETAIL MODAL ============ -->
+<div id="modal-order-view" class="hidden fixed inset-0 z-50 bg-black/88 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="w-full max-w-lg glass rounded-[26px] p-6 max-h-[92vh] overflow-y-auto space-y-4 fade-in">
+    <div class="flex items-start justify-between">
+      <div>
+        <h3 class="text-sm font-bold text-white">Order <span id="om-order-no" class="font-mono gold-text"></span></h3>
+        <p class="text-[10px] text-ink-400" id="om-date-time"></p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="om-vip-chip" class="chip chip-gold hidden">VIP</span>
+        <button onclick="window.closeOrderModal()" class="text-ink-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </div>
+
+    <div id="om-body" class="space-y-3 text-xs"></div>
+
+    <div class="p-4 rounded-2xl glass-soft space-y-2">
+      <label class="block text-[11px] font-bold text-gold-300">
+        <i class="fa-solid fa-location-dot"></i> Live Tracking Note (shown live to the customer)
+      </label>
+      <div class="flex gap-2">
+        <input type="text" id="om-custom-location-note" placeholder="Rider has reached Main Chowk / 5 mins away…"
+               class="flex-1 rounded-xl px-3 py-2.5 text-xs input-clean">
+        <button onclick="window.saveCustomLocationNote()" class="btn-gold px-3.5 py-2.5 rounded-xl text-[11px] shrink-0">Update</button>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-[11px] font-bold text-ink-400 mb-2 uppercase tracking-wider">Change Order Status</label>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="om-actions-grid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CUSTOMER DETAIL MODAL ============ -->
+<div id="modal-customer" class="hidden fixed inset-0 z-50 bg-black/88 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="w-full max-w-lg glass rounded-[26px] p-6 max-h-[92vh] overflow-y-auto space-y-4 fade-in">
+    <div class="flex items-start justify-between">
+      <div>
+        <h3 id="cm-name" class="text-base font-display font-bold text-white">Customer</h3>
+        <p id="cm-phone" class="text-[11px] font-mono text-gold-300"></p>
+      </div>
+      <button onclick="window.closeCustomerModal()" class="text-ink-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="cm-body" class="space-y-3 text-xs"></div>
+  </div>
+</div>
+
+<!-- ============ ITEM MODAL ============ -->
+<div id="modal-item" class="hidden fixed inset-0 z-50 bg-black/88 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="w-full max-w-lg glass rounded-[26px] p-6 max-h-[92vh] overflow-y-auto space-y-4 fade-in">
+    <div class="flex items-center justify-between">
+      <h3 id="item-modal-title" class="text-sm font-bold text-white">Add Food Item</h3>
+      <button onclick="window.closeItemModal()" class="text-ink-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <input type="hidden" id="edit-item-id">
+    <div class="space-y-3 text-xs">
+      <div>
+        <label class="block text-ink-300 mb-1.5">Item Name *</label>
+        <input type="text" id="it-name" placeholder="Special Chicken Biryani" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean">
+      </div>
+      <div>
+        <label class="block text-ink-300 mb-1.5">Description</label>
+        <textarea id="it-desc" rows="2" placeholder="Fragrant basmati rice with tender spiced chicken…" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean"></textarea>
+      </div>
+      <div>
+        <label class="block text-ink-300 mb-1.5">Category *</label>
+        <select id="it-category" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean"></select>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-ink-300 mb-1.5">Price (PKR) *</label>
+          <input type="number" id="it-final-price" placeholder="450" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+        </div>
+        <div>
+          <label class="block text-ink-300 mb-1.5">Rating</label>
+          <input type="number" step="0.1" id="it-rating" value="4.9" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+        </div>
+      </div>
+      <div>
+        <label class="block text-ink-300 mb-1.5">Item Image URL</label>
+        <input type="url" id="it-image-url" placeholder="https://images.unsplash.com/…" class="w-full rounded-xl px-3.5 py-2.5 text-xs input-clean font-mono">
+      </div>
+      <div class="flex gap-5 pt-1">
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="it-available" checked class="rounded accent-amber-500"> In Stock</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="it-popular" class="rounded accent-amber-500"> Popular Item</label>
+      </div>
+    </div>
+    <div class="flex gap-2 pt-3 border-t hair">
+      <button type="button" id="btn-item-delete" onclick="window.deleteItem()" class="hidden btn-danger px-4 py-2.5 rounded-xl text-[11px]">Delete</button>
+      <div class="flex-1"></div>
+      <button type="button" onclick="window.closeItemModal()" class="btn-ghost px-4 py-2.5 rounded-xl text-[11px]">Cancel</button>
+      <button type="button" onclick="window.saveItem()" class="btn-gold px-5 py-2.5 rounded-xl text-[11px]">Save Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============ FIREBASE & COMPLETE LOGIC ============ -->
+<script type="module">
+/* ===== Firebase (Cloud Firestore) <-> Realtime-DB style adapter =====
+   Login required (same login as the rest of Alpha Bakers). Each "table" is a Firestore collection,
+   every document looks like  { data: {...}, updated_at: ms }                                   */
+const FB = await Promise.race([window.__fbReady, new Promise((_, rej) => setTimeout(() => rej(new Error("Firebase failed to load")), 20000))])
+  .catch(e => { alert(e.message + " - please check your internet connection and refresh the page"); throw e; });
+const FBUSER = await FB.authReady;
+if (!FBUSER) { try { localStorage.removeItem("fb_user"); } catch (e) {} (window.top||window).location.replace("login.html?next=index.html"); throw new Error("login required"); }
+const fs = FB.fs, fdb = FB.db;
+const CONFIGURED = true;
+
+const TABLES = {
+  profile: "bk_profile", categories: "bk_categories", items: "bk_items",
+  deliveryAreas: "bk_delivery_areas", orders: "bk_orders", customers: "bk_customers",
+  reviews: "bk_reviews", complaints: "bk_complaints"
+};
+
+function getDatabase() { return {}; }
+function ref(_db, path) { return { path: String(path || "") }; }
+
+function parse(path) {
+  let segs = path.split("/").filter(Boolean);
+  if (segs[0] === "restaurants" || segs[0] === "bakery") segs = segs.slice(2); // strip store prefix
+  const key = segs[0];
+  const table = TABLES[key];
+  if (!table) throw new Error("Unknown path: " + path);
+  if (key === "profile") return { key, table, id: "main", sub: segs.slice(1) };
+  return { key, table, id: segs[1] || null, sub: segs.slice(2) };
+}
+
+const clone = (v) => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
+function getIn(obj, sub) { let c = obj; for (const s of sub) { if (c == null) return null; c = c[s]; } return c === undefined ? null : c; }
+function setIn(obj, sub, val) {
+  if (!sub.length) return val;
+  const root = (obj && typeof obj === "object") ? obj : {};
+  let c = root;
+  for (let i = 0; i < sub.length - 1; i++) { if (c[sub[i]] == null || typeof c[sub[i]] !== "object") c[sub[i]] = {}; c = c[sub[i]]; }
+  if (val === null) delete c[sub[sub.length - 1]]; else c[sub[sub.length - 1]] = val;
+  return root;
+}
+function snapOf(key, val) { return { key, val: () => (val === undefined ? null : val), exists: () => val != null }; }
+const dataOf = (d) => { const x = d.data(); return x && x.json ? JSON.parse(x.json) : (x ? x.data : null); };
+
+/* ---- reads: served from the live cache when a listener is already running ---- */
+const dref = (p) => fs.doc(fdb, p.table, p.id);
+const sortedObj = (docs) => {
+  const out = {};
+  docs.slice().sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0)).forEach(d => { out[d.id] = dataOf(d); });
+  return out;
+};
+async function readRow(p) {
+  const w = tables[p.table];
+  if (w && w.docs) return Object.prototype.hasOwnProperty.call(w.docs, p.id) ? w.docs[p.id] : null;
+  const d = await fs.getDoc(dref(p));
+  return d.exists() ? dataOf(d) : null;
+}
+async function readAll(p) {
+  const w = tables[p.table];
+  if (w && w.docs) return Object.assign({}, w.docs);
+  return sortedObj((await fs.getDocs(fs.query(fs.collection(fdb, p.table), fs.limit(5000)))).docs);
+}
+async function readPath(path) {
+  const p = parse(path);
+  if (!p.id) return readAll(p);
+  const row = await readRow(p);
+  return getIn(row, p.sub);
+}
+const friendly = (e) => {
+  const m = (e && e.message) || "";
+  if (e && e.code === "permission-denied") return new Error("Permission denied. Please log in again and make sure the latest firestore.rules are published.");
+  if (/offline/i.test(m)) return new Error("You are offline. Please check the internet connection and try again.");
+  return e;
+};
+/* read-modify-write inside ONE transaction: two devices editing the same row can never overwrite each other */
+function mutateRow(p, fn) {
+  return fs.runTransaction(fdb, async (tx) => {
+    const s = await tx.get(dref(p));
+    const row = s.exists() ? dataOf(s) : null;
+    tx.set(dref(p), { id: p.id, data: fn(row), updated_at: Date.now() });
+  }).catch(e => { throw friendly(e); });
+}
+
+async function get(r) { const p = parse(r.path); return snapOf(p.id || p.key, await readPath(r.path).catch(e => { throw friendly(e); })); }
+
+function set(r, val) {
+  const p = parse(r.path);
+  if (!p.id) return Promise.reject(new Error("set() needs an id"));
+  if (!p.sub.length) {
+    // replace whole row (no merge, so removed fields really disappear)
+    return fs.setDoc(dref(p), { id: p.id, data: clone(val), updated_at: Date.now() }).catch(e => { throw friendly(e); });
+  }
+  return mutateRow(p, (row) => setIn(row || {}, p.sub, clone(val)));
+}
+function update(r, vals) {
+  const p = parse(r.path);
+  if (!p.id) return Promise.reject(new Error("update() needs an id"));
+  return mutateRow(p, (row) => {
+    const base = row || {};
+    let cur = p.sub.length ? getIn(base, p.sub) : base;
+    if (cur == null || typeof cur !== "object") cur = {};
+    Object.keys(vals || {}).forEach(k => { if (vals[k] === null) delete cur[k]; else if (vals[k] !== undefined) cur[k] = clone(vals[k]); });
+    return p.sub.length ? setIn(base, p.sub, cur) : cur;
+  });
+}
+function remove(r) {
+  const p = parse(r.path);
+  if (!p.id) return Promise.reject(new Error("remove() needs an id"));
+  if (p.sub.length) return mutateRow(p, (row) => setIn(row || {}, p.sub, null));
+  return fs.deleteDoc(dref(p)).catch(e => { throw friendly(e); });
+}
+let _pc = 0;
+const B64 = "-0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz";
+function pushId() {
+  let t = Date.now(), s = ""; for (let i = 0; i < 8; i++) { s = B64[t % 64] + s; t = Math.floor(t / 64); }
+  const rnd = new Uint8Array(8); crypto.getRandomValues(rnd);
+  _pc = (_pc + 1) % 4096; return s + Array.from(rnd, b => B64[b % 64]).join("") + B64[_pc % 64];
+}
+function push(r, val) {
+  const id = pushId();
+  const nr = { path: r.path.replace(/\/+$/, "") + "/" + id, key: id };
+  if (val === undefined) return nr;
+  const pr = set(nr, val).then(() => nr); pr.key = id; return pr;
+}
+
+/* realtime: ONE Firestore listener per collection; onValue / onChildAdded read from its cache (no re-reading) */
+const tables = {};
+function tableState(table) {
+  let w = tables[table];
+  if (w) return w;
+  w = tables[table] = { fns: new Set(), errs: new Set(), docs: null };
+  fs.onSnapshot(fs.collection(fdb, table), (s) => {
+    w.docs = sortedObj(s.docs);
+    Array.from(w.fns).forEach(f => { try { f(); } catch (e) { console.error(e); } });
+  }, (e) => {
+    console.error("listen " + table, e);
+    Array.from(w.errs).forEach(f => { try { f(friendly(e)); } catch (x) { console.error(x); } });
+  });
+  return w;
+}
+function onValue(r, cb, errCb) {
+  const p = parse(r.path); const w = tableState(p.table); let last = "__init__";
+  const run = () => {
+    if (!w.docs) return;
+    const v = p.id ? getIn(Object.prototype.hasOwnProperty.call(w.docs, p.id) ? w.docs[p.id] : null, p.sub) : Object.assign({}, w.docs);
+    const s = JSON.stringify(v);
+    if (s !== last) { last = s; cb(snapOf(p.id || p.key, v)); }
+  };
+  w.fns.add(run); if (errCb) w.errs.add(errCb);
+  run();
+  return () => { w.fns.delete(run); if (errCb) w.errs.delete(errCb); };
+}
+function onChildAdded(r, cb, errCb) {
+  const p = parse(r.path); const w = tableState(p.table); const known = new Set();
+  const run = () => {
+    if (!w.docs) return;
+    Object.keys(w.docs).forEach(id => { if (!known.has(id)) { known.add(id); cb(snapOf(id, w.docs[id])); } });
+  };
+  w.fns.add(run); if (errCb) w.errs.add(errCb);
+  run();
+  return () => { w.fns.delete(run); if (errCb) w.errs.delete(errCb); };
+}
+
+const db = getDatabase();
+
+let currentUid = 'alpha_bakers';
+let basePath = 'bakery/alpha_bakers';
+// Customer ordering website link (leave empty to use order.html from this same folder)
+const CUSTOMER_SITE_URL = '';
+let activeSelectedOrderId = null;
+let listenersAttached = false;
+let autoMoveTimer = null;
+
+// 10-SECOND LOUD ALARM AUDIO SYSTEM
+let alarmAudioCtx = null;
+let alarmInterval = null;
+let alarmTimeout = null;
+
+// ORDER & COMPLAINT ALERT HISTORY TRACKER
+const ORDER_ALERTS_KEY = 'rp_notified_orders_history';
+const COMPLAINT_ALERTS_KEY = 'rp_notified_complaints_history';
+
+function getAlertedOrdersSet() {
+  try {
+    const raw = localStorage.getItem(ORDER_ALERTS_KEY);
+    return new Set(raw ? JSON.parse(raw) : []);
+  } catch(e) { return new Set(); }
+}
+
+function hasOrderBeenAlerted(orderIdOrKey) {
+  if (!orderIdOrKey) return false;
+  const setObj = getAlertedOrdersSet();
+  return setObj.has(String(orderIdOrKey));
+}
+
+function markOrderAsAlerted(orderKey, orderId) {
+  try {
+    const setObj = getAlertedOrdersSet();
+    if (orderKey) setObj.add(String(orderKey));
+    if (orderId) setObj.add(String(orderId));
+    const arr = Array.from(setObj).slice(-1000);
+    localStorage.setItem(ORDER_ALERTS_KEY, JSON.stringify(arr));
+  } catch(e) {}
+}
+
+function hasComplaintBeenAlerted(compId) {
+  if(!compId) return false;
+  try {
+    const raw = localStorage.getItem(COMPLAINT_ALERTS_KEY);
+    const setObj = new Set(raw ? JSON.parse(raw) : []);
+    return setObj.has(String(compId));
+  } catch(e){ return false; }
+}
+
+function markComplaintAsAlerted(compId) {
+  if(!compId) return;
+  try {
+    const raw = localStorage.getItem(COMPLAINT_ALERTS_KEY);
+    const setObj = new Set(raw ? JSON.parse(raw) : []);
+    setObj.add(String(compId));
+    const arr = Array.from(setObj).slice(-500);
+    localStorage.setItem(COMPLAINT_ALERTS_KEY, JSON.stringify(arr));
+  } catch(e) {}
+}
+
+const ORIGINAL_DEVELOPER_THEME = {
+  primary: '#E8783D',
+  secondary: '#D4662B',
+  bg: '#FFFDF9',
+  card: '#FFFFFF',
+  nav: '#FFFFFF',
+  menu: '#FFFDF9',
+  about: '#FFFFFF',
+  contact: '#FFFDF9',
+  text: '#222222'
+};
+
+const DEFAULT_THEME = {
+  primary: '#d4a34e',
+  secondary: '#b07f2c',
+  bg: '#05070d',
+  card: '#0f1320',
+  nav: '#0a0d16',
+  menu: '#070911',
+  about: '#0a0d16',
+  contact: '#05070d',
+  text: '#f1f4fa'
+};
+
+const DEFAULT_SECTIONS = {
+  allowOrders: true,
+  showHero: true,
+  showPopular: true,
+  showCategories: true,
+  showMenu: true,
+  showAbout: true,
+  showReviews: true,
+  showComplaints: true,
+  showContact: true,
+  showFloatingWhatsapp: true
+};
+
+const state = {
+  profile: {},
+  theme: { ...DEFAULT_THEME },
+  sections: { ...DEFAULT_SECTIONS },
+  categories: {},
+  items: {},
+  orders: {},
+  deliveryAreas: {},
+  reviews: {},
+  complaints: {},
+  activeOrderFilter: 'all',
+  ordersLoadedOnce: false,
+  complaintsLoadedOnce: false,
+  range: { key: 'today', from: null, to: null }
+};
+
+const STATUS_FLOW = ['pending','accepted','preparing','ready','on_the_way','delivered'];
+const NOTEBOOK_STATUSES = ['delivered','cancelled'];
+const FALLBACK_IMG = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=700&q=80';
+
+function escapeHtml(str){
+  if(str===null||str===undefined) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+function $(id){ return document.getElementById(id); }
+function setText(id, val){ const el=$(id); if(el) el.textContent = val; }
+function money(n){ return 'Rs. ' + (Number(n)||0).toLocaleString('en-PK'); }
+
+function tsOf(o){
+  const v = o && o.createdAt;
+  if(!v) return 0;
+  const n = typeof v === 'number' ? v : Date.parse(v);
+  return isNaN(n) ? 0 : n;
+}
+function dayKey(ts){
+  const d = new Date(ts);
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+function prettyDay(key){
+  const [y,m,d] = key.split('-');
+  return `${d}/${m}`;
+}
+function normPhone(p){ return String(p||'').replace(/\D/g,'').slice(-11); }
+function isOnlinePayment(o){
+  const m = String((o && o.paymentMethod) || 'cash_on_delivery').toLowerCase();
+  return !(m.includes('cod') || m.includes('cash'));
+}
+function payLabel(o){
+  const m = String((o && o.paymentMethod) || 'cash_on_delivery').replace(/_/g,' ');
+  return m.toUpperCase();
+}
+function orderTotal(o){ return Number(o && o.total) || 0; }
+/* Recompute an online order from the CURRENT menu / delivery areas (customer browser prices are not trusted). */
+function verifyOrder(o){
+  const issues = []; let sub = 0;
+  const items = Array.isArray(o && o.items) ? o.items : [];
+  items.forEach(it=>{
+    const q = Number(it.quantity)||0, sent = Number(it.price)||0;
+    if(!(q > 0) || q !== Math.floor(q) || q > 500) issues.push(`${it.name||'Item'}: invalid quantity (${it.quantity})`);
+    const m = it.id ? state.items[it.id] : null;
+    if(!m){ issues.push(`${it.name||'Item'}: not on the menu any more`); sub += sent*q; return; }
+    const cur = Number(m.price)||0;
+    if(cur !== sent) issues.push(`${it.name}: customer price Rs.${sent}, menu price Rs.${cur}`);
+    if(m.available === false) issues.push(`${it.name}: currently unavailable`);
+    sub += cur*q;
+  });
+  let fee = Number(state.profile && state.profile.deliveryFee); if(!Number.isFinite(fee)) fee = 150;
+  const area = Object.values(state.deliveryAreas||{}).find(a=>a && a.name === o.area);
+  if(area && area.fee !== undefined) fee = Number(area.fee)||0;
+  if(sub === 0) fee = 0;
+  /* saved customers get 10% off (their id also starts with guest_), so accept either no discount or exactly 10% */
+  const tenPct = Math.round(sub*0.10), given = Number(o.discount)||0;
+  if(given !== 0 && Math.abs(given - tenPct) > 1) issues.push(`Discount Rs.${given} is not the standard 10% (Rs.${tenPct})`);
+  const disc = (given !== 0 && Math.abs(given - tenPct) <= 1) ? tenPct : 0;
+  const expected = Math.max(0, sub + fee - disc);
+  const total = orderTotal(o);
+  if(Math.abs(expected - total) > 1) issues.push(`Order total is Rs.${total} but should be Rs.${expected} (items ${sub} + delivery ${fee}${disc?` - discount ${disc}`:''})`);
+  return { ok: issues.length === 0, issues, expected };
+}
+window.verifyOrder = verifyOrder;
+function statusOf(o){ return (o && o.orderStatus) || 'pending'; }
+function isCancelled(o){ return statusOf(o) === 'cancelled'; }
+
+// HAVERSINE DISTANCE FORMULA
+function haversineKm(lat1, lon1, lat2, lon2) {
+  const toRad = (v) => (v * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function statusChipClass(s){
+  switch(s){
+    case 'pending': return 'chip chip-gold';
+    case 'accepted': return 'chip chip-sky';
+    case 'preparing': return 'chip chip-plum';
+    case 'ready': return 'chip chip-mint';
+    case 'on_the_way': return 'chip chip-sky';
+    case 'delivered': return 'chip chip-mint';
+    case 'cancelled': return 'chip chip-rose';
+    default: return 'chip chip-mute';
+  }
+}
+
+window.showToast = function(title, message, type='info'){
+  const container = $('toast-container');
+  if(!container) return;
+  const map = { success:['fa-circle-check','text-mint-400'], error:['fa-triangle-exclamation','text-rose-400'], info:['fa-circle-info','text-gold-300'] };
+  const ic = map[type] || map.info;
+  const toast = document.createElement('div');
+  toast.className = 'toast-card w-80 p-3.5 rounded-2xl glass flex items-start gap-3';
+  toast.innerHTML = `
+    <div class="mt-0.5 text-xs shrink-0 ${ic[1]}"><i class="fa-solid ${ic[0]}"></i></div>
+    <div class="flex-1 space-y-0.5">
+      <h4 class="text-xs font-bold text-white">${escapeHtml(title)}</h4>
+      <p class="text-[11px] text-ink-400 leading-snug">${escapeHtml(message)}</p>
+    </div>
+    <button class="text-ink-500 hover:text-white text-xs"><i class="fa-solid fa-xmark"></i></button>`;
+  toast.querySelector('button').onclick = () => toast.remove();
+  container.appendChild(toast);
+  requestAnimationFrame(()=>toast.classList.add('show'));
+  setTimeout(()=>{ toast.classList.remove('show'); setTimeout(()=>toast.remove(),260); }, 4200);
+};
+
+/* ================= 10-SECOND LOUD ALARM LOGIC ================= */
+function playLoudAlarm(title, durationMs = 10000) {
+  try {
+    stopLoudAlarm();
+
+    const stopBtn = $('btn-stop-alarm');
+    const stopTxt = $('stop-alarm-text');
+    if (stopBtn) {
+      stopBtn.classList.remove('hidden');
+    }
+
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    alarmAudioCtx = new AudioCtx();
+
+    let high = true;
+    const playTone = () => {
+      if (!alarmAudioCtx) return;
+      const osc = alarmAudioCtx.createOscillator();
+      const gain = alarmAudioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(high ? 920 : 640, alarmAudioCtx.currentTime);
+      gain.gain.setValueAtTime(0.45, alarmAudioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, alarmAudioCtx.currentTime + 0.24);
+      osc.connect(gain);
+      gain.connect(alarmAudioCtx.destination);
+      osc.start();
+      osc.stop(alarmAudioCtx.currentTime + 0.25);
+      high = !high;
+    };
+
+    playTone();
+    alarmInterval = setInterval(playTone, 260);
+
+    let remaining = Math.round(durationMs / 1000);
+    const countTimer = setInterval(() => {
+      remaining--;
+      if (stopTxt && remaining > 0) {
+        stopTxt.textContent = `Stop Alarm (${remaining}s)`;
+      } else {
+        clearInterval(countTimer);
+      }
+    }, 1000);
+
+    alarmTimeout = setTimeout(() => {
+      clearInterval(countTimer);
+      stopLoudAlarm();
+    }, durationMs);
+
+    window.showToast(title, 'The alarm is ringing (10 sec). Use the button at the top to stop it.', 'error');
+  } catch(e) {
+    console.warn("Alarm audio exception:", e);
+  }
+}
+
+function stopLoudAlarm() {
+  if (alarmInterval) { clearInterval(alarmInterval); alarmInterval = null; }
+  if (alarmTimeout) { clearTimeout(alarmTimeout); alarmTimeout = null; }
+  if (alarmAudioCtx) {
+    try { alarmAudioCtx.close(); } catch(e){}
+    alarmAudioCtx = null;
+  }
+  const stopBtn = $('btn-stop-alarm');
+  if (stopBtn) stopBtn.classList.add('hidden');
+}
+window.stopAlarm = stopLoudAlarm;
+window.testAlarmSound = function() {
+  playLoudAlarm('🔔 Test Alarm Alert!', 10000);
+};
+
+/* ---------------- ADMIN WHITE / LIGHT THEME TOGGLE ---------------- */
+window.toggleAdminTheme = function(){
+  const isWhite = document.body.classList.toggle('theme-white');
+  localStorage.setItem('rp_admin_theme_mode', isWhite ? 'white' : 'dark');
+  updateAdminThemeBtn(isWhite);
+};
+
+function updateAdminThemeBtn(isWhite){
+  const icon = $('admin-theme-icon');
+  const txt = $('admin-theme-text');
+  if(icon && txt){
+    if(isWhite){
+      icon.className = "fa-solid fa-moon text-[10px]";
+      txt.textContent = "Dark Mode";
+    }else{
+      icon.className = "fa-solid fa-sun text-[10px]";
+      txt.textContent = "White Mode";
+    }
+  }
+}
+
+if(localStorage.getItem('rp_admin_theme_mode') === 'white'){
+  document.body.classList.add('theme-white');
+  setTimeout(()=>updateAdminThemeBtn(true), 50);
+}
+
+/* ---------------- GPS LIVE LOCATION FETCH ---------------- */
+window.fetchAdminLiveGPS = function(){
+  const btn = $('btn-fetch-gps');
+  if(!navigator.geolocation){
+    window.showToast('GPS Error', 'Your browser does not support geolocation.', 'error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Getting Location...`;
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = Number(pos.coords.latitude.toFixed(6));
+      const lon = Number(pos.coords.longitude.toFixed(6));
+
+      try{
+        await update(ref(db, `${basePath}/profile`), {
+          latitude: lat,
+          longitude: lon,
+          liveLocation: { latitude: lat, longitude: lon, updatedAt: Date.now() },
+          updatedAt: Date.now()
+        });
+        state.profile.latitude = lat;
+        state.profile.longitude = lon;
+        setText('gps-coords-display', `Lat: ${lat} | Lon: ${lon} (Synced)`);
+        window.showToast('GPS Live Synced!', `Latitude: ${lat}, Longitude: ${lon} are now live on the customer website!`, 'success');
+      }catch(err){
+        window.showToast('Save Error', err.message, 'error');
+      }finally{
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-location-arrow"></i> Update Current Live Location`;
+      }
+    },
+    (err) => {
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-location-arrow"></i> Update Current Live Location`;
+      let errMsg = "Location permission denied.";
+      if(err.code === 2) errMsg = "Location position unavailable.";
+      if(err.code === 3) errMsg = "Location request timeout.";
+      window.showToast('Location Permission', errMsg + ' Please allow location access in your browser settings.', 'error');
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+};
+
+window.switchTab = function(tabId){
+  document.querySelectorAll('.tab-pane').forEach(el=>el.classList.add('hidden'));
+  document.querySelectorAll('.nav-link').forEach(el=>el.classList.remove('active'));
+  const t = $(tabId), n = $('nav-'+tabId);
+  if(t) t.classList.remove('hidden');
+  if(n) n.classList.add('active');
+};
+
+/* ---------------- DIRECT START (no login) ---------------- */
+async function ensureProfile(){
+  let profile = {};
+  try{
+    const snap = await get(ref(db, `${basePath}/profile`));
+    profile = snap.val() || {};
+  }catch(e){
+    window.showToast('Database Error','Please check Firebase (is the Firestore database created, are the rules published, are you logged in?): ' + e.message,'error');
+    return;
+  }
+  if(profile.setupCompleted !== true){
+    try{
+      // Only technical defaults are created here. Names, prices, texts and payment details are entered by the bakery in Settings.
+      await update(ref(db, `${basePath}/profile`), {
+        isOpen: profile.isOpen !== false,
+        setupCompleted: true, autoNotebook: profile.autoNotebook !== false,
+        autoNotebookMinutes: profile.autoNotebookMinutes ?? 1, vipThreshold: profile.vipThreshold ?? 2,
+        updatedAt: Date.now()
+      });
+    }catch(e){ window.showToast('Setup Error', e.message, 'error'); }
+  }
+  initDashboardRealtime();
+}
+ensureProfile();
+
+/* ---------------- CLIENT PREVIEW ---------------- */
+function getClientAppUrl() {
+  if (CUSTOMER_SITE_URL) return CUSTOMER_SITE_URL;
+  const folder = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
+  return `${window.location.origin}${folder}order.html`;
+}
+
+window.previewClientWebsite = function() {
+  const url = getClientAppUrl();
+  $('preview-url-text').textContent = url;
+  $('preview-iframe').src = url;
+  $('modal-preview-website').classList.remove('hidden');
+};
+
+window.closePreviewModal = function() {
+  $('modal-preview-website').classList.add('hidden');
+  $('preview-iframe').src = 'about:blank';
+};
+
+window.openClientInNewTab = function() {
+  window.open(getClientAppUrl(), '_blank');
+};
+
+/* ---------------- REALTIME ENGINE ---------------- */
+function initDashboardRealtime(){
+  if(listenersAttached) return;
+  listenersAttached = true;
+
+  initDefaultRange();
+
+  // 1. Profile Listener
+  onValue(ref(db, `${basePath}/profile`), (snap)=>{
+    state.profile = snap.val() || {};
+    state.theme = Object.assign({}, DEFAULT_THEME, state.profile.theme || {});
+    state.sections = Object.assign({}, DEFAULT_SECTIONS, state.profile.sections || {});
+    
+    renderTopBar(); 
+    populateSettingsUI();
+    populateWebsiteEditorUI();
+    populateThemeUI();
+    populateSectionsUI();
+  }, dbErr);
+
+  // 3. Delivery Areas Listener
+  onValue(ref(db, `${basePath}/deliveryAreas`), (snap)=>{
+    state.deliveryAreas = snap.val() || {};
+    renderDeliveryAreasList();
+  }, dbErr);
+
+  // 4. Categories Listener
+  onValue(ref(db, `${basePath}/categories`), (snap)=>{
+    state.categories = snap.val() || {};
+    renderCategoriesList(); populateCategorySelect();
+  }, dbErr);
+
+  // 5. Menu Items Listener
+  onValue(ref(db, `${basePath}/items`), (snap)=>{
+    state.items = snap.val() || {};
+    renderMenuItems(); refreshAll();
+  }, dbErr);
+
+  // 6. Orders Listener
+  onValue(ref(db, `${basePath}/orders`), (snap)=>{
+    const rawOrders = snap.val() || {};
+    state.orders = rawOrders;
+
+    if (!state.ordersLoadedOnce) {
+      Object.entries(rawOrders).forEach(([k, ord]) => {
+        markOrderAsAlerted(k, ord && ord.orderId);
+      });
+      state.ordersLoadedOnce = true;
+    }
+
+    refreshAll();
+  }, dbErr);
+
+  // 7. Reviews Listener
+  onValue(ref(db, `${basePath}/reviews`), (snap)=>{
+    state.reviews = snap.val() || {};
+    renderReviews();
+  }, dbErr);
+
+  // 8. Complaints & Return Listener
+  onValue(ref(db, `${basePath}/complaints`), (snap)=>{
+    const rawComplaints = snap.val() || {};
+    state.complaints = rawComplaints;
+
+    if (!state.complaintsLoadedOnce) {
+      Object.keys(rawComplaints).forEach(id => {
+        markComplaintAsAlerted(id);
+      });
+      state.complaintsLoadedOnce = true;
+    }
+
+    renderComplaints();
+  }, dbErr);
+
+  // REALTIME ORDER ALARM (CHECK ORDER NUMBER TO PREVENT REPEATS)
+  onChildAdded(ref(db, `${basePath}/orders`), (snap)=>{
+    if(!state.ordersLoadedOnce) return;
+    const orderKey = snap.key;
+    const orderData = snap.val() || {};
+    const orderId = orderData.orderId || orderKey;
+
+    if (hasOrderBeenAlerted(orderKey) || hasOrderBeenAlerted(orderId)) {
+      return;
+    }
+
+    if (orderData.orderStatus && orderData.orderStatus !== 'pending') {
+      markOrderAsAlerted(orderKey, orderId);
+      return;
+    }
+
+    markOrderAsAlerted(orderKey, orderId);
+    playLoudAlarm(`🚨 New Order Received! (#${orderId})`, 10000);
+  }, dbErr);
+
+  // REALTIME COMPLAINT ALARM
+  onChildAdded(ref(db, `${basePath}/complaints`), (snap)=>{
+    if(!state.complaintsLoadedOnce) return;
+    const compId = snap.key;
+    const comp = snap.val() || {};
+
+    if (hasComplaintBeenAlerted(compId)) {
+      return;
+    }
+
+    markComplaintAsAlerted(compId);
+    playLoudAlarm(`⚠️ Return / Complaint Alert! (${comp.type || 'Alert'})`, 10000);
+  }, dbErr);
+
+  if(autoMoveTimer) clearInterval(autoMoveTimer);
+  autoMoveTimer = setInterval(()=>{ renderLiveOrders(); window.renderNotebook(); }, 15000);
+}
+
+function dbErr(e){
+  console.error(e);
+  window.showToast('Database Error', e.message || 'Realtime read failed', 'error');
+}
+
+function refreshAll(){
+  computeAnalytics();
+  renderLiveOrders();
+  window.renderNotebook();
+  window.renderCustomers();
+  renderRecentOrdersOverview();
+}
+
+function renderTopBar(){
+  const p = state.profile;
+  setText('top-bar-rest-name', p.restaurantName || 'Bakery');
+  const logo = $('top-bar-logo'), fb = $('top-bar-logo-fallback');
+  if(p.logoUrl){
+    logo.src = p.logoUrl; logo.classList.remove('hidden'); fb.classList.add('hidden');
+    logo.onerror = ()=>{ logo.classList.add('hidden'); fb.classList.remove('hidden'); };
+  }else{
+    fb.textContent = (p.restaurantName || 'R').charAt(0).toUpperCase();
+    fb.classList.remove('hidden'); logo.classList.add('hidden');
+  }
+  const open = p.isOpen !== false;
+  $('top-open-switch').classList.toggle('on', open);
+  setText('top-open-status-text', open ? 'OPEN' : 'CLOSED');
+}
+
+window.toggleRestaurantOpen = async function(){
+  const current = state.profile.isOpen !== false;
+  try{
+    await update(ref(db, `${basePath}/profile`), { isOpen: !current, updatedAt: Date.now() });
+    window.showToast('Status', !current ? 'Store is OPEN' : 'Store is CLOSED', 'info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- DELIVERY AREAS MANAGEMENT ---------------- */
+window.addDeliveryArea = async function(){
+  const nameEl = $('new-area-name');
+  const feeEl = $('new-area-fee');
+  const name = nameEl.value.trim();
+  const fee = Number(feeEl.value);
+
+  if(!name || isNaN(fee) || fee < 0){
+    window.showToast('Validation Error', 'Please enter the area name and the delivery fee.', 'error');
+    return;
+  }
+
+  try{
+    await push(ref(db, `${basePath}/deliveryAreas`), {
+      name, fee, createdAt: Date.now()
+    });
+    nameEl.value = '';
+    feeEl.value = '';
+    window.showToast('Area Added', `${name} — Rs. ${fee} added.`, 'success');
+  }catch(err){
+    window.showToast('Error', err.message, 'error');
+  }
+};
+
+window.deleteDeliveryArea = async function(id){
+  try{
+    await remove(ref(db, `${basePath}/deliveryAreas/${id}`));
+    window.showToast('Area Removed', 'Delivery area deleted.', 'info');
+  }catch(err){
+    window.showToast('Error', err.message, 'error');
+  }
+};
+
+function renderDeliveryAreasList(){
+  const box = $('delivery-areas-list-box');
+  if(!box) return;
+  const entries = Object.entries(state.deliveryAreas);
+  if(entries.length === 0){
+    box.innerHTML = `<p class="text-ink-500 text-xs py-2">No specific area has been added (default charges will be used).</p>`;
+    return;
+  }
+
+  box.innerHTML = entries.map(([id, a]) => `
+    <div class="flex items-center justify-between p-3 rounded-xl glass-soft text-xs">
+      <div>
+        <strong class="text-white">${escapeHtml(a.name || 'Area')}</strong>
+        <span class="text-gold-300 font-mono font-bold ml-2">Rs. ${a.fee || 0}</span>
+      </div>
+      <button onclick="window.deleteDeliveryArea('${id}')" class="text-ink-400 hover:text-rose-400 p-1">
+        <i class="fa-solid fa-trash-can"></i>
+      </button>
+    </div>
+  `).join('');
+}
+
+/* ---------------- THEME & COLOR SYSTEM ---------------- */
+function populateThemeUI(){
+  const t = state.theme;
+  const keys = ['primary','secondary','bg','card','nav','menu','about','contact','text'];
+  keys.forEach(k => {
+    const val = t[k] || DEFAULT_THEME[k];
+    const inp = $(`clr-${k}`);
+    const hex = $(`clr-${k}-hex`);
+    const badge = $(`preview-box-clr-${k}`);
+    if(inp) inp.value = val;
+    if(hex) hex.value = val;
+    if(badge) badge.style.backgroundColor = val;
+  });
+}
+
+window.updateColorInput = function(idKey){
+  const el = $(idKey);
+  const hex = $(idKey + '-hex');
+  const badge = $('preview-box-' + idKey);
+  if(el && hex){
+    hex.value = el.value;
+    if(badge) badge.style.backgroundColor = el.value;
+  }
+};
+
+window.syncHexToColor = function(idKey){
+  const el = $(idKey);
+  const hex = $(idKey + '-hex');
+  const badge = $('preview-box-' + idKey);
+  if(el && hex && /^#[0-9A-F]{6}$/i.test(hex.value.trim())){
+    el.value = hex.value.trim();
+    if(badge) badge.style.backgroundColor = el.value;
+  }
+};
+
+window.applyPresetPalette = function(type){
+  const palettes = {
+    gold: {
+      primary: '#d4a34e', secondary: '#b07f2c', bg: '#05070d', card: '#0f1320',
+      nav: '#0a0d16', menu: '#070911', about: '#0a0d16', contact: '#05070d', text: '#f1f4fa'
+    },
+    ruby: {
+      primary: '#f43f5e', secondary: '#be123c', bg: '#0a0507', card: '#170b10',
+      nav: '#13080d', menu: '#0d0609', about: '#13080d', contact: '#0a0507', text: '#fff1f2'
+    },
+    emerald: {
+      primary: '#22c55e', secondary: '#15803d', bg: '#040e08', card: '#0a1a10',
+      nav: '#06130b', menu: '#040d07', about: '#06130b', contact: '#040e08', text: '#f0fdf4'
+    },
+    sapphire: {
+      primary: '#38bdf8', secondary: '#0284c7', bg: '#050b14', card: '#0c1829',
+      nav: '#081220', menu: '#050c17', about: '#081220', contact: '#050b14', text: '#f0f9ff'
+    }
+  };
+
+  const selected = palettes[type] || palettes.gold;
+  Object.keys(selected).forEach(k=>{
+    const inp = $(`clr-${k}`);
+    const hex = $(`clr-${k}-hex`);
+    const badge = $(`preview-box-clr-${k}`);
+    if(inp) inp.value = selected[k];
+    if(hex) hex.value = selected[k];
+    if(badge) badge.style.backgroundColor = selected[k];
+  });
+  window.showToast('Preset Loaded', `${type.toUpperCase()} theme loaded. click 'Save Color Theme' to apply it.`, 'info');
+};
+
+window.resetColorsToDefault = function(){
+  window.applyPresetPalette('gold');
+};
+
+window.resetColorsToDeveloperDefault = async function(){
+  Object.keys(ORIGINAL_DEVELOPER_THEME).forEach(k=>{
+    const inp = $(`clr-${k}`);
+    const hex = $(`clr-${k}-hex`);
+    const badge = $(`preview-box-clr-${k}`);
+    if(inp) inp.value = ORIGINAL_DEVELOPER_THEME[k];
+    if(hex) hex.value = ORIGINAL_DEVELOPER_THEME[k];
+    if(badge) badge.style.backgroundColor = ORIGINAL_DEVELOPER_THEME[k];
+  });
+
+  try{
+    await update(ref(db, `${basePath}/profile/theme`), {
+      ...ORIGINAL_DEVELOPER_THEME,
+      updatedAt: Date.now()
+    });
+    state.theme = { ...ORIGINAL_DEVELOPER_THEME };
+    window.showToast('Original Theme Restored!', 'The original colors have been applied to the website!', 'success');
+  }catch(err){
+    window.showToast('Failed', err.message, 'error');
+  }
+};
+
+window.saveThemeColors = async function(){
+  const themeData = {
+    primary: $('clr-primary').value,
+    secondary: $('clr-secondary').value,
+    bg: $('clr-bg').value,
+    card: $('clr-card').value,
+    nav: $('clr-nav').value,
+    menu: $('clr-menu').value,
+    about: $('clr-about').value,
+    contact: $('clr-contact').value,
+    text: $('clr-text').value,
+    updatedAt: Date.now()
+  };
+
+  try{
+    await update(ref(db, `${basePath}/profile/theme`), themeData);
+    state.theme = themeData;
+    window.showToast('Colors Synced!','Colors are now applied live on the customer website!','success');
+  }catch(e){
+    window.showToast('Save Failed', e.message, 'error');
+  }
+};
+
+/* ---------------- SECTION VISIBILITY & ON/OFF TOGGLES ---------------- */
+function populateSectionsUI(){
+  const s = state.sections || {};
+  Object.keys(DEFAULT_SECTIONS).forEach(key=>{
+    const val = s[key] !== false;
+    const switchEl = $(`toggle-${key}`);
+    const badgeEl = $(`badge-toggle-${key}`);
+    if(switchEl){
+      switchEl.classList.toggle('on', val);
+    }
+    if(badgeEl){
+      badgeEl.className = val ? 'chip chip-mint' : 'chip chip-rose';
+      badgeEl.textContent = val ? (key === 'allowOrders' ? 'ACTIVE' : 'VISIBLE') : (key === 'allowOrders' ? 'DISABLED' : 'HIDDEN');
+    }
+  });
+}
+
+window.handleSwitchClick = function(key){
+  const switchEl = $(`toggle-${key}`);
+  const badgeEl = $(`badge-toggle-${key}`);
+  if(!switchEl) return;
+  const isOn = switchEl.classList.toggle('on');
+  if(badgeEl){
+    badgeEl.className = isOn ? 'chip chip-mint' : 'chip chip-rose';
+    badgeEl.textContent = isOn ? (key === 'allowOrders' ? 'ACTIVE' : 'VISIBLE') : (key === 'allowOrders' ? 'DISABLED' : 'HIDDEN');
+  }
+};
+
+window.saveSectionToggles = async function(){
+  const sectionsData = {};
+  Object.keys(DEFAULT_SECTIONS).forEach(key=>{
+    const switchEl = $(`toggle-${key}`);
+    sectionsData[key] = switchEl ? switchEl.classList.contains('on') : true;
+  });
+
+  try{
+    await update(ref(db, `${basePath}/profile/sections`), sectionsData);
+    state.sections = sectionsData;
+    window.showToast('Settings Applied!','Options saved. The customer website has been updated instantly.','success');
+  }catch(e){
+    window.showToast('Update Failed', e.message, 'error');
+  }
+};
+
+/* ---------------- DATE RANGE & ANALYTICS ---------------- */
+function toInputDate(d){
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  return `${d.getFullYear()}-${m}-${day}`;
+}
+function startOfDay(d){ const x = new Date(d); x.setHours(0,0,0,0); return x.getTime(); }
+function endOfDay(d){ const x = new Date(d); x.setHours(23,59,59,999); return x.getTime(); }
+
+function initDefaultRange(){
+  const today = new Date();
+  $('range-from').value = toInputDate(today);
+  $('range-to').value   = toInputDate(today);
+  state.range = { key:'today', from:startOfDay(today), to:endOfDay(today) };
+  setText('range-label','Today');
+}
+
+function highlightQuick(key){
+  ['today','yesterday','7d','30d','month','all'].forEach(k=>{
+    const b = $('qr-'+k);
+    if(b) b.className = (k===key)
+      ? 'btn-gold px-3 py-1.5 rounded-lg text-[11px]'
+      : 'btn-ghost px-3 py-1.5 rounded-lg text-[11px]';
+  });
+}
+
+window.setQuickRange = function(key){
+  const now = new Date();
+  let from, to, label;
+  if(key==='today'){ from=new Date(now); to=new Date(now); label='Today'; }
+  else if(key==='yesterday'){ const y=new Date(now); y.setDate(y.getDate()-1); from=y; to=new Date(y); label='Yesterday'; }
+  else if(key==='7d'){ const s=new Date(now); s.setDate(s.getDate()-6); from=s; to=new Date(now); label='Last 7 Days'; }
+  else if(key==='30d'){ const s=new Date(now); s.setDate(s.getDate()-29); from=s; to=new Date(now); label='Last 30 Days'; }
+  else if(key==='month'){ from=new Date(now.getFullYear(), now.getMonth(), 1); to=new Date(now); label='This Month'; }
+  else { from=null; to=null; label='All Time'; }
+
+  state.range = {
+    key,
+    from: from ? startOfDay(from) : 0,
+    to:   to   ? endOfDay(to)     : Number.MAX_SAFE_INTEGER
+  };
+  if(from) $('range-from').value = toInputDate(from);
+  if(to)   $('range-to').value   = toInputDate(to);
+  setText('range-label', label);
+  highlightQuick(key);
+  computeAnalytics();
+};
+
+window.onCustomRangeChange = function(){
+  const f = $('range-from').value, t = $('range-to').value;
+  if(!f || !t) return;
+  let fromD = new Date(f+'T00:00:00'), toD = new Date(t+'T00:00:00');
+  if(fromD > toD){ const tmp = fromD; fromD = toD; toD = tmp;
+    $('range-from').value = toInputDate(fromD); $('range-to').value = toInputDate(toD); }
+  state.range = { key:'custom', from:startOfDay(fromD), to:endOfDay(toD) };
+  setText('range-label', `${toInputDate(fromD)} → ${toInputDate(toD)}`);
+  highlightQuick('custom');
+  computeAnalytics();
+};
+
+function ordersInRange(){
+  return Object.entries(state.orders).filter(([id,o])=>{
+    const t = tsOf(o);
+    return t >= state.range.from && t <= state.range.to;
+  });
+}
+
+function buildCustomerIndex(){
+  const idx = {};
+  Object.entries(state.orders).forEach(([id,o])=>{
+    if(!o) return;
+    const key = normPhone(o.phone) || ('n_' + String(o.customerName||'guest').toLowerCase().trim());
+    if(!key) return;
+    if(!idx[key]) idx[key] = { key, phone:o.phone||'--', name:o.customerName||'Customer', orders:[], total:0, lastAt:0, address:o.address||'' };
+    const c = idx[key];
+    c.orders.push({ id, ...o });
+    if(!isCancelled(o)) c.total += orderTotal(o);
+    const t = tsOf(o);
+    if(t > c.lastAt){ c.lastAt = t; c.name = o.customerName || c.name; c.address = o.address || c.address; c.phone = o.phone || c.phone; }
+  });
+  Object.values(idx).forEach(c=>c.orders.sort((a,b)=>tsOf(b)-tsOf(a)));
+  return idx;
+}
+function vipThreshold(){ return Math.max(2, Number(state.profile.vipThreshold) || 2); }
+function customerOrderCount(o, idx){
+  const key = normPhone(o.phone) || ('n_' + String(o.customerName||'guest').toLowerCase().trim());
+  return (idx[key] && idx[key].orders.length) || 1;
+}
+
+function computeAnalytics(){
+  const entries = ordersInRange();
+  const valid = entries.filter(([id,o])=>!isCancelled(o));
+  const cancelled = entries.length - valid.length;
+
+  let total=0, cod=0, online=0, codCount=0, onlineCount=0, delivered=0;
+  const perDay = {};
+  const items = {};
+
+  valid.forEach(([id,o])=>{
+    const amt = orderTotal(o);
+    total += amt;
+    const k = dayKey(tsOf(o) || Date.now());
+    if(!perDay[k]) perDay[k] = { orders:0, cod:0, online:0, total:0 };
+    perDay[k].orders++; perDay[k].total += amt;
+    if(isOnlinePayment(o)){ online += amt; onlineCount++; perDay[k].online += amt; }
+    else { cod += amt; codCount++; perDay[k].cod += amt; }
+    if(statusOf(o)==='delivered') delivered++;
+    (o.items||[]).forEach(it=>{
+      const n = it && it.name ? it.name : 'Item';
+      const q = Number(it && it.quantity) || 1;
+      if(!items[n]) items[n] = { qty:0, amount:0 };
+      items[n].qty += q;
+      items[n].amount += (Number(it && it.price)||0) * q;
+    });
+  });
+
+  const allOrders = Object.values(state.orders);
+  const pendingNow = allOrders.filter(o=>statusOf(o)==='pending').length;
+  const idx = buildCustomerIndex();
+  const vipCount = Object.values(idx).filter(c=>c.orders.length >= vipThreshold()).length;
+
+  setText('kpi-total-sales', money(total));
+  setText('kpi-total-orders', `${valid.length} orders`);
+  setText('kpi-cod-cash', money(cod));
+  setText('kpi-cod-count', `${codCount} COD orders`);
+  setText('kpi-online-cash', money(online));
+  setText('kpi-online-count', `${onlineCount} online orders`);
+  setText('kpi-aov', money(valid.length ? Math.round(total/valid.length) : 0));
+  setText('kpi-delivered-count', `${delivered} delivered`);
+  setText('kpi-pending', pendingNow);
+  setText('kpi-cancelled', cancelled);
+  setText('kpi-repeat', vipCount);
+  setText('kpi-menu-count', Object.keys(state.items).length);
+
+  const badge = $('badge-live-orders-count');
+  if(pendingNow>0){ badge.textContent = pendingNow; badge.classList.remove('hidden'); }
+  else badge.classList.add('hidden');
+
+  const vipBadge = $('badge-vip-count');
+  if(vipCount>0){ vipBadge.textContent = vipCount; vipBadge.classList.remove('hidden'); }
+  else vipBadge.classList.add('hidden');
+
+  renderDailyChart(perDay);
+  renderPaymentSplit(cod, online, total);
+  renderTopItems(items);
+}
+
+function renderDailyChart(perDay){
+  const keys = Object.keys(perDay).sort();
+  const chart = $('daily-chart');
+  const tbody = $('daily-table-body');
+  setText('chart-days-label', keys.length ? `${keys.length} day(s)` : 'no data');
+
+  if(keys.length===0){
+    chart.innerHTML = `<p class="text-[11px] text-ink-400 m-auto">No orders found in this range.</p>`;
+    tbody.innerHTML = `<tr><td colspan="5" class="text-center text-ink-400 py-4">No data</td></tr>`;
+    return;
+  }
+  const max = Math.max(...keys.map(k=>perDay[k].total), 1);
+
+  chart.innerHTML = keys.map(k=>{
+    const d = perDay[k];
+    const h = Math.max(6, Math.round((d.total/max)*100));
+    return `
+      <div class="flex flex-col items-center justify-end gap-1.5 min-w-[42px] flex-1 h-full group" title="${prettyDay(k)} — ${money(d.total)}">
+        <span class="text-[9px] font-mono text-ink-300 opacity-0 group-hover:opacity-100 transition">${(d.total/1000).toFixed(1)}k</span>
+        <div class="w-full bar-track flex-1 flex items-end" style="min-height:8px">
+          <div class="bar-fill w-full" style="height:${h}%"></div>
+        </div>
+        <span class="text-[9px] font-mono text-ink-400 font-bold">${prettyDay(k)}</span>
+      </div>`;
+  }).join('');
+
+  tbody.innerHTML = keys.slice().reverse().map(k=>{
+    const d = perDay[k];
+    return `<tr>
+      <td class="font-mono text-ink-200">${k}</td>
+      <td class="font-mono text-white font-bold">${d.orders}</td>
+      <td class="font-mono text-mint-400">${money(d.cod)}</td>
+      <td class="font-mono text-sky-400">${money(d.online)}</td>
+      <td class="font-mono font-bold text-right gold-text">${money(d.total)}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderPaymentSplit(cod, online, total){
+  const box = $('payment-split');
+  const t = total || 1;
+  const codPct = Math.round((cod/t)*100);
+  const onPct  = Math.round((online/t)*100);
+  box.innerHTML = `
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-[11px]"><span class="text-ink-300 font-medium">COD Cash</span><span class="font-mono font-bold text-mint-400">${money(cod)} • ${codPct}%</span></div>
+      <div class="bar-track h-2.5"><div class="bar-fill bar-fill-mint h-full" style="width:${codPct}%"></div></div>
+    </div>
+    <div class="space-y-1.5">
+      <div class="flex justify-between text-[11px]"><span class="text-ink-300 font-medium">Online / Bank</span><span class="font-mono font-bold text-sky-400">${money(online)} • ${onPct}%</span></div>
+      <div class="bar-track h-2.5"><div class="bar-fill bar-fill-sky h-full" style="width:${onPct}%"></div></div>
+    </div>
+    <div class="pt-2 mt-1 border-t hair flex justify-between text-[11px]">
+      <span class="text-ink-300 font-bold">Grand Total</span>
+      <span class="font-mono font-extrabold gold-text">${money(total)}</span>
+    </div>`;
+}
+
+function renderTopItems(items){
+  const box = $('top-items');
+  const list = Object.entries(items).sort((a,b)=>b[1].qty-a[1].qty).slice(0,5);
+  if(list.length===0){ box.innerHTML = `<p class="text-[11px] text-ink-400">No item data.</p>`; return; }
+  const max = list[0][1].qty || 1;
+  box.innerHTML = list.map(([name,d])=>`
+    <div class="space-y-1">
+      <div class="flex justify-between text-[11px]">
+        <span class="text-ink-200 truncate pr-2">${escapeHtml(name)}</span>
+        <span class="font-mono text-gold-300">${d.qty}x</span>
+      </div>
+      <div class="bar-track h-1.5"><div class="bar-fill h-full" style="width:${Math.round((d.qty/max)*100)}%"></div></div>
+    </div>`).join('');
+}
+
+/* ---------------- ORDER CARDS & NOTEBOOK ---------------- */
+function autoMoveMinutes(){
+  const m = Number(state.profile.autoNotebookMinutes);
+  return (isFinite(m) && m > 0) ? m : 1;
+}
+function autoMoveEnabled(){ return state.profile.autoNotebook !== false; }
+
+function isNotebookOrder(o){
+  if(!o) return false;
+  if(o.movedToNotebook === true) return true;
+  if(NOTEBOOK_STATUSES.includes(statusOf(o))) return true;
+  if(!autoMoveEnabled()) return false;
+  const acceptedAt = Number(o.acceptedAt) || 0;
+  if(!acceptedAt) return false;
+  const stage = STATUS_FLOW.indexOf(statusOf(o));
+  if(stage < STATUS_FLOW.indexOf('accepted')) return false;
+  return (Date.now() - acceptedAt) >= autoMoveMinutes()*60*1000;
+}
+
+function orderCardHTML(id, o, idx, opts){
+  opts = opts || {};
+  const count = customerOrderCount(o, idx);
+  const isRepeat = count >= vipThreshold();
+  const st = statusOf(o);
+  const itemsCount = (o.items||[]).reduce((s,it)=>s + (Number(it && it.quantity)||1), 0);
+  const acceptedAt = Number(o.acceptedAt)||0;
+
+  const uCoords = o.userLiveLocation || (o.latitude && o.longitude ? { latitude: o.latitude, longitude: o.longitude } : null);
+  let distanceHTML = '';
+
+  if(uCoords && uCoords.latitude && state.profile.latitude && state.profile.longitude){
+    const distKm = haversineKm(
+      Number(state.profile.latitude), Number(state.profile.longitude),
+      Number(uCoords.latitude), Number(uCoords.longitude)
+    );
+    const estMins = Math.max(6, Math.round(distKm * 3.5));
+    distanceHTML = `
+      <div class="flex items-center gap-2 p-2 rounded-xl bg-gold-500/10 border border-gold-500/30 text-gold-300 text-[11px] font-mono">
+        <i class="fa-solid fa-route"></i>
+        <span><strong>${distKm.toFixed(1)} KM Door</strong> (~${estMins} mins)</span>
+        <a href="https://www.google.com/maps/dir/?api=1&origin=${state.profile.latitude},${state.profile.longitude}&destination=${uCoords.latitude},${uCoords.longitude}" 
+           target="_blank" class="ml-auto text-sky-400 hover:underline flex items-center gap-1" onclick="event.stopPropagation()">
+          <i class="fa-solid fa-location-arrow"></i> Map Route
+        </a>
+      </div>
+    `;
+  }
+
+  let countdown = '';
+  if(!opts.notebook && acceptedAt && autoMoveEnabled() && STATUS_FLOW.indexOf(st) >= 1){
+    const left = Math.max(0, autoMoveMinutes()*60*1000 - (Date.now()-acceptedAt));
+    const secs = Math.ceil(left/1000);
+    countdown = `<span class="chip chip-plum"><i class="fa-regular fa-clock"></i> Notebook in ${secs}s</span>`;
+  }
+
+  const deliveryArea = o.area ? `<span class="chip chip-gold">${escapeHtml(o.area)}</span>` : '';
+  const houseDetails = o.houseNumber ? `House/Flat: ${escapeHtml(o.houseNumber)}` : '';
+  const streetDetails = o.streetNumber ? `Street/Road: ${escapeHtml(o.streetNumber)}` : '';
+
+  return `
+    <div class="order-card ${isRepeat?'repeat-card':'glass'} p-5 ${isRepeat?'rail-pad':''}">
+      ${isRepeat?`<div class="vip-rail"><span>VIP</span></div>`:''}
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="space-y-2 text-xs flex-1 cursor-pointer" onclick="window.openOrderModal('${id}')">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold text-sm text-white font-mono">${escapeHtml(o.orderId || id.substring(0,8))}</span>
+            <span class="${statusChipClass(st)}">${st.replace(/_/g,' ')}</span>
+            ${deliveryArea}
+            ${isRepeat?`<span class="chip chip-gold"><i class="fa-solid fa-crown"></i> ${count} orders</span>`:`<span class="chip chip-mute">New</span>`}
+            ${countdown}
+            <span class="text-[10px] text-ink-500 font-mono">${new Date(tsOf(o)||Date.now()).toLocaleString([], {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+
+          <div class="text-ink-300">
+            <strong class="text-white">${escapeHtml(o.customerName || 'Anonymous')}</strong>
+            <span class="text-ink-500">•</span>
+            <span class="font-mono text-gold-300">${escapeHtml(o.phone || '--')}</span>
+          </div>
+
+          <div class="text-[11px] text-ink-300 bg-ink-950/40 p-2.5 rounded-xl border hair space-y-0.5">
+            <div class="font-bold text-white flex items-center gap-1.5">
+              <i class="fa-solid fa-location-dot text-gold-400"></i> Delivery Place:
+            </div>
+            <div>${escapeHtml(o.address || '—')}</div>
+            ${(houseDetails || streetDetails)?`<div class="text-ink-400 text-[10px]">${houseDetails} | ${streetDetails}</div>`:''}
+            ${o.landmark?`<div class="text-ink-400 text-[10px]">Landmark: <span class="text-gold-300">${escapeHtml(o.landmark)}</span></div>`:''}
+          </div>
+
+          ${distanceHTML}
+
+          ${o.locationNote?`<div class="text-[11px] text-gold-300 glass-soft p-2 rounded-lg"><i class="fa-solid fa-location-arrow text-[9px]"></i> ${escapeHtml(o.locationNote)}</div>`:''}
+
+          <div class="flex items-center gap-2 flex-wrap pt-1">
+            <span class="chip chip-mute">${itemsCount} items</span>
+            <span class="chip ${isOnlinePayment(o)?'chip-sky':'chip-mint'}">${payLabel(o)}</span>
+            <span class="font-mono font-extrabold text-sm gold-text">${money(orderTotal(o))}</span>
+          </div>
+        </div>
+
+        <div class="flex sm:flex-col items-stretch gap-2 shrink-0">
+          <button onclick="window.openOrderModal('${id}')" class="btn-gold px-4 py-2.5 rounded-xl text-[11px] whitespace-nowrap">
+            View &amp; Track
+          </button>
+          ${(!opts.notebook && st==='pending')
+            ? `<button onclick="event.stopPropagation(); window.setOrderStatus('${id}','accepted')" class="btn-mint px-4 py-2.5 rounded-xl text-[11px] whitespace-nowrap">Accept</button>`
+            : ''}
+          ${(!opts.notebook && st!=='pending')
+            ? `<button onclick="event.stopPropagation(); window.moveToNotebook('${id}')" class="btn-ghost px-4 py-2.5 rounded-xl text-[11px] whitespace-nowrap"><i class="fa-solid fa-book text-[10px]"></i> To Notebook</button>`
+            : ''}
+          ${(opts.notebook)
+            ? `<button onclick="event.stopPropagation(); window.restoreToLive('${id}')" class="btn-ghost px-4 py-2.5 rounded-xl text-[11px] whitespace-nowrap"><i class="fa-solid fa-rotate-left text-[10px]"></i> Back to Live</button>`
+            : ''}
+        </div>
+      </div>
+    </div>`;
+}
+
+window.filterOrders = function(status){
+  state.activeOrderFilter = status;
+  ['all','pending','accepted','preparing','on_the_way'].forEach(s=>{
+    const b = $(`btn-order-${s}`);
+    if(b) b.className = (s===status)
+      ? 'btn-gold text-[11px] px-3 py-1.5 rounded-lg'
+      : 'btn-ghost text-[11px] px-3 py-1.5 rounded-lg';
+  });
+  renderLiveOrders();
+};
+
+function renderLiveOrders(){
+  const container = $('orders-full-list');
+  if(!container) return;
+  const idx = buildCustomerIndex();
+  let entries = Object.entries(state.orders)
+    .filter(([id,o])=>o && !isNotebookOrder(o))
+    .sort((a,b)=>tsOf(b[1])-tsOf(a[1]));
+
+  if(state.activeOrderFilter!=='all'){
+    entries = entries.filter(([id,o])=>statusOf(o)===state.activeOrderFilter);
+  }
+
+  if(entries.length===0){
+    container.innerHTML = `
+      <div class="text-center py-14 glass rounded-3xl">
+        <i class="fa-solid fa-bell-concierge text-2xl text-ink-600 mb-3"></i>
+        <p class="text-xs text-ink-400">No live orders. Accepted orders are in the Notebook.</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = entries.map(([id,o])=>orderCardHTML(id,o,idx,{notebook:false})).join('');
+}
+
+function renderRecentOrdersOverview(){
+  const container = $('overview-recent-orders-list');
+  if(!container) return;
+  const idx = buildCustomerIndex();
+  const entries = Object.entries(state.orders).sort((a,b)=>tsOf(b[1])-tsOf(a[1])).slice(0,6);
+  if(entries.length===0){
+    container.innerHTML = `<p class="text-xs text-ink-500 py-4 text-center">No orders received yet.</p>`;
+    return;
+  }
+  container.innerHTML = entries.map(([id,o])=>{
+    const count = customerOrderCount(o, idx);
+    const isRepeat = count >= vipThreshold();
+    return `
+      <div class="flex items-center justify-between p-3.5 rounded-2xl ${isRepeat?'repeat-card':'glass-soft'} text-xs cursor-pointer" onclick="window.openOrderModal('${id}')">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="font-bold text-white font-mono">${escapeHtml(o.orderId || id.substring(0,8))}</span>
+            ${isRepeat?`<span class="chip chip-gold">VIP ${count}x</span>`:''}
+          </div>
+          <div class="text-[11px] text-ink-400 truncate">${escapeHtml(o.customerName||'Customer')} • ${escapeHtml(o.phone||'--')}</div>
+        </div>
+        <div class="text-right shrink-0 pl-3">
+          <div class="font-mono font-bold gold-text">${money(orderTotal(o))}</div>
+          <span class="${statusChipClass(statusOf(o))}">${statusOf(o).replace(/_/g,' ')}</span>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+window.renderNotebook = function(){
+  const container = $('notebook-list');
+  if(!container) return;
+  const idx = buildCustomerIndex();
+  const q = ($('notebook-search') ? $('notebook-search').value : '').trim().toLowerCase();
+
+  let entries = Object.entries(state.orders)
+    .filter(([id,o])=>o && isNotebookOrder(o))
+    .sort((a,b)=>tsOf(b[1])-tsOf(a[1]));
+
+  let total=0, cod=0, online=0;
+  entries.forEach(([id,o])=>{
+    if(isCancelled(o)) return;
+    const amt = orderTotal(o);
+    total += amt;
+    if(isOnlinePayment(o)) online += amt; else cod += amt;
+  });
+  setText('nb-count', entries.length);
+  setText('nb-total', money(total));
+  setText('nb-cod', money(cod));
+  setText('nb-online', money(online));
+
+  const nbBadge = $('badge-notebook-count');
+  if(entries.length>0){ nbBadge.textContent = entries.length; nbBadge.classList.remove('hidden'); }
+  else nbBadge.classList.add('hidden');
+
+  if(q){
+    entries = entries.filter(([id,o])=>{
+      const hay = `${o.orderId||id} ${o.customerName||''} ${o.phone||''} ${o.address||''}`.toLowerCase();
+      return hay.includes(q);
+    });
+  }
+
+  if(entries.length===0){
+    container.innerHTML = `
+      <div class="text-center py-14 glass rounded-3xl">
+        <i class="fa-solid fa-book text-2xl text-ink-600 mb-3"></i>
+        <p class="text-xs text-ink-400">The Notebook is empty. Accepted orders appear here ${autoMoveMinutes()} min after acceptance.</p>
+      </div>`;
+    return;
+  }
+  container.innerHTML = entries.map(([id,o])=>orderCardHTML(id,o,idx,{notebook:true})).join('');
+};
+
+window.moveToNotebook = async function(id){
+  try{
+    await update(ref(db, `${basePath}/orders/${id}`), { movedToNotebook:true, movedAt:Date.now() });
+    window.showToast('Moved','Order moved to the Notebook.','success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+window.restoreToLive = async function(id){
+  try{
+    await update(ref(db, `${basePath}/orders/${id}`), { movedToNotebook:false, acceptedAt:0, movedAt:null });
+    window.showToast('Restored','Order moved back to Live Orders.','info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.exportNotebookCSV = function(){
+  const rows = [['Order ID','Date','Customer','Phone','Area','Address','Items','Payment','Status','Total']];
+  Object.entries(state.orders).filter(([id,o])=>isNotebookOrder(o))
+    .sort((a,b)=>tsOf(b[1])-tsOf(a[1]))
+    .forEach(([id,o])=>{
+      const items = (o.items||[]).map(it=>`${it.quantity||1}x ${it.name||''}`).join(' | ');
+      rows.push([
+        o.orderId||id, new Date(tsOf(o)||Date.now()).toLocaleString(),
+        o.customerName||'', o.phone||'', o.area||'', o.address||'', items,
+        payLabel(o), statusOf(o), orderTotal(o)
+      ]);
+    });
+  downloadCSV(rows, 'notebook-orders.csv');
+};
+
+function downloadCSV(rows, filename){
+  const csv = rows.map(r=>r.map(c=>`"${String(c===undefined||c===null?'':c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  window.showToast('Exported', filename, 'success');
+}
+
+/* ---------------- CUSTOMERS ---------------- */
+window.renderCustomers = function(){
+  const grid = $('customers-grid');
+  if(!grid) return;
+  const idx = buildCustomerIndex();
+  const q = ($('customer-search') ? $('customer-search').value : '').trim().toLowerCase();
+  const filter = $('customer-filter') ? $('customer-filter').value : 'all';
+  const th = vipThreshold();
+
+  let list = Object.values(idx).sort((a,b)=>b.orders.length-a.orders.length || b.lastAt-a.lastAt);
+  if(filter==='vip') list = list.filter(c=>c.orders.length >= th);
+  if(filter==='new') list = list.filter(c=>c.orders.length < th);
+  if(q) list = list.filter(c=>`${c.name} ${c.phone} ${c.address}`.toLowerCase().includes(q));
+
+  if(list.length===0){
+    grid.innerHTML = `<div class="col-span-full text-center py-14 glass rounded-3xl">
+      <i class="fa-solid fa-users text-2xl text-ink-600 mb-3"></i>
+      <p class="text-xs text-ink-400">No customers saved yet.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(c=>{
+    const vip = c.orders.length >= th;
+    return `
+      <div class="${vip?'repeat-card':'glass'} rounded-3xl p-5 space-y-3 cursor-pointer ${vip?'rail-pad':''} relative overflow-hidden"
+           onclick="window.openCustomerModal('${encodeURIComponent(c.key)}')">
+        ${vip?`<div class="vip-rail"><span>VIP</span></div>`:''}
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0">
+            <h4 class="text-sm font-bold text-white truncate">${escapeHtml(c.name)}</h4>
+            <p class="text-[11px] font-mono text-gold-300">${escapeHtml(c.phone)}</p>
+          </div>
+          <span class="chip ${vip?'chip-gold':'chip-mute'}">${c.orders.length}x</span>
+        </div>
+        <p class="text-[11px] text-ink-400 line-clamp-2">${escapeHtml(c.address||'—')}</p>
+        <div class="flex items-center justify-between pt-2 border-t hair">
+          <div>
+            <p class="text-[9px] text-ink-500 uppercase tracking-wider">Lifetime</p>
+            <p class="font-mono font-bold gold-text text-sm">${money(c.total)}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[9px] text-ink-500 uppercase tracking-wider">Last Order</p>
+            <p class="text-[11px] font-mono text-ink-200">${c.lastAt?new Date(c.lastAt).toLocaleDateString():'—'}</p>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+};
+
+window.openCustomerModal = function(encKey){
+  const key = decodeURIComponent(encKey);
+  const idx = buildCustomerIndex();
+  const c = idx[key];
+  if(!c) return;
+  const vip = c.orders.length >= vipThreshold();
+  setText('cm-name', c.name);
+  setText('cm-phone', c.phone);
+  $('cm-body').innerHTML = `
+    <div class="flex gap-2 flex-wrap">
+      <span class="chip ${vip?'chip-gold':'chip-mute'}">${vip?'VIP CUSTOMER':'NEW CUSTOMER'}</span>
+      <span class="chip chip-mute">${c.orders.length} orders</span>
+      <span class="chip chip-mint">${money(c.total)} lifetime</span>
+    </div>
+    <div class="glass-soft rounded-2xl p-3.5 space-y-1">
+      <p><span class="text-ink-400">Address:</span> <span class="text-white">${escapeHtml(c.address||'—')}</span></p>
+      <p><span class="text-ink-400">Last order:</span> <span class="text-white">${c.lastAt?new Date(c.lastAt).toLocaleString():'—'}</span></p>
+      <p><span class="text-ink-400">Avg order:</span> <span class="text-white font-mono">${money(c.orders.length?Math.round(c.total/c.orders.length):0)}</span></p>
+    </div>
+    <div class="space-y-1.5">
+      <p class="font-bold text-ink-300 text-[11px] uppercase tracking-wider">Order History</p>
+      ${c.orders.map(o=>`
+        <div class="flex items-center justify-between glass-soft rounded-xl p-2.5">
+          <div>
+            <span class="font-mono text-white">${escapeHtml(o.orderId||o.id.substring(0,8))}</span>
+            <span class="text-[10px] text-ink-500 ml-2">${new Date(tsOf(o)||Date.now()).toLocaleDateString()}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="${statusChipClass(statusOf(o))}">${statusOf(o).replace(/_/g,' ')}</span>
+            <span class="font-mono font-bold gold-text">${money(orderTotal(o))}</span>
+          </div>
+        </div>`).join('')}
+    </div>
+    <a href="tel:${escapeHtml(c.phone)}" class="btn-gold w-full py-3 rounded-xl text-[11px] flex items-center justify-center gap-2">
+      <i class="fa-solid fa-phone text-[10px]"></i> Call Customer
+    </a>`;
+  $('modal-customer').classList.remove('hidden');
+};
+window.closeCustomerModal = function(){ $('modal-customer').classList.add('hidden'); };
+
+window.exportCustomersCSV = function(){
+  const idx = buildCustomerIndex();
+  const th = vipThreshold();
+  const rows = [['Name','Phone','Address','Orders','VIP','Lifetime Value','Last Order']];
+  Object.values(idx).sort((a,b)=>b.orders.length-a.orders.length).forEach(c=>{
+    rows.push([c.name, c.phone, c.address, c.orders.length, c.orders.length>=th?'YES':'NO', c.total, c.lastAt?new Date(c.lastAt).toLocaleString():'']);
+  });
+  downloadCSV(rows,'customers.csv');
+};
+
+/* ---------------- REVIEWS ---------------- */
+function renderReviews(){
+  const box = $('reviews-list-box');
+  if(!box) return;
+  const entries = Object.entries(state.reviews).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+
+  const badge = $('badge-reviews-count');
+  if(badge){
+    const pendingCount = entries.filter(([id, r]) => r.approved !== true && r.status !== 'approved').length;
+    if(pendingCount > 0){
+      badge.textContent = `${pendingCount} new`;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  if(entries.length === 0){
+    box.innerHTML = `<div class="glass rounded-3xl p-10 text-center"><p class="text-xs text-ink-500">No reviews yet.</p></div>`;
+    return;
+  }
+
+  box.innerHTML = entries.map(([id, r]) => {
+    const isApproved = r.approved === true || r.status === 'approved';
+    const isHome = r.showOnHome === true;
+
+    return `
+      <div class="glass-soft rounded-2xl p-4 text-xs space-y-3 border ${isApproved ? 'hair' : 'border-gold-500/40 bg-gold-500/5'}">
+        <div class="flex items-start justify-between gap-2 flex-wrap">
+          <div>
+            <div class="flex items-center gap-2">
+              <strong class="text-white text-sm">${escapeHtml(r.name || 'Customer')}</strong>
+              <span class="chip ${isApproved ? 'chip-mint' : 'chip-gold'}">${isApproved ? 'Approved' : 'Pending Approval'}</span>
+              ${isHome ? '<span class="chip chip-sky"><i class="fa-solid fa-house text-[9px] mr-1"></i> On Home Page</span>' : ''}
+            </div>
+            <div class="text-gold-300 font-bold mt-1">${'★'.repeat(r.rating || 5)}${'☆'.repeat(5 - (r.rating || 5))} <span class="text-ink-400 font-mono text-[11px]">(${r.rating || 5}/5)</span></div>
+          </div>
+          <div class="text-right text-[10px] text-ink-500 font-mono">
+            <div>Order: <strong class="text-ink-300">${escapeHtml(r.orderId || 'Direct')}</strong></div>
+            <div>${new Date(r.createdAt || Date.now()).toLocaleDateString()}</div>
+          </div>
+        </div>
+
+        <p class="text-ink-200 text-xs italic bg-ink-950/40 p-3 rounded-xl">"${escapeHtml(r.text || '')}"</p>
+
+        <div class="flex items-center justify-between pt-2 border-t hair flex-wrap gap-2">
+          <div class="text-[11px] text-ink-400">
+            Phone: <span class="font-mono text-gold-300">${escapeHtml(r.authorPhone || 'N/A')}</span>
+          </div>
+
+          <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="window.toggleReviewApproval('${id}', ${isApproved})" class="${isApproved ? 'btn-ghost' : 'btn-mint'} px-3 py-1.5 rounded-lg text-[10px] font-bold">
+              <i class="fa-solid ${isApproved ? 'fa-ban' : 'fa-check'} text-[9px] mr-1"></i> ${isApproved ? 'Unapprove' : 'Approve Review'}
+            </button>
+
+            <button onclick="window.toggleReviewHome('${id}', ${isHome})" class="${isHome ? 'btn-danger' : 'btn-gold'} px-3 py-1.5 rounded-lg text-[10px] font-bold">
+              <i class="fa-solid ${isHome ? 'fa-house-circle-xmark' : 'fa-house-circle-check'} text-[9px] mr-1"></i> ${isHome ? 'Remove from Home' : 'Show on Home'}
+            </button>
+
+            <button onclick="window.deleteReview('${id}')" class="btn-ghost text-rose-400 hover:text-white hover:bg-rose-500/20 px-3 py-1.5 rounded-lg text-[10px] font-bold">
+              <i class="fa-solid fa-trash-can text-[9px] mr-1"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleReviewApproval = async function(id, currentApproved){
+  try{
+    const nextApproved = !currentApproved;
+    await update(ref(db, `${basePath}/reviews/${id}`), {
+      approved: nextApproved,
+      status: nextApproved ? 'approved' : 'pending',
+      updatedAt: Date.now()
+    });
+    window.showToast('Review Updated', nextApproved ? 'Review approved and can now be shown publicly.' : 'Review approval withdrawn.', 'success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.toggleReviewHome = async function(id, currentShowOnHome){
+  try{
+    const nextHome = !currentShowOnHome;
+    await update(ref(db, `${basePath}/reviews/${id}`), {
+      showOnHome: nextHome,
+      approved: true,
+      status: 'approved',
+      updatedAt: Date.now()
+    });
+    window.showToast('Home Page Display', nextHome ? 'Review added to the customer Home Page!' : 'Review removed from the Home Page.', 'success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.deleteReview = async function(id){
+  if(!confirm("Are you sure you want to delete this review?")) return;
+  try{
+    await remove(ref(db, `${basePath}/reviews/${id}`));
+    window.showToast('Review Removed', 'Review deleted from the database.', 'info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- COMPLAINTS & RETURNS ---------------- */
+function renderComplaints(){
+  const box = $('complaints-list-box');
+  if(!box) return;
+  const entries = Object.entries(state.complaints).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  
+  const badge = $('badge-complaints-count');
+  if(badge){
+    const pendingCount = entries.filter(([id, c]) => c.status !== 'resolved').length;
+    if(pendingCount > 0){
+      badge.textContent = pendingCount;
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  if(entries.length === 0){
+    box.innerHTML = `<div class="glass rounded-3xl p-10 text-center"><p class="text-xs text-ink-500">No complaints or returns filed.</p></div>`;
+    return;
+  }
+
+  box.innerHTML = entries.map(([id, comp]) => {
+    const isResolved = comp.status === 'resolved';
+
+    return `
+      <div class="glass-soft rounded-2xl p-4 text-xs space-y-3 border ${isResolved ? 'hair opacity-80' : 'border-rose-500/40 bg-rose-500/5'}">
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2">
+            <span class="chip ${isResolved ? 'chip-mint' : 'chip-rose'}">${escapeHtml(comp.type || 'Complaint / Return')}</span>
+            <span class="font-mono text-white text-xs">${escapeHtml(comp.orderId || '')}</span>
+            <span class="chip ${isResolved ? 'chip-mint' : 'chip-gold'}">${isResolved ? 'Resolved' : 'Pending Action'}</span>
+          </div>
+          <span class="text-ink-500 font-mono text-[10px]">${new Date(comp.createdAt || Date.now()).toLocaleDateString()}</span>
+        </div>
+
+        <p class="text-ink-100 bg-ink-950/40 p-3 rounded-xl leading-relaxed">${escapeHtml(comp.details || '')}</p>
+
+        <div class="flex items-center justify-between pt-2 border-t hair flex-wrap gap-2">
+          <div class="text-[11px]">
+            Customer Phone: <a href="tel:${escapeHtml(comp.customerPhone || '')}" class="text-gold-300 font-mono hover:underline">${escapeHtml(comp.customerPhone || 'No Phone')}</a>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="window.toggleComplaintStatus('${id}', '${comp.status || 'pending'}')" class="${isResolved ? 'btn-ghost' : 'btn-mint'} px-3 py-1.5 rounded-lg text-[10px] font-bold">
+              <i class="fa-solid ${isResolved ? 'fa-arrow-rotate-left' : 'fa-circle-check'} text-[9px] mr-1"></i> ${isResolved ? 'Reopen' : 'Mark Resolved'}
+            </button>
+
+            <button onclick="window.deleteComplaint('${id}')" class="btn-danger px-3 py-1.5 rounded-lg text-[10px] font-bold">
+              <i class="fa-solid fa-trash-can text-[9px] mr-1"></i> Remove
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+window.toggleComplaintStatus = async function(id, currentStatus){
+  try{
+    const nextStatus = currentStatus === 'resolved' ? 'pending' : 'resolved';
+    await update(ref(db, `${basePath}/complaints/${id}`), {
+      status: nextStatus,
+      resolvedAt: nextStatus === 'resolved' ? Date.now() : null,
+      updatedAt: Date.now()
+    });
+    window.showToast('Status Updated', nextStatus === 'resolved' ? 'Marked as resolved.' : 'Reopened.', 'info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.deleteComplaint = async function(id){
+  if(!confirm("Are you sure you want to delete this entry?")) return;
+  try{
+    await remove(ref(db, `${basePath}/complaints/${id}`));
+    window.showToast('Removed', 'Record deleted.', 'info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- ORDER DETAIL MODAL WITH LOCATION & DISTANCE ---------------- */
+window.openOrderModal = function(orderId){
+  activeSelectedOrderId = orderId;
+  const o = state.orders[orderId];
+  if(!o) return;
+  const idx = buildCustomerIndex();
+  const count = customerOrderCount(o, idx);
+  const vip = count >= vipThreshold();
+
+  setText('om-order-no', o.orderId || orderId.substring(0,8));
+  setText('om-date-time', new Date(tsOf(o)||Date.now()).toLocaleString());
+  $('om-custom-location-note').value = o.locationNote || '';
+  const vipChip = $('om-vip-chip');
+  vipChip.classList.toggle('hidden', !vip);
+  if(vip) vipChip.textContent = `VIP • ${count} orders`;
+
+  const items = (o.items||[]);
+  const itemsSum = items.reduce((s,it)=>s + (Number(it.price)||0)*(Number(it.quantity)||1), 0);
+  const fee = Math.max(0, orderTotal(o) - itemsSum);
+  const vr = verifyOrder(o);
+  let warnEl = $('om-verify-warn');
+  if(!warnEl){ warnEl = document.createElement('div'); warnEl.id = 'om-verify-warn'; warnEl.className = 'p-3 rounded-2xl text-[11px] font-bold mb-2'; const a = $('om-actions-grid'); if(a && a.parentNode) a.parentNode.insertBefore(warnEl, a); }
+  warnEl.style.cssText = vr.ok ? 'display:none' : 'background:#7f1d1d;color:#fecaca;border:1px solid #ef4444';
+  warnEl.innerHTML = vr.ok ? '' : '⚠ Check before accepting:<br>• ' + vr.issues.map(x=>String(x).replace(/</g,'&lt;')).join('<br>• ');
+
+  const uCoords = o.userLiveLocation || (o.latitude && o.longitude ? { latitude: o.latitude, longitude: o.longitude } : null);
+  let modalDistHTML = '';
+
+  if(uCoords && uCoords.latitude && state.profile.latitude && state.profile.longitude){
+    const distKm = haversineKm(
+      Number(state.profile.latitude), Number(state.profile.longitude),
+      Number(uCoords.latitude), Number(uCoords.longitude)
+    );
+    const estMins = Math.max(6, Math.round(distKm * 3.5));
+    modalDistHTML = `
+      <div class="p-3 rounded-2xl bg-gold-500/10 border border-gold-500/30 text-gold-200 flex items-center justify-between flex-wrap gap-2">
+        <div class="space-y-0.5">
+          <div class="font-bold flex items-center gap-1.5 text-white">
+            <i class="fa-solid fa-satellite-item text-gold-400"></i> Customer Live GPS Coordinates:
+          </div>
+          <div class="text-[11px] font-mono">
+            <strong>${distKm.toFixed(2)} KM</strong> door (~${estMins} mins rider time)
+          </div>
+        </div>
+        <a href="https://www.google.com/maps/dir/?api=1&origin=${state.profile.latitude},${state.profile.longitude}&destination=${uCoords.latitude},${uCoords.longitude}" 
+           target="_blank" class="btn-gold px-3 py-1.5 rounded-xl text-[11px] font-bold flex items-center gap-1">
+          <i class="fa-solid fa-diamond-turn-right"></i> Open Navigation Map
+        </a>
+      </div>
+    `;
+  }
+
+  $('om-body').innerHTML = `
+    <div class="glass-soft rounded-2xl p-3.5 space-y-2">
+      <p><span class="text-ink-400">Customer:</span> <strong class="text-white">${escapeHtml(o.customerName||'')}</strong>
+         ${vip?`<span class="chip chip-gold ml-1">Repeat ${count}x</span>`:`<span class="chip chip-mute ml-1">New</span>`}</p>
+      <p><span class="text-ink-400">Phone:</span> <a href="tel:${escapeHtml(o.phone||'')}" class="text-gold-300 font-mono font-bold hover:underline">${escapeHtml(o.phone||'')}</a></p>
+      
+      <div class="p-2.5 rounded-xl bg-ink-950/40 border hair space-y-1">
+        <div class="font-bold text-white flex items-center justify-between">
+          <span><i class="fa-solid fa-location-dot text-gold-400"></i> Delivery Place:</span>
+          ${o.area ? `<span class="chip chip-gold">${escapeHtml(o.area)}</span>` : ''}
+        </div>
+        <div class="text-ink-200">${escapeHtml(o.address || '—')}</div>
+        ${o.houseNumber ? `<div class="text-ink-400 text-[10px]">House/Flat: <strong class="text-white">${escapeHtml(o.houseNumber)}</strong></div>` : ''}
+        ${o.streetNumber ? `<div class="text-ink-400 text-[10px]">Street/Road: <strong class="text-white">${escapeHtml(o.streetNumber)}</strong></div>` : ''}
+        ${o.landmark ? `<div class="text-ink-400 text-[10px]">Landmark: <span class="text-gold-300 font-bold">${escapeHtml(o.landmark)}</span></div>` : ''}
+      </div>
+
+      ${modalDistHTML}
+
+      ${o.specialInstructions?`<p><span class="text-ink-400">Instructions:</span> <span class="text-gold-200">${escapeHtml(o.specialInstructions)}</span></p>`:''}
+      <p><span class="text-ink-400">Payment:</span> <span class="chip ${isOnlinePayment(o)?'chip-sky':'chip-mint'}">${payLabel(o)}</span></p>
+      <p><span class="text-ink-400">Status:</span> <span class="${statusChipClass(statusOf(o))}">${statusOf(o).replace(/_/g,' ')}</span></p>
+    </div>
+    <div class="space-y-1.5">
+      <p class="font-bold text-ink-300 text-[11px] uppercase tracking-wider">Ordered Items</p>
+      ${items.length?items.map(it=>`
+        <div class="flex justify-between glass-soft rounded-xl p-2.5">
+          <span class="text-ink-100">${Number(it.quantity)||1}x ${escapeHtml(it.name||'Item')} ${it.notes?`<small class="text-gold-300">(${escapeHtml(it.notes)})</small>`:''}</span>
+          <span class="font-mono font-bold text-white">${money((Number(it.price)||0)*(Number(it.quantity)||1))}</span>
+        </div>`).join(''):`<p class="text-[11px] text-ink-500">No item details.</p>`}
+    </div>
+    ${fee>0?`<div class="flex justify-between text-[11px] text-ink-400"><span>Delivery Fee</span><span class="font-mono">${money(fee)}</span></div>`:''}
+    <div class="flex justify-between font-bold text-sm border-t hair pt-2.5">
+      <span class="text-white">Total Bill</span>
+      <span class="gold-text font-mono">${money(orderTotal(o))}</span>
+    </div>`;
+
+  $('om-actions-grid').innerHTML = STATUS_FLOW.map(s=>`
+    <button onclick="window.setOrderStatus('${orderId}','${s}')" class="py-2.5 rounded-xl text-[11px] ${statusOf(o)===s?'btn-gold':'btn-ghost'}">
+      Mark ${s.replace(/_/g,' ')}
+    </button>`).join('') + `
+    <button onclick="window.setOrderStatus('${orderId}','cancelled')" class="btn-danger col-span-2 py-2.5 rounded-xl text-[11px]">Cancel / Return Order</button>`;
+
+  $('modal-order-view').classList.remove('hidden');
+};
+window.closeOrderModal = function(){ $('modal-order-view').classList.add('hidden'); };
+
+window.saveCustomLocationNote = async function(){
+  if(!activeSelectedOrderId) return;
+  try{
+    await update(ref(db, `${basePath}/orders/${activeSelectedOrderId}`), {
+      locationNote: $('om-custom-location-note').value.trim(), updatedAt: Date.now()
+    });
+    window.showToast('Note Updated','The live tracking note has been sent to the customer.','success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.setOrderStatus = async function(orderId, status){
+  const payload = { orderStatus: status, updatedAt: Date.now() };
+  const o = state.orders[orderId] || {};
+  if(statusOf(o) === 'pending' && STATUS_FLOW.indexOf(status) >= 1){
+    const v = verifyOrder(o);
+    if(!v.ok && !confirm('WARNING - this order does not match the current menu:\n\n- ' + v.issues.join('\n- ') + '\n\nAccept anyway?\n(Cancel = do not accept; contact the customer or reject the order.)')) return;
+  }
+  if(status === 'accepted' && !Number(o.acceptedAt)) payload.acceptedAt = Date.now();
+  if(STATUS_FLOW.indexOf(status) >= 1 && !Number(o.acceptedAt)) payload.acceptedAt = Date.now();
+  if(status === 'pending'){ payload.acceptedAt = 0; payload.movedToNotebook = false; }
+  
+  if(status === 'cancelled'){
+    playLoudAlarm('⚠️ Order Return / Cancel Alert!', 10000);
+  }
+
+  try{
+    await update(ref(db, `${basePath}/orders/${orderId}`), payload);
+    const msg = (status==='accepted' && autoMoveEnabled())
+      ? `Accepted — moves to the Notebook after ${autoMoveMinutes()} min.`
+      : `Order marked as ${status.replace(/_/g,' ')}`;
+    window.showToast('Status Updated', msg, 'success');
+    window.closeOrderModal();
+    setTimeout(()=>{ renderLiveOrders(); window.renderNotebook(); }, autoMoveMinutes()*60*1000 + 800);
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- CATEGORIES ---------------- */
+window.addCategory = async function(){
+  const input = $('input-new-category');
+  const name = input.value.trim();
+  if(!name){ window.showToast('Validation','Please enter a category name.','error'); return; }
+  try{
+    await set(push(ref(db, `${basePath}/categories`)), { name, createdAt: Date.now() });
+    input.value = '';
+    window.showToast('Category Added', name, 'success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+window.deleteCategory = async function(id){
+  try{
+    await remove(ref(db, `${basePath}/categories/${id}`));
+    window.showToast('Removed','Category deleted.','info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+function renderCategoriesList(){
+  const box = $('categories-list-box');
+  const cats = Object.entries(state.categories);
+  if(cats.length===0){ box.innerHTML = `<p class="text-[11px] text-ink-500 py-3">No categories added yet.</p>`; return; }
+  box.innerHTML = cats.map(([id,c])=>`
+    <div class="flex items-center justify-between p-3 rounded-xl glass-soft text-xs">
+      <span class="font-bold text-white">${escapeHtml(c.name)}</span>
+      <button onclick="window.deleteCategory('${id}')" class="text-ink-400 hover:text-rose-400"><i class="fa-solid fa-trash-can"></i></button>
+    </div>`).join('');
+}
+function populateCategorySelect(){
+  const sel = $('it-category');
+  if(!sel) return;
+  const cats = Object.values(state.categories);
+  sel.innerHTML = cats.length
+    ? cats.map(c=>`<option value="${escapeHtml(c.name)}">${escapeHtml(c.name)}</option>`).join('')
+    : '<option value="General">General</option>';
+}
+
+/* ---------------- MENU ITEMS ---------------- */
+let editingItemId = null;
+window.openItemModal = function(id){
+  editingItemId = id || null;
+  setText('item-modal-title', id ? 'Edit Item' : 'Add Food Item');
+  $('btn-item-delete').classList.toggle('hidden', !id);
+  $('edit-item-id').value = id || '';
+  const it = (id && state.items[id]) ? state.items[id] : {};
+  $('it-name').value = it.name || '';
+  $('it-desc').value = it.description || '';
+  populateCategorySelect();
+  if(it.category) $('it-category').value = it.category;
+  $('it-final-price').value = it.price || '';
+  $('it-rating').value = it.rating || '4.9';
+  $('it-image-url').value = it.image || '';
+  $('it-available').checked = it.available !== false;
+  $('it-popular').checked = !!it.popular;
+  $('modal-item').classList.remove('hidden');
+};
+window.closeItemModal = function(){ $('modal-item').classList.add('hidden'); };
+
+window.saveItem = async function(){
+  const name = $('it-name').value.trim();
+  const category = $('it-category').value || 'General';
+  const price = Number($('it-final-price').value) || 0;
+  if(!name || !price){ window.showToast('Validation','Item name and price are required.','error'); return; }
+
+  const data = {
+    name, category,
+    description: $('it-desc').value.trim(),
+    image: $('it-image-url').value.trim() || FALLBACK_IMG,
+    price,
+    rating: Number($('it-rating').value) || 4.9,
+    available: $('it-available').checked,
+    popular: $('it-popular').checked,
+    updatedAt: Date.now()
+  };
+  try{
+    if(editingItemId) await update(ref(db, `${basePath}/items/${editingItemId}`), data);
+    else await set(push(ref(db, `${basePath}/items`)), { ...data, createdAt: Date.now() });
+    window.closeItemModal();
+    window.showToast('Saved', `${name} is now live on the customer website.`, 'success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+window.deleteItem = async function(){
+  if(!editingItemId) return;
+  try{
+    await remove(ref(db, `${basePath}/items/${editingItemId}`));
+    window.closeItemModal();
+    window.showToast('Deleted','Item removed from the menu.','info');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+function renderMenuItems(){
+  const grid = $('menu-items-grid');
+  const entries = Object.entries(state.items);
+  if(entries.length===0){
+    grid.innerHTML = `<div class="col-span-full text-center py-14 glass rounded-3xl">
+      <i class="fa-solid fa-utensils text-2xl text-ink-600 mb-3"></i>
+      <p class="text-xs text-ink-400">No items yet. Click "Add Food Item".</p></div>`;
+    return;
+  }
+  grid.innerHTML = entries.map(([id,it])=>`
+    <div class="glass rounded-3xl overflow-hidden cursor-pointer hover:border-gold-500/40 transition group" onclick="window.openItemModal('${id}')">
+      <div class="relative">
+        <img src="${escapeHtml(it.image||FALLBACK_IMG)}" alt="" class="w-full h-36 object-cover group-hover:scale-[1.03] transition duration-300"
+             onerror="this.src='${FALLBACK_IMG}'">
+        <div class="absolute top-2 right-2 flex gap-1.5">
+          ${it.popular?`<span class="chip chip-gold">Popular</span>`:''}
+          ${it.available===false?`<span class="chip chip-rose">Out</span>`:''}
+        </div>
+      </div>
+      <div class="p-4 space-y-1">
+        <h4 class="font-bold text-white text-sm truncate">${escapeHtml(it.name)}</h4>
+        <p class="text-[11px] text-ink-400 truncate">${escapeHtml(it.category||'General')}</p>
+        <div class="flex items-center justify-between pt-1.5">
+          <span class="font-mono font-extrabold gold-text">${money(it.price)}</span>
+          <span class="text-[10px] text-ink-400"><i class="fa-solid fa-star text-gold-400"></i> ${escapeHtml(it.rating||'4.9')}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+/* ---------------- WEBSITE CONTENT EDITOR ---------------- */
+function populateWebsiteEditorUI(){
+  const p = state.profile;
+  $('edit-rest-name').value = p.restaurantName || '';
+  $('edit-owner-phone').value = p.ownerPhone || '';
+  $('edit-logo-url').value = p.logoUrl || '';
+  $('edit-hero-image').value = p.heroImage || '';
+  $('edit-hero-heading').value = p.heroHeading || '';
+  $('edit-hero-subtitle').value = p.heroSubtitle || '';
+  $('edit-about-image').value = p.aboutImage || '';
+  $('edit-about-desc').value = p.description || '';
+  $('edit-about-custom').value = p.aboutText || '';
+}
+
+window.saveWebsiteEditor = async function(){
+  const updates = {
+    restaurantName: $('edit-rest-name').value.trim(),
+    ownerPhone: $('edit-owner-phone').value.trim(),
+    logoUrl: $('edit-logo-url').value.trim(),
+    heroImage: $('edit-hero-image').value.trim(),
+    heroHeading: $('edit-hero-heading').value.trim(),
+    heroSubtitle: $('edit-hero-subtitle').value.trim(),
+    aboutImage: $('edit-about-image').value.trim(),
+    description: $('edit-about-desc').value.trim(),
+    aboutText: $('edit-about-custom').value.trim(),
+    updatedAt: Date.now()
+  };
+
+  try{
+    await update(ref(db, `${basePath}/profile`), updates);
+    window.showToast('Saved & Synced','Customer website details have been updated!','success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- SETTINGS (DELIVERY & PAYMENTS) ---------------- */
+function populateSettingsUI(){
+  const p = state.profile;
+  $('set-rest-name').value = p.restaurantName || '';
+  $('set-owner-phone').value = p.ownerPhone || '';
+  $('set-location').value = p.location || '';
+  $('set-delivery-fee').value = (p.deliveryFee === undefined || p.deliveryFee === null) ? 150 : p.deliveryFee;
+  $('set-open-time').value = p.openTime || '11:00';
+  $('set-close-time').value = p.closeTime || '02:00';
+
+  if(p.latitude && p.longitude){
+    setText('gps-coords-display', `Lat: ${p.latitude} | Lon: ${p.longitude} (Saved)`);
+  } else {
+    setText('gps-coords-display', 'Lat: — | Lon: — (Not updated yet)');
+  }
+
+  const ps = p.paymentSettings || {};
+  $('set-cod-switch').classList.toggle('on', ps.allowCod !== false);
+  $('set-online-switch').classList.toggle('on', !!ps.allowOnline);
+  $('set-online-box').classList.toggle('hidden', !ps.allowOnline);
+  $('set-online-method').value = ps.onlineMethod || 'EasyPaisa';
+  $('set-account-title').value = ps.accountTitle || '';
+  $('set-account-number').value = ps.accountNumber || '';
+  $('set-instructions').value = ps.instructions || '';
+}
+
+window.toggleSetOnline = function(el){
+  el.classList.toggle('on');
+  $('set-online-box').classList.toggle('hidden', !el.classList.contains('on'));
+};
+
+window.saveSettings = async function(){
+  const restName = $('set-rest-name').value.trim();
+  const ownerPhone = $('set-owner-phone').value.trim();
+  const location = $('set-location').value.trim();
+  const deliveryFee = Number($('set-delivery-fee').value) || 0;
+
+  if(!restName || !ownerPhone || !location){
+    window.showToast('Validation Error', 'Bakery name, phone and location are required.', 'error');
+    return;
+  }
+
+  try{
+    await update(ref(db, `${basePath}/profile`), {
+      restaurantName: restName,
+      ownerPhone: ownerPhone,
+      location: location,
+      deliveryFee: deliveryFee,
+      openTime: $('set-open-time').value || '11:00',
+      closeTime: $('set-close-time').value || '02:00',
+      paymentSettings: {
+        allowCod: $('set-cod-switch').classList.contains('on'),
+        allowOnline: $('set-online-switch').classList.contains('on'),
+        onlineMethod: $('set-online-method').value.trim(),
+        accountTitle: $('set-account-title').value.trim(),
+        accountNumber: $('set-account-number').value.trim(),
+        instructions: $('set-instructions').value.trim()
+      },
+      updatedAt: Date.now()
+    });
+    window.showToast('Saved & Synced','Delivery & payment settings are now live on the customer website.','success');
+  }catch(e){ window.showToast('Failed', e.message, 'error'); }
+};
+
+/* ---------------- MISC & KEYBOARD ---------------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape'){
+    window.closeOrderModal(); window.closeItemModal(); window.closeCustomerModal(); window.closePreviewModal();
+  }
+});
+['modal-order-view','modal-item','modal-customer','modal-preview-website'].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el) el.addEventListener('click', (e)=>{ if(e.target === el) el.classList.add('hidden'); });
+});
+
+const catInput = document.getElementById('input-new-category');
+if(catInput) catInput.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); window.addCategory(); } });
+
+/* Ignore a second click while the first save is still running (prevents duplicate categories / items / areas) */
+['addDeliveryArea', 'addCategory', 'saveItem'].forEach((name) => {
+  const fn = window[name]; if (typeof fn !== 'function') return;
+  let busy = false;
+  window[name] = async function (...args) {
+    if (busy) return; busy = true;
+    try { return await fn.apply(this, args); } finally { busy = false; }
+  };
+});
+</script>
+<script src="ping.js"></script></body>
+</html>
