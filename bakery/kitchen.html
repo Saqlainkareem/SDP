@@ -4,15 +4,15 @@
 <style>
 :root{--bg:#f8fafc;--line:#e2e8f0;--ink:#1e293b;--mute:#64748b;--gold:#b8892a;--goldd:#8a6418;--goldl:#fbf5e6;--bad:#dc2626;--ok:#16a34a}
 *{box-sizing:border-box;margin:0}body{background:var(--bg);color:var(--ink);font:14px system-ui,Segoe UI,sans-serif;display:flex;min-height:100vh}aside{width:232px;background:#fff;border-right:1px solid var(--line);padding:18px 12px;position:sticky;top:0;height:100vh;flex-shrink:0;overflow:auto}.brand{text-align:center;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:12px}.brand b{display:block;font:700 19px Georgia,serif;color:var(--goldd);letter-spacing:.14em;margin-top:6px}.brand small{color:var(--mute);letter-spacing:.3em;font-size:9px}aside a{display:flex;gap:10px;padding:10px 12px;border-radius:10px;color:var(--ink);text-decoration:none;margin-bottom:2px;font-weight:600}aside a:hover{background:var(--goldl)}aside a.on{background:var(--gold);color:#fff}
-main{flex:1;padding:24px 30px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:18px}.top h1{font:800 26px Georgia,serif;color:var(--goldd)}.top p{color:var(--mute);font-size:12px}.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.g2{display:grid;gap:16px;grid-template-columns:1fr 1fr}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.card h3{font:700 15px Georgia,serif;color:var(--goldd);margin-bottom:10px}button,input,textarea{font:inherit;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 11px}input,textarea{width:100%}button{cursor:pointer;background:var(--gold);color:#fff;font-weight:700;border:0}button:disabled{opacity:.55;cursor:not-allowed}button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}button.sm{padding:5px 9px;font-size:12px}label{display:block;font-size:10px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>div{flex:1;min-width:130px}.stock-card{border:1px solid var(--line);border-radius:12px;padding:12px}.stock-card.selected{border-color:var(--gold);background:var(--goldl)}.tag{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#f1f5f9}.low{color:var(--bad);font-weight:700}.okc{color:var(--ok);font-weight:700}.err{color:var(--bad);font-weight:700}.sc{overflow:auto}table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.08em;background:#f8fafc}th,td{padding:9px 8px;border-bottom:1px solid var(--line)}.qty{max-width:110px}.qty.invalid{border:2px solid var(--bad);background:#fff1f2}.np{}@media(max-width:850px){body{flex-direction:column}aside{width:100%;height:auto;position:static}.g2{grid-template-columns:1fr}main{padding:14px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:500px){.grid{grid-template-columns:1fr}}@media print{aside,.np{display:none!important}main{padding:0}}
+main{flex:1;padding:24px 30px;min-width:0}.top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-bottom:18px}.top h1{font:800 26px Georgia,serif;color:var(--goldd)}.top p{color:var(--mute);font-size:12px}.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(190px,1fr))}.g2{display:grid;gap:16px;grid-template-columns:1fr 1fr}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px}.card h3{font:700 15px Georgia,serif;color:var(--goldd);margin-bottom:10px}button,input,select,textarea{font:inherit;border-radius:9px;border:1px solid var(--line);background:#fff;color:var(--ink);padding:9px 11px}input,select,textarea{width:100%}button{cursor:pointer;background:var(--gold);color:#fff;font-weight:700;border:0}button:disabled{opacity:.55;cursor:not-allowed}button.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}button.sm{padding:5px 9px;font-size:12px}label{display:block;font-size:10px;font-weight:700;color:var(--mute);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.row>div{flex:1;min-width:130px}.stock-card{border:1px solid var(--line);border-radius:12px;padding:12px}.stock-card.selected{border-color:var(--gold);background:var(--goldl)}.tag{padding:2px 9px;border-radius:99px;font-size:11px;font-weight:700;background:#f1f5f9}.low{color:var(--bad);font-weight:700}.okc{color:var(--ok);font-weight:700}.err{color:var(--bad);font-weight:700}.sc{overflow:auto}table{width:100%;border-collapse:collapse}th{text-align:left;color:var(--mute);font-size:10px;text-transform:uppercase;letter-spacing:.08em;background:#f8fafc}th,td{padding:9px 8px;border-bottom:1px solid var(--line)}.qty{min-width:80px;max-width:105px}.qty.invalid{border:2px solid var(--bad);background:#fff1f2}.u-sel{min-width:74px;max-width:86px;padding:8px 6px}.pcs-in{min-width:70px;max-width:88px}.mul-lbl{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--mute);text-transform:none;letter-spacing:0;margin:0;cursor:pointer;white-space:nowrap}.mul-lbl input{width:auto;padding:0;margin:0}.np{}@media(max-width:850px){body{flex-direction:column}aside{width:100%;height:auto;position:static}.g2{grid-template-columns:1fr}main{padding:14px}.grid{grid-template-columns:1fr 1fr}}@media(max-width:500px){.grid{grid-template-columns:1fr}}@media print{aside,.np{display:none!important}main{padding:0}}
 </style></head><body><main>
 <div id="hd"></div>
 <div class="g2 np" style="margin-bottom:14px">
  <div class="card"><h3>Reference / Hawala</h3><div class="row"><div><label>Reference</label><input id="ref" placeholder="Morning Kitchen"></div><div><label>Note / Remarks</label><textarea id="note" rows="2"></textarea></div></div></div>
- <div class="card"><h3>Search Stock</h3><label>Search item/material</label><input id="stockSearch" placeholder="Search item..." autocomplete="off"></div>
+ <div class="card"><h3>Search Stock</h3><label>Search item/material</label><input id="stockSearch" placeholder="Search item or category..." autocomplete="off"></div>
 </div>
 <div class="grid np" id="stockCards" style="margin-bottom:14px"></div>
-<div class="card np" style="margin-bottom:14px"><h3>Selected Kitchen Materials</h3><div class="sc"><table><thead><tr><th>NO</th><th>ITEM</th><th>AVAILABLE</th><th>UNIT</th><th>USED QTY</th><th>REMAINING</th><th>ACTION</th></tr></thead><tbody id="selectedBody"></tbody></table></div><div class="row" style="margin-top:12px;justify-content:flex-end"><div style="flex:0 0 auto"><button id="saveBtn" onclick="saveKitchen()">SAVE KITCHEN USAGE</button></div><div style="flex:0 0 auto"><button id="printLast" class="ghost" onclick="printLast()">PRINT KITCHEN SLIP</button></div></div><p id="saveMsg" style="margin-top:8px"></p></div>
+<div class="card np" style="margin-bottom:14px"><h3>Selected Kitchen Materials</h3><p style="font-size:12px;color:var(--mute);margin:-4px 0 10px">Enter total weight/qty, OR enter per-piece weight (e.g. <b>2 kg</b>) and Pieces (e.g. <b>5</b>) to auto-calculate <b>10 kg</b>.</p><div class="sc"><table><thead><tr><th>NO</th><th>ITEM</th><th>AVAILABLE</th><th>USED QTY &amp; UNIT</th><th>PIECES (×)</th><th>TOTAL USED</th><th>REMAINING</th><th>ACTION</th></tr></thead><tbody id="selectedBody"></tbody></table></div><div class="row" style="margin-top:12px;justify-content:flex-end"><div style="flex:0 0 auto"><button id="saveBtn" onclick="saveKitchen()">SAVE KITCHEN USAGE</button></div><div style="flex:0 0 auto"><button id="printLast" class="ghost" onclick="printLast()">PRINT KITCHEN SLIP</button></div></div><p id="saveMsg" style="margin-top:8px"></p></div>
 <div class="card np" style="margin-bottom:14px"><h3>Kitchen Usage Summary</h3><div class="row"><div><label>Date</label><input id="summaryDate" type="date"></div><div style="flex:0 0 auto"><button class="ghost" onclick="printDaily()">PRINT DAILY KITCHEN REPORT</button></div></div><div id="dailySummary" style="margin-top:10px"></div></div>
 <div class="card sc np"><h3>Kitchen Usage History</h3><div class="row" style="margin-bottom:10px"><div><label>Search Kitchen Records</label><input id="recordSearch" placeholder="Usage ID, Hawala, item, date, staff"></div><div><label>From Date</label><input id="fromDate" type="date"></div><div><label>To Date</label><input id="toDate" type="date"></div><button class="ghost" onclick="drawHistory()">Search</button></div><table><thead><tr><th>Usage ID</th><th>Date</th><th>Time</th><th>Reference/Hawala</th><th>Items</th><th>Total Qty</th><th>Created By</th><th>Actions</th></tr></thead><tbody id="historyBody"></tbody></table></div>
 </main>
@@ -39,61 +39,187 @@ if(!AB.db.get('stock',null)){
 summaryDate.value=AB.today();
 window.__fbReady.then(function(FB){return FB.authReady}).then(function(u){currentUser=u&&u.email||''}).catch(()=>{});
 
+const ALIAS={g:'gram',gm:'gram',gms:'gram',gram:'gram',grams:'gram',kg:'kg',kgs:'kg',kilo:'kg',kilogram:'kg',l:'L',ltr:'L',lt:'L',litre:'L',liter:'L',ml:'ml',pc:'pcs',pcs:'pcs',piece:'pcs',pieces:'pcs',nag:'pcs',adad:'pcs',dz:'dozen',dozen:'dozen'};
+const nu_=u=>{const k=String(u||'').trim();return ALIAS[k.toLowerCase()]||k};
+const FAC={gram:['m',.001],kg:['m',1],ml:['v',.001],L:['v',1],pcs:['c',1],dozen:['c',12]};
+function compat(u){const k=nu_(u),f=FAC[k];if(!f)return[String(u||'pcs')];return Object.keys(FAC).filter(x=>FAC[x][0]==f[0]).sort((a,b)=>FAC[a][1]-FAC[b][1])}
+const conv=(v,from,to)=>{const a=FAC[nu_(from)],b=FAC[nu_(to)];return a&&b&&a[0]==b[0]?round(v*a[1]/b[1]):v};
+const isPcs=u=>/^(pcs?|pieces?|piece|nag|adad)$/i.test(String(u||'').trim());
+const pcs=x=>x.pieces!=null&&x.pieces!==''?(+x.pieces||0):(isPcs(x.unit)?(+x.qty||0):0);
+
+function round(n){return Math.round((n+Number.EPSILON)*1000000)/1000000}
 function normalize(v){try{return typeof v==='string'?JSON.parse(v):v}catch(e){return []}}
 function getStock(){return normalize(AB.db.get('stock',[])).filter(x=>x&&x.id)}
 function getUsage(){return normalize(AB.db.get('kitchen_usage',[]))}
 function getPending(){return normalize(AB.db.get('kitchen_pending',[]))}
 function savePending(v){AB.db.set('kitchen_pending',v)}
 
+function calcItem(x){
+ const stock=getStock().find(s=>s.id===x.stockItemId);
+ const available=stock?Number(stock.qty):Number(x.available||0);
+ const stockUnit=stock?(stock.unit||'pcs'):(x.unit||'pcs');
+ const eu=x.enteredUnit||stockUnit;
+ const pCount=(x.pieces!=null&&x.pieces!==''&&Number(x.pieces)>0)?Math.round(Number(x.pieces)):0;
+ const rawQty=(x.usedQty!=null&&x.usedQty!==''&&Number.isFinite(Number(x.usedQty)))?Number(x.usedQty):(isPcs(eu)&&pCount>0?pCount:NaN);
+ const hasInput=Number.isFinite(rawQty)||(pCount>0&&isPcs(eu));
+ const isMul=!!x.mul&&pCount>0&&Number.isFinite(rawQty)&&rawQty>0;
+ const enteredTotal=Number.isFinite(rawQty)?(isMul?round(rawQty*pCount):rawQty):NaN;
+ const totalStockUnit=Number.isFinite(enteredTotal)?conv(enteredTotal,eu,stockUnit):NaN;
+ const remaining=Number.isFinite(totalStockUnit)?round(available-totalStockUnit):NaN;
+ const invalid=!Number.isFinite(totalStockUnit)||totalStockUnit<=0||totalStockUnit>available+1e-9;
+ return{available,stockUnit,eu,pCount,rawQty,hasInput,isMul,enteredTotal,totalStockUnit,remaining,invalid};
+}
+
 function drawStock(){
  const q=(stockSearch.value||'').trim().toLowerCase().replace(/\s+/g,' ');
- const stock=getStock().filter(x=>String(x.name||'').toLowerCase().replace(/\s+/g,' ').includes(q));
+ const stock=getStock().filter(x=>(String(x.name||'')+' '+String(x.category||'')).toLowerCase().replace(/\s+/g,' ').includes(q));
  stockCards.innerHTML=stock.map(x=>{
-  const low=Number(x.qty)<=Number(x.min||0),isSel=selected.has(x.id);
-  return '<div class="stock-card '+(isSel?'selected':'')+'"><b>'+esc(x.name)+'</b><p style="color:var(--mute);font-size:12px;margin:4px 0">'+esc(x.category||'Raw stock')+'</p><p>Available: <b class="'+(low?'low':'okc')+'">'+Number(x.qty)+' '+esc(x.unit||'pcs')+'</b></p><p style="margin:3px 0">'+(low?'<span class="tag low">LOW STOCK</span>':'<span class="tag">IN STOCK</span>')+'</p><button class="sm '+(isSel?'ghost':'')+'" onclick="toggleItem('+JSON.stringify(x.id)+')">'+(isSel?'Selected':'Select')+'</button></div>'
- }).join('')||'<div class="card">No matching stock items.</div>';drawSelected();
+  const low=Number(x.qty)<=Number(x.min||0),isSel=selected.has(x.id),p=pcs(x);
+  return '<div class="stock-card '+(isSel?'selected':'')+'"><b>'+esc(x.name)+'</b><p style="color:var(--mute);font-size:12px;margin:4px 0">'+esc(x.category||'Raw stock')+'</p><p>Available: <b class="'+(low?'low':'okc')+'">'+Number(x.qty)+' '+esc(x.unit||'pcs')+'</b>'+(p>0?' <span style="font-size:11px;color:var(--mute)">('+p+' pcs)</span>':'')+'</p><p style="margin:3px 0">'+(low?'<span class="tag low">LOW STOCK</span>':'<span class="tag">IN STOCK</span>')+'</p><button class="sm '+(isSel?'ghost':'')+'" data-action="toggle" data-id="'+esc(x.id)+'">'+(isSel?'Selected':'Select')+'</button></div>'
+ }).join('')||'<div class="card">No matching stock items.</div>';
+ drawSelected();
 }
-function toggleItem(id){if(selected.has(id))selected.delete(id);else{const x=getStock().find(s=>s.id===id);if(x)selected.set(id,{stockItemId:id,itemName:x.name,available:Number(x.qty),unit:x.unit||'pcs'})}drawStock()}
+
+function toggleItem(id){
+ if(selected.has(id))selected.delete(id);
+ else{
+  const x=getStock().find(s=>s.id===id);
+  if(x){
+   const u=x.unit||'pcs';
+   const defU=compat(u).includes(nu_(u))?nu_(u):u;
+   selected.set(id,{stockItemId:id,itemName:x.name,available:Number(x.qty),unit:u,enteredUnit:defU,mul:!isPcs(defU)});
+  }
+ }
+ drawStock();
+}
+
 function drawSelected(){
  selectedBody.innerHTML=[...selected.values()].map((x,i)=>{
-  const stock=getStock().find(s=>s.id===x.stockItemId);const available=stock?Number(stock.qty):x.available;const used=Number(x.usedQty||0);const remaining=available-used;
-  const invalid=!Number.isFinite(used)||used<=0||used>available;
-  return '<tr><td>'+ (i+1)+'</td><td><b>'+esc(x.itemName)+'</b></td><td>'+available+'</td><td>'+esc(x.unit)+'</td><td><input class="qty '+(invalid&&x.usedQty!==undefined?'invalid':'')+'" type="number" step="any" min="0.000001" value="'+(x.usedQty==null?'':esc(x.usedQty))+'" oninput="changeQty('+JSON.stringify(x.stockItemId)+',this.value)"></td><td class="'+(invalid?'err':'')+'">'+(x.usedQty==null?'':(Number.isFinite(remaining)?remaining:'-'))+'</td><td><button class="ghost sm" onclick="toggleItem('+JSON.stringify(x.stockItemId)+')">Remove</button></td></tr>'
- }).join('')||'<tr><td colspan="7" style="color:var(--mute)">No stock items selected.</td></tr>';
+  const c=calcItem(x);
+  const opts=compat(c.stockUnit);
+  const availPcs=pcs(getStock().find(s=>s.id===x.stockItemId)||{});
+  return '<tr data-id="'+esc(x.stockItemId)+'">'+
+   '<td>'+(i+1)+'</td>'+
+   '<td><b>'+esc(x.itemName)+'</b></td>'+
+   '<td>'+c.available+' '+esc(c.stockUnit)+(availPcs>0?'<div style="font-size:11px;color:var(--mute)">'+availPcs+' pcs</div>':'')+'</td>'+
+   '<td><div style="display:flex;gap:4px;align-items:center"><input class="qty '+(c.invalid&&c.hasInput?'invalid':'')+'" data-role="qty" type="number" step="any" min="0.000001" placeholder="qty" value="'+(x.usedQty==null?'':esc(x.usedQty))+'"><select class="u-sel" data-role="unit" '+(opts.length<2?'disabled':'')+'>'+opts.map(u=>'<option value="'+esc(u)+'"'+(u===c.eu?' selected':'')+'>'+esc(u)+'</option>').join('')+'</select></div></td>'+
+   '<td><div style="display:flex;gap:6px;align-items:center"><input class="pcs-in" data-role="pcs" type="number" step="1" min="0" placeholder="pcs" value="'+(x.pieces==null?'':esc(x.pieces))+'"><label class="mul-lbl" title="Multiply Qty × Pieces"><input type="checkbox" data-role="mul"'+(x.mul?' checked':'')+'> ×</label></div></td>'+
+   '<td data-cell="total">'+formatTotalCell(c)+'</td>'+
+   '<td data-cell="rem" class="'+(c.invalid&&c.hasInput?'err':'')+'">'+(c.hasInput&&Number.isFinite(c.remaining)?c.remaining+' '+esc(c.stockUnit):'-')+'</td>'+
+   '<td><button class="ghost sm" data-action="remove" data-id="'+esc(x.stockItemId)+'">Remove</button></td>'+
+  '</tr>';
+ }).join('')||'<tr><td colspan="8" style="color:var(--mute)">No stock items selected.</td></tr>';
 }
-function changeQty(id,v){const x=selected.get(id);if(!x)return;x.usedQty=v===''?undefined:Number(v);drawSelected()}
+
+function formatTotalCell(c){
+ if(!c.hasInput||!Number.isFinite(c.totalStockUnit))return'<span style="color:var(--mute)">-</span>';
+ let html='<b>'+c.totalStockUnit+' '+esc(c.stockUnit)+'</b>';
+ if(c.isMul)html+='<div style="font-size:11px;color:var(--goldd)">'+c.rawQty+' '+esc(c.eu)+' × '+c.pCount+' pcs</div>';
+ else if(nu_(c.eu)!==nu_(c.stockUnit))html+='<div style="font-size:11px;color:var(--mute)">'+c.enteredTotal+' '+esc(c.eu)+'</div>';
+ return html;
+}
+
+function updateRow(tr,x){
+ const c=calcItem(x);
+ const qIn=tr.querySelector('[data-role="qty"]');
+ if(qIn)qIn.className='qty'+(c.invalid&&c.hasInput?' invalid':'');
+ const totEl=tr.querySelector('[data-cell="total"]');
+ if(totEl)totEl.innerHTML=formatTotalCell(c);
+ const remEl=tr.querySelector('[data-cell="rem"]');
+ if(remEl){
+  remEl.className=c.invalid&&c.hasInput?'err':'';
+  remEl.textContent=c.hasInput&&Number.isFinite(c.remaining)?(c.remaining+' '+c.stockUnit):'-';
+ }
+}
+
+function changeQty(id,v){const x=selected.get(id);if(!x)return;x.usedQty=v===''?undefined:Number(v);const tr=selectedBody.querySelector('tr[data-id="'+CSS.escape(id)+'"]');if(tr)updateRow(tr,x)}
+
+stockCards.addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-action="toggle"]');
+ if(btn)toggleItem(btn.dataset.id);
+});
+selectedBody.addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-action="remove"]');
+ if(btn)toggleItem(btn.dataset.id);
+});
+selectedBody.addEventListener('input',e=>{
+ const tr=e.target.closest('tr[data-id]');if(!tr)return;
+ const x=selected.get(tr.dataset.id);if(!x)return;
+ const role=e.target.dataset.role;
+ if(role==='qty')x.usedQty=e.target.value===''?undefined:Number(e.target.value);
+ else if(role==='pcs')x.pieces=e.target.value===''?undefined:Math.max(0,Math.round(Number(e.target.value)||0));
+ updateRow(tr,x);
+});
+selectedBody.addEventListener('change',e=>{
+ const tr=e.target.closest('tr[data-id]');if(!tr)return;
+ const x=selected.get(tr.dataset.id);if(!x)return;
+ const role=e.target.dataset.role;
+ if(role==='unit'){
+  x.enteredUnit=e.target.value;
+  x.mul=!isPcs(x.enteredUnit);
+  const mChk=tr.querySelector('[data-role="mul"]');if(mChk)mChk.checked=x.mul;
+ }else if(role==='mul'){
+  x.mul=e.target.checked;
+ }
+ updateRow(tr,x);
+});
 
 async function saveKitchen(){
  if(saving)return;const items=[...selected.values()];
  if(!items.length)return alert('Select at least one stock item');
- for(const x of items){const used=x.usedQty;const stock=getStock().find(s=>s.id===x.stockItemId);if(!stock)return alert('Stock item was not found');if(!Number.isFinite(Number(used))||Number(used)<=0)return alert('Enter a valid used quantity for '+x.itemName);if(Number(used)>Number(stock.qty))return alert('Insufficient stock for '+x.itemName)}
+ const computed=[];
+ for(const x of items){
+  const stock=getStock().find(s=>s.id===x.stockItemId);
+  if(!stock)return alert('Stock item was not found: '+x.itemName);
+  const c=calcItem(x);
+  if(!Number.isFinite(c.totalStockUnit)||c.totalStockUnit<=0)return alert('Enter a valid used quantity for '+x.itemName);
+  if(c.totalStockUnit>Number(stock.qty)+1e-9)return alert('Insufficient stock for '+x.itemName+' (available: '+stock.qty+' '+c.stockUnit+')');
+  computed.push({x,c});
+ }
  saving=true;saveBtn.disabled=true;saveBtn.textContent='Saving...';saveMsg.textContent='';saveMsg.className='';
  const usageId='KU-'+AB.uid().toUpperCase();
- const payload={usageId,items:items.map(x=>({stockItemId:x.stockItemId,usedQty:Number(x.usedQty)})),date:AB.today(),time:AB.now(),reference:ref.value.trim(),note:note.value.trim(),createdBy:currentUser||'',createdAt:new Date().toISOString()};
+ const payload={usageId,items:computed.map(({x,c})=>({stockItemId:x.stockItemId,usedQty:c.totalStockUnit})),date:AB.today(),time:AB.now(),reference:ref.value.trim(),note:note.value.trim(),createdBy:currentUser||'',createdAt:new Date().toISOString()};
  try{
   const FBc=await window.__fbReady;const d=await FBc.kitchenCommit(payload);
-  applyResult(d.record,d.stock);selected.clear();ref.value='';note.value='';lastRecord=d.record;saveMsg.textContent='Saved Successfully';saveMsg.className='okc';
+  const stockAfter=d.stock||getStock();
+  computed.forEach(({x,c})=>{
+   const st=stockAfter.find(y=>y.id===x.stockItemId);
+   if(st&&(c.pCount>0||isPcs(st.unit))){
+    const subP=c.pCount>0?c.pCount:c.totalStockUnit;
+    st.pieces=Math.max(0,pcs(st)-subP);
+   }
+  });
+  applyResult(d.record,stockAfter);
+  selected.clear();ref.value='';note.value='';lastRecord=d.record;saveMsg.textContent='Saved Successfully';saveMsg.className='okc';drawStock();
  }catch(e){
   if(e&&e.validation){saveMsg.textContent=e.message;saveMsg.className='err';saving=false;saveBtn.disabled=false;saveBtn.textContent='SAVE KITCHEN USAGE';return}
   const stock=getStock(),usage=getUsage(),pending=getPending();
   const record={id:usageId,usageNo:usageId,date:payload.date,time:payload.time,reference:payload.reference,note:payload.note,createdBy:payload.createdBy,createdAt:payload.createdAt,items:[]};
-  for(const x of payload.items){const s=stock.find(y=>y.id===x.stockItemId);const old=Number(s.qty);record.items.push({stockItemId:x.stockItemId,itemName:s.name,oldQty:old,usedQty:x.usedQty,remainingQty:round(old-x.usedQty),unit:s.unit||'pcs'});s.qty=round(old-x.usedQty)}
+  for(const {x,c} of computed){
+   const s=stock.find(y=>y.id===x.stockItemId);const old=Number(s.qty);
+   record.items.push({stockItemId:x.stockItemId,itemName:s.name,oldQty:old,usedQty:c.totalStockUnit,remainingQty:round(old-c.totalStockUnit),unit:s.unit||'pcs',pieces:c.pCount>0?c.pCount:null});
+   s.qty=round(old-c.totalStockUnit);
+   if(c.pCount>0||isPcs(s.unit))s.pieces=Math.max(0,pcs(s)-(c.pCount>0?c.pCount:c.totalStockUnit));
+  }
   usage.unshift(record);pending.push(payload);AB.db.set('stock',stock);AB.db.set('kitchen_usage',usage);savePending(pending);
-  // append offline movement entries
-  const moves=normalize(AB.db.get('moves',[]));record.items.forEach(x=>{const st=stock.find(y=>y.id===x.stockItemId)||{};moves.push({id:AB.uid(),date:record.date,time:record.time,itemId:x.stockItemId,name:x.itemName,category:st.category||'',unit:x.unit,kind:'out',qty:x.usedQty,rate:Number(st.rate)||0,total:round((Number(st.rate)||0)*x.usedQty),before:x.oldQty,after:x.remainingQty,by:record.createdBy,party:'Kitchen',note:'Kitchen usage '+record.id+(record.reference?' / '+record.reference:'')})});AB.db.set('moves',moves);
+  const moves=normalize(AB.db.get('moves',[]));
+  record.items.forEach(it=>{
+   const st=stock.find(y=>y.id===it.stockItemId)||{};
+   moves.push({id:AB.uid(),date:record.date,time:record.time,itemId:it.stockItemId,name:it.itemName,category:st.category||'',unit:it.unit,kind:'out',qty:it.usedQty,pieces:it.pieces,rate:Number(st.rate)||0,total:round((Number(st.rate)||0)*it.usedQty),before:it.oldQty,after:it.remainingQty,by:record.createdBy,party:'Kitchen',note:'Kitchen usage '+record.id+(record.reference?' / '+record.reference:'')});
+  });
+  AB.db.set('moves',moves);
   selected.clear();ref.value='';note.value='';lastRecord=record;saveMsg.textContent='Saved offline. It will synchronize when online.';saveMsg.className='err';drawStock();
  }
  saving=false;saveBtn.disabled=false;saveBtn.textContent='SAVE KITCHEN USAGE';drawHistory();drawDaily();
 }
-function round(n){return Math.round((n+Number.EPSILON)*1000000)/1000000}
 function applyResult(record,stock){AB.db.set('stock',stock);let usage=getUsage();usage=usage.filter(x=>x&&x.id!==record.id);usage.unshift(record);AB.db.set('kitchen_usage',usage)}
 function printLast(){if(!lastRecord)return alert('No saved kitchen usage in this session');printRecord(lastRecord)}
 function printRecord(r){
- const rows=r.items.map((x,i)=>'<tr style="border-bottom:1px dashed #000"><td>'+ (i+1)+'</td><td>'+esc(x.itemName)+'</td><td>'+Number(x.usedQty)+' '+esc(x.unit)+'</td></tr>').join('');
- const total=r.items.reduce((n,x)=>n+Number(x.usedQty),0);
+ const rows=r.items.map((x,i)=>'<tr style="border-bottom:1px dashed #000"><td>'+(i+1)+'</td><td>'+esc(x.itemName)+(x.pieces?' ('+x.pieces+' pcs)':'')+'</td><td>'+Number(x.usedQty)+' '+esc(x.unit)+'</td></tr>').join('');
+ const total=round(r.items.reduce((n,x)=>n+Number(x.usedQty),0));
  AB.win('Kitchen Stock Usage','<p><b>Kitchen Usage No:</b> '+esc(r.usageNo||r.id)+'</p><p>Date: '+esc(r.date)+' &nbsp; Time: '+esc(r.time)+'</p><p>Reference/Hawala: '+esc(r.reference||'-')+'</p><p>Note: '+esc(r.note||'-')+'</p><table><tr><th>NO</th><th>ITEM</th><th>USED QTY</th></tr>'+rows+'</table><p style="margin-top:6px">Total Items: '+r.items.length+'</p><p>Total Qty: '+total+'</p><p>Reference/Hawala: '+esc(r.reference||'-')+'</p><p>Prepared/Issued By: '+esc(r.createdBy||'-')+'</p><p style="text-align:center;margin-top:8px">Kitchen Usage Record Saved Successfully</p>');
 }
-function viewRecord(id){const r=getUsage().find(x=>x.id===id);if(!r)return;const details=(r.items||[]).map((x,i=1)=>x.itemName+' - '+Number(x.usedQty)+' '+(x.unit||'')).join('\n');alert('Kitchen Usage No: '+(r.usageNo||r.id)+'\nDate: '+r.date+' '+(r.time||'')+'\nReference/Hawala: '+(r.reference||'-')+'\nNote: '+(r.note||'-')+'\nCreated By: '+(r.createdBy||'-')+'\n\n'+details)}
+function viewRecord(id){const r=getUsage().find(x=>x.id===id);if(!r)return;const details=(r.items||[]).map((x,i)=>(i+1)+'. '+x.itemName+' - '+Number(x.usedQty)+' '+(x.unit||'')+(x.pieces?' ('+x.pieces+' pcs)':'')).join('\n');alert('Kitchen Usage No: '+(r.usageNo||r.id)+'\nDate: '+r.date+' '+(r.time||'')+'\nReference/Hawala: '+(r.reference||'-')+'\nNote: '+(r.note||'-')+'\nCreated By: '+(r.createdBy||'-')+'\n\n'+details)}
 function printRecordId(id){const r=getUsage().find(x=>x.id===id);if(r)printRecord(r)}
 function drawHistory(){
  const q=(recordSearch.value||'').trim().toLowerCase().replace(/\s+/g,' ');
@@ -103,10 +229,19 @@ function drawHistory(){
   const hay=[r.id,r.reference,r.date,r.createdBy,...(r.items||[]).map(x=>x.itemName)].join(' ').toLowerCase().replace(/\s+/g,' ');
   return !q||hay.includes(q)
  });
-  historyBody.innerHTML=rows.map(r=>'<tr><td><b>'+esc(r.usageNo||r.id)+'</b></td><td>'+esc(r.date)+'</td><td>'+esc(r.time||'-')+'</td><td>'+esc(r.reference||'-')+'</td><td>'+esc((r.items||[]).map(x=>x.itemName+' '+Number(x.usedQty)+' '+(x.unit||'')).join(', '))+'</td><td>'+round((r.items||[]).reduce((n,x)=>n+Number(x.usedQty||0),0))+'</td><td>'+esc(r.createdBy||'-')+'</td><td><button class="ghost sm" onclick="viewRecord('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">VIEW</button> <button class="sm" onclick="printRecordId('+JSON.stringify(r.id).replace(/"/g,'&quot;')+')">PRINT</button></td></tr>').join('')||'<tr><td colspan="8" style="color:var(--mute)">No kitchen records found.</td></tr>';
+ historyBody.innerHTML=rows.map(r=>'<tr><td><b>'+esc(r.usageNo||r.id)+'</b></td><td>'+esc(r.date)+'</td><td>'+esc(r.time||'-')+'</td><td>'+esc(r.reference||'-')+'</td><td>'+esc((r.items||[]).map(x=>x.itemName+' '+Number(x.usedQty)+' '+(x.unit||'')).join(', '))+'</td><td>'+round((r.items||[]).reduce((n,x)=>n+Number(x.usedQty||0),0))+'</td><td>'+esc(r.createdBy||'-')+'</td><td><button class="ghost sm" data-action="view" data-id="'+esc(r.id)+'">VIEW</button> <button class="sm" data-action="print" data-id="'+esc(r.id)+'">PRINT</button></td></tr>').join('')||'<tr><td colspan="8" style="color:var(--mute)">No kitchen records found.</td></tr>';
 }
-function drawDaily(){const date=summaryDate.value||AB.today(),rows=getUsage().filter(r=>r.date===date),totals={};rows.forEach(r=>(r.items||[]).forEach(x=>{totals[x.itemName]=(totals[x.itemName]||0)+Number(x.usedQty)}));dailySummary.innerHTML='<b>Date: '+esc(date)+'</b><br>'+Object.keys(totals).map(name=>esc(name)+' <b>'+round(totals[name])+'</b>').join('<br>')+(Object.keys(totals).length?'<br>':'No usage items.')+'<br>Total Usage Records: '+rows.length}
+historyBody.addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-action]');if(!btn)return;
+ if(btn.dataset.action==='view')viewRecord(btn.dataset.id);
+ else if(btn.dataset.action==='print')printRecordId(btn.dataset.id);
+});
+function drawDaily(){
+ const date=summaryDate.value||AB.today(),rows=getUsage().filter(r=>r.date===date),totals={},units={};
+ rows.forEach(r=>(r.items||[]).forEach(x=>{totals[x.itemName]=(totals[x.itemName]||0)+Number(x.usedQty);if(x.unit)units[x.itemName]=x.unit}));
+ dailySummary.innerHTML='<b>Date: '+esc(date)+'</b><br>'+Object.keys(totals).map(name=>esc(name)+' <b>'+round(totals[name])+' '+esc(units[name]||'')+'</b>').join('<br>')+(Object.keys(totals).length?'<br>':'No usage items.')+'<br>Total Usage Records: '+rows.length;
+}
 function printDaily(){const date=summaryDate.value||AB.today(),rows=getUsage().filter(r=>r.date===date),totals={};rows.forEach(r=>(r.items||[]).forEach(x=>{totals[x.itemName]=(totals[x.itemName]||0)+Number(x.usedQty)}));const body='<h2 style="font-size:11px;text-align:center">DAILY KITCHEN REPORT</h2><p>Date: '+esc(date)+'</p><table>'+Object.keys(totals).map(name=>'<tr><td>'+esc(name)+'</td><td>'+round(totals[name])+' '+esc((rows.flatMap(r=>r.items||[]).find(x=>x.itemName===name)||{}).unit||'')+'</td></tr>').join('')+'</table><p style="margin-top:6px">Total Usage Records: '+rows.length+'</p>';AB.win('Daily Kitchen Report',body)}
-async function syncPending(){if(!navigator.onLine)return;for(const payload of getPending().slice()){try{const FBc=await window.__fbReady;const d=await FBc.kitchenCommit(payload);applyResult(d.record,d.stock||getStock());let moves=normalize(AB.db.get('moves',[]));moves=moves.filter(x=>!(String(x.note||'').includes('Kitchen usage '+d.record.id)));AB.db.set('moves',moves);const pending=getPending().filter(x=>x.usageId!==payload.usageId);savePending(pending)}catch(e){if(e&&e.validation){/* rejected for good (e.g. not enough stock): park it, never block the rest of the queue */const bad=AB.db.get('kitchen_failed',[]);bad.push(Object.assign({},payload,{error:e.message,failedAt:new Date().toISOString()}));AB.db.set('kitchen_failed',bad);savePending(getPending().filter(x=>x.usageId!==payload.usageId));if(window.abDiag)abDiag.log('kitchen','queued usage rejected: '+e.message,payload.usageId);try{toast('A saved offline entry was rejected: '+e.message)}catch(x){}continue}break}}drawStock();drawHistory();drawDaily()}
-stockSearch.addEventListener('input',drawStock);recordSearch.addEventListener('input',drawHistory);summaryDate.addEventListener('change',drawDaily);fromDate.value=AB.today().slice(0,8)+'01';toDate.value=AB.today();window.addEventListener('online',syncPending);drawStock();drawHistory();drawDaily();syncPending();
+async function syncPending(){if(!navigator.onLine)return;for(const payload of getPending().slice()){try{const FBc=await window.__fbReady;const d=await FBc.kitchenCommit(payload);applyResult(d.record,d.stock||getStock());let moves=normalize(AB.db.get('moves',[]));moves=moves.filter(x=>!(String(x.note||'').includes('Kitchen usage '+d.record.id)));AB.db.set('moves',moves);const pending=getPending().filter(x=>x.usageId!==payload.usageId);savePending(pending)}catch(e){if(e&&e.validation){const bad=AB.db.get('kitchen_failed',[]);bad.push(Object.assign({},payload,{error:e.message,failedAt:new Date().toISOString()}));AB.db.set('kitchen_failed',bad);savePending(getPending().filter(x=>x.usageId!==payload.usageId));if(window.abDiag)abDiag.log('kitchen','queued usage rejected: '+e.message,payload.usageId);try{toast('A saved offline entry was rejected: '+e.message)}catch(x){}continue}break}}drawStock();drawHistory();drawDaily()}
+stockSearch.addEventListener('input',drawStock);recordSearch.addEventListener('input',drawHistory);summaryDate.addEventListener('change',drawDaily);fromDate.value=AB.today().slice(0,8)+'01';toDate.value=AB.today();window.addEventListener('online',syncPending);window.addEventListener('storage',e=>{if(['ab_stock','ab_kitchen_usage'].includes(e.key)){drawStock();drawHistory();drawDaily()}});drawStock();drawHistory();drawDaily();syncPending();
 </script><script src="ping.js"></script></body></html>
