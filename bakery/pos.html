@@ -383,496 +383,6 @@
                     <!-- LIVE POS ITEM SEARCH BAR -->
                     <div class="relative w-full md:w-56">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                        <input type="text" id="pos-search-input" oninput="handlePOSSearch(this.value)" placeholder="Search item (Rice, Zinger...)" class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-blue-600">
-                    </div>
-
-                    <div class="flex flex-wrap gap-1.5 overflow-x-auto pb-1" id="pos-categories-tabs">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="pos-food-grid">
-                </div>
-            </div>
-
-            <!-- Right Side: POS BILL CART DRAWER -->
-            <div id="cart-drawer-panel" class="app-card bg-white border border-slate-200 rounded-xl p-5 space-y-4 shadow-md flex flex-col justify-between self-start">
-                <div>
-                    <h3 class="text-sm font-bold uppercase tracking-wider pb-2 border-b border-slate-100 flex justify-between items-center">
-                        <span><i class="fa-solid fa-cart-shopping text-blue-600 mr-1"></i> <span data-translate="current_cart">Current Order Cart</span></span>
-                        <button onclick="clearCart()" class="text-[10px] text-red-500 font-bold hover:underline" data-translate="clear_basket">Clear Basket</button>
-                    </h3>
-
-                    <div class="divide-y divide-slate-100 max-h-44 overflow-y-auto pr-1 my-3 space-y-2.5" id="pos-cart-container">
-                        <p class="text-slate-400 text-center py-10 text-xs" data-translate="basket_empty">Basket is empty. Select foods from menu.</p>
-                    </div>
-                </div>
-
-                <div class="space-y-3 pt-2 border-t border-slate-100">
-                    <input type="text" id="cust-name-input" placeholder="Enter Customer Name" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-                    <div class="grid grid-cols-2 gap-2">
-                        <select id="bill-type-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-                            <option value="Takeaway" data-translate="checkout_takeaway">Takeaway</option>
-                            <option value="Dine-In" data-translate="checkout_dinein">Dine-In</option>
-                            <option value="Delivery" data-translate="checkout_delivery">Delivery</option>
-                            <option value="Catering" data-translate="checkout_catering">Custom Order</option>
-                        </select>
-                        <select id="payment-method-select" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500">
-                            <option value="Cash" data-translate="checkout_cash">Cash Pay</option>
-                            <option value="Online" data-translate="checkout_online">Online Bank</option>
-                            <option value="Card" data-translate="checkout_card">Card Swipe</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase block mb-1" data-translate="owner_contact_lbl">Owner Contact</label>
-                        <input type="tel" id="owner-phone-input" value="03000000000" readonly class="w-full bg-slate-100 border border-slate-200 rounded-lg p-2.5 text-xs text-slate-800 font-bold cursor-not-allowed focus:outline-none">
-                    </div>
-                </div>
-
-                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2 text-xs">
-                    <div class="flex justify-between text-slate-500">
-                        <span data-translate="gross_sum">Gross Sum:</span>
-                        <span id="calc-subtotal" class="font-bold">Rs. 0</span>
-                    </div>
-                    <div class="flex items-center justify-between text-slate-500">
-                        <span data-translate="discounts">Discounts (Rs.):</span>
-                        <input type="number" id="discount-input" oninput="updateCartCalculations()" value="0" class="w-20 bg-white border border-slate-200 rounded p-1 text-right text-xs text-slate-800 focus:outline-none">
-                    </div>
-                    <div id="delivery-charge-row" class="hidden flex items-center justify-between text-slate-500">
-                        <span data-translate="delivery_charges">Delivery Charges (Rs.):</span>
-                        <input type="number" id="delivery-charge-input" oninput="updateCartCalculations()" value="0" class="w-20 bg-white border border-slate-200 rounded p-1 text-right text-xs text-slate-800 focus:outline-none">
-                    </div>
-                    <div class="flex justify-between text-base font-extrabold text-blue-950 pt-2 border-t border-slate-200">
-                        <span data-translate="net_payable">Net Payable:</span>
-                        <span class="text-blue-700" id="calc-payable">Rs. 0</span>
-                    </div>
-                </div>
-
-                <button id="btn-process-checkout" onclick="processCheckoutBill()" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-extrabold py-3.5 rounded-lg text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer" data-translate="process_invoice">
-                    <i class="fa-solid fa-receipt"></i> <span>Process Invoice & Open Slip</span>
-                </button>
-            </div>
-
-        </div>
-
-        <!-- ALWAYS UNLOCKED SAMAN LIST (NAME & QUANTITY ONLY) -->
-        <section id="daily-saman-summary-card" class="app-card bg-white border border-slate-200 rounded-2xl p-6 shadow-md mb-8 relative">
-            <div class="border-b border-slate-100 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-lg font-black flex items-center gap-2">
-                        <span class="text-blue-700">📦</span> 
-                        <span data-translate="selected_date_saman">Selected Date Items Summary</span>
-                    </h3>
-                    <p class="text-xs text-slate-500 font-bold mt-0.5" id="saman-summary-date-desc">Showing items sold on selected date: 2026-09-01</p>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="openMonthlySummary()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 no-print shadow transition-all">
-                        <i class="fa-solid fa-calendar-days text-sm"></i> <span>Monthly</span>
-                    </button>
-                    <button onclick="printDailySamanReport()" class="bg-blue-700 hover:bg-blue-800 text-white px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 no-print shadow transition-all">
-                        <i class="fa-solid fa-print text-sm"></i> <span data-translate="print_saman_btn">Print Item List</span>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Scrollable Table Body Container (Always Unlocked & Clean) -->
-            <div id="container-saman-table" class="overflow-x-auto max-h-96 overflow-y-auto border border-slate-100 rounded-xl">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-50 border-b border-slate-200 uppercase font-bold tracking-wider sticky top-0 z-10 text-slate-700">
-                        <tr>
-                            <th class="p-3" style="width: 8%;">#</th>
-                            <th class="p-3" style="width: 38%;">Item Name</th>
-                            <th class="p-3 text-center" style="width: 14%;">Qty</th>
-                            <th class="p-3 text-right" style="width: 20%;">Price (Rs.)</th>
-                            <th class="p-3 text-right" style="width: 20%;">Amount (Rs.)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100 font-medium" id="saman-summary-rows">
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- LEDGER LOG SHEET -->
-        <section id="ledger-section-card" class="app-card bg-white border border-slate-200 rounded-2xl p-6 shadow-md relative">
-            <div class="border-b border-slate-100 pb-3 mb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-lg font-black"><span class="text-blue-700">📋</span> <span data-translate="saved_ledger">Saved Billing Ledger</span></h3>
-                    <p class="text-xs text-slate-500" data-translate="ledger_desc">Click on a customer's row to reprint the slip. (Triple-click rapidly with PIN 7150 to delete bill)</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2.5">
-                    <button id="lock-btn-ledger" onclick="toggleLockSection('ledger')" class="bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5 shadow transition-all">
-                        <i class="fa-solid fa-lock"></i> <span id="lock-text-ledger">Unlock Ledger</span>
-                    </button>
-                    <span class="text-[10px] font-bold uppercase font-mono px-3 py-1 bg-green-50 text-green-700 rounded border border-green-300 flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span> <span data-translate="realtime_sync">Online Synced</span>
-                    </span>
-                </div>
-            </div>
-
-            <div id="container-ledger-table" class="overflow-x-auto max-h-96 overflow-y-auto border border-slate-100 rounded-xl list-blur-locked">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-50 border-b border-slate-200 uppercase font-bold tracking-wider sticky top-0 z-10 text-slate-700">
-                        <tr>
-                            <th class="p-3" data-translate="inv_id">Invoice ID</th>
-                            <th class="p-3" data-translate="cust_name">Customer Name</th>
-                            <th class="p-3" data-translate="date">Date</th>
-                            <th class="p-3" data-translate="order_type">Order Type</th>
-                            <th class="p-3" data-translate="pay_method">Payment Method</th>
-                            <th class="p-3" data-translate="breakdown">Food Items Breakdown</th>
-                            <th class="p-3 text-right" data-translate="net_bill">Price (Net Bill)</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-100" id="ledger-table-rows">
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-    </div>
-
-    <!-- PREP STOCK MANAGEMENT POP BOARD -->
-    <div id="modal-prep-board" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl max-w-md md:max-w-xl w-full p-6 space-y-4 shadow-2xl relative modal-pop">
-            <div class="absolute top-4 right-4">
-                <button onclick="togglePrepModal(false)" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <div class="border-b border-slate-100 pb-2">
-                <h4 class="text-lg font-black flex items-center gap-2">
-                    <i class="fa-solid fa-fire-burner text-blue-700"></i> <span data-translate="manage_cooked_title">Daily Prepared Stock & Dishes Management</span>
-                </h4>
-                <p class="text-xs text-slate-500" data-translate="manage_cooked_desc">Manage cooked quantities, images, and pricing.</p>
-            </div>
-
-            <div class="flex border-b border-slate-200">
-                <button id="tab-btn-stocklist" onclick="switchPrepTab('stocklist')" class="px-4 py-2 text-xs font-bold border-b-2 border-blue-700 text-blue-700" data-translate="adjust_cooked">Adjust Cooked Stock</button>
-                <button id="tab-btn-additem" onclick="switchPrepTab('additem')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-blue-700" data-translate="add_custom_item">➕ Add Custom New Item</button>
-            </div>
-
-            <div id="prep-search-wrapper" class="relative">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="prep-search-input" oninput="handlePrepSearch(this.value)" placeholder="Search dish/item name in stock..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-blue-600">
-            </div>
-
-            <div id="prep-panel-stocklist-container" class="space-y-3">
-                <div class="flex flex-wrap gap-1 border-b border-slate-100 pb-2 overflow-x-auto" id="prep-categories-tabs">
-                </div>
-                <div id="prep-panel-stocklist" class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-72 overflow-y-auto pr-1 py-1">
-                </div>
-            </div>
-
-            <div id="prep-panel-additem" class="hidden space-y-4">
-                <form id="new-item-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs" onsubmit="event.preventDefault();">
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="item_name_lbl">Item/Dish Name</label>
-                        <input type="text" id="new-item-name" required placeholder="e.g., Mutton Korma (Single)" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="price_lbl">Price (Rs.)</label>
-                        <input type="number" id="new-item-price" required placeholder="350" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1"><i class="fa-solid fa-barcode text-blue-600 mr-1"></i> Barcode (scan with a USB scanner)</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="new-item-barcode" data-barcode-field="1" placeholder="Click here and scan with the scanner, or type it" class="flex-1 bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800 font-mono">
-                            <button type="button" onclick="scanToField('new-item-barcode')" class="bg-blue-700 hover:bg-blue-800 text-white font-bold px-4 rounded-lg whitespace-nowrap"><i class="fa-solid fa-barcode mr-1"></i> Scan</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="category_lbl">Category</label>
-                        <select id="new-item-category" onchange="toggleOtherCategoryInput()" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                            <option value="Bread & Bakery">Bread &amp; Bakery</option>
-                            <option value="Cakes">Cakes</option>
-                            <option value="Pastries & Sweet Items">Pastries &amp; Sweet Items</option>
-                            <option value="Biscuits & Cookies">Biscuits &amp; Cookies</option>
-                            <option value="Local Bakery Items">Local Bakery Items</option>
-                            <option value="Snacks / Fast Food">Snacks / Fast Food</option>
-                            <option value="Drinks">Drinks</option>
-                            <option value="Special Discount">Special Discount</option>
-                            <option value="__other__">Other</option>
-                        </select>
-                        <input type="text" id="new-item-category-other" placeholder="Type new category name..." class="hidden mt-2 w-full bg-white border border-blue-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="initial_cooked_lbl">Initial Cooked Stock</label>
-                        <input type="number" id="new-item-cooked" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                    </div>
-                    
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                            <i class="fa-solid fa-image text-blue-600 mr-1"></i> Dish Image (Upload or enter Path/URL)
-                        </label>
-                        <div class="space-y-2 bg-slate-50 p-2.5 border border-slate-200 rounded-lg">
-                            <div class="flex items-center gap-3">
-                                <input type="file" id="new-item-image-file" accept="image/*" onchange="handleNewItemImagePreview(event)" class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
-                                <img id="new-item-img-preview" src="" class="h-10 w-10 object-cover rounded-lg border border-slate-300 hidden">
-                            </div>
-                            <input type="text" id="new-item-image-url" placeholder="Or enter image URL/path (e.g., images/burger.jpg)" class="w-full bg-white border border-slate-200 rounded p-1.5 text-xs focus:outline-none text-slate-700">
-                        </div>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Deal Details / Sub-items (Optional)</label>
-                        <input type="text" id="new-item-desc" placeholder="e.g., 1 Zinger Burger + 1 Cold Drink" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
-                    </div>
-                    <div class="md:col-span-2 flex justify-end">
-                        <button type="button" onclick="submitAddNewMenuItem()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-5 rounded-lg" data-translate="add_item_btn">Add Item to Terminal</button>
-                    </div>
-                </form>
-            </div>
-
-            <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
-                <button onclick="togglePrepModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs px-5 py-2.5 rounded-lg transition-all" data-translate="close_board_btn">Close Board</button>
-                <button id="btn-save-stocklist-action" onclick="saveKitchenPreparedStock()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-6 py-2.5 rounded-lg transition-all shadow-sm" data-translate="save_cooked_btn">Save Cooked Stock</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SHOW DETAIL REPORT MODAL -->
-    <div id="modal-detail-report" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-white border border-slate-200 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl relative modal-pop">
-            <div class="absolute top-4 right-4">
-                <button onclick="toggleDetailReportModal(false)" class="text-slate-400 hover:text-slate-600 transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div class="border-b border-slate-100 pb-2">
-                <h4 class="text-lg font-black text-blue-900" id="detail-report-title">Daily Summary Report</h4>
-                <p class="text-xs text-slate-500" id="detail-report-date">Date: 2026-08-03</p>
-            </div>
-            
-            <div id="report-high-low-container" class="grid grid-cols-2 gap-4 text-xs font-sans">
-            </div>
-
-            <div class="overflow-hidden border border-slate-200 rounded-xl bg-slate-50 max-h-64 overflow-y-auto">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead class="bg-slate-100 border-b border-slate-200 font-bold uppercase tracking-wider text-slate-600 sticky top-0">
-                        <tr id="report-table-header">
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-slate-200 font-mono text-slate-800" id="report-table-body">
-                    </tbody>
-                </table>
-            </div>
-
-            <div id="report-pagination-row" class="flex justify-between items-center text-xs font-bold pt-1 hidden">
-                <span id="report-page-indicator" class="text-slate-500 font-sans">Page 1 of 2 (Dates 1 - 15)</span>
-                <div class="flex gap-1.5">
-                    <button id="btn-report-prev" onclick="changeReportPage(-1)" class="bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                        <i class="fa-solid fa-chevron-left text-[10px]"></i> Prev
-                    </button>
-                    <button id="btn-report-next" onclick="changeReportPage(1)" class="bg-blue-700 hover:bg-blue-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1">
-                        Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex justify-end pt-3 border-t border-slate-100 gap-2">
-                <button onclick="printDetailReport()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-5 py-2.5 rounded-lg flex items-center gap-1.5 no-print">
-                    <i class="fa-solid fa-print"></i> Print Report
-                </button>
-                <button onclick="toggleDetailReportModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs px-5 py-2.5 rounded-lg">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- THERMAL RECEIPT SLIP MODAL -->
-    <div id="modal-invoice-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-[9999] hidden">
-        <div class="flex flex-col items-center max-w-sm w-full max-h-[90vh] bg-white p-4 rounded-xl shadow-2xl modal-pop">
-            
-            <div id="modal-invoice-content" class="bg-white text-black p-3 rounded-lg font-sans text-[10px] font-bold space-y-2 border-2 border-dashed border-gray-400 w-full overflow-y-auto max-h-[70vh]">
-                
-                <div class="customer-receipt-block">
-                    <div style="text-align: center; margin-bottom: 6px;">
-                        <img src="data:image/jpeg;base64,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" alt="Logo" class="h-24 w-24 object-contain mx-auto rounded-full border-2 border-blue-500 shadow-sm select-none">
-            <h1 id="header-title" class="text-3xl font-black text-blue-900 tracking-wide mt-2" data-translate="title">ALPHA BAKERS</h1>
-        </header>
-
-        <!-- TOP STATS -->
-        <section id="stats-section-row" class="app-card bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm space-y-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-8 gap-4">
-                <!-- Open Cash Card -->
-                <div class="p-4 bg-yellow-50/50 rounded-xl border border-yellow-100 flex flex-col justify-between" ondblclick="enableOpenCashEdit()">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-yellow-100 text-yellow-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-vault"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="open_cash">Opening Cash</span>
-                            <span id="opening-cash-label" class="font-black text-xs md:text-sm text-slate-800 cursor-pointer select-none">Rs. 0</span>
-                            <input type="number" id="opening-cash-input" onblur="disableOpenCashEdit()" onkeydown="handleOpenCashKey(event)" value="0" class="hidden w-20 bg-white border border-slate-300 rounded px-1 py-0.5 text-xs font-black text-slate-800 focus:outline-none">
-                            <span class="text-[8px] text-slate-400 block no-print select-none">(Double-click to edit)</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total Sales Card -->
-                <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-sack-dollar"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="total_sales">Total Sales</span>
-                            <span id="stat-sales" class="text-xs md:text-sm font-black">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cash Paid Card -->
-                <div class="p-4 bg-emerald-50/50 rounded-xl border border-emerald-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-money-bill-wave"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="cash_paid">Cash Paid</span>
-                            <span id="stat-cash" class="text-xs md:text-sm font-black">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Cash in Hand -->
-                <div class="p-4 bg-teal-50/50 rounded-xl border border-teal-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-wallet"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="cash_in_hand">Cash in Hand</span>
-                            <span id="stat-cash-in-hand" class="text-xs md:text-sm font-black text-teal-800">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Online Paid Card -->
-                <div class="p-4 bg-indigo-50/50 rounded-xl border border-indigo-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-credit-card"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="online_paid">Online Paid</span>
-                            <span id="stat-online" class="text-xs md:text-sm font-black">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bills Issued Card -->
-                <div class="p-4 bg-orange-50/50 rounded-xl border border-orange-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-orange-100 text-orange-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-file-invoice"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="bills_issued">Bills Issued</span>
-                            <span id="stat-orders" class="text-xs md:text-sm font-black">0 Bills</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Delivery Orders Card -->
-                <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-motorcycle"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Delivery Orders</span>
-                            <span id="stat-delivery-orders" class="text-xs md:text-sm font-black">0 Orders</span>
-                            <span id="stat-delivery-payment" class="text-xs md:text-sm font-black text-rose-700 block">Rs. 0</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Daily Sales Navigation Card -->
-                <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="openReportForPeriod('day')">
-                        <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-calendar-day"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="daily_sales_title">Daily Sales</span>
-                            <span id="stat-daily-sales-amount" class="text-xs md:text-sm font-black text-slate-800">Rs. 0</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between gap-1 mt-1 border-t border-amber-100/50 pt-2 no-print">
-                        <button onclick="event.stopPropagation(); navigateDailyStats(-1)" class="w-5 h-5 rounded bg-amber-100 text-amber-700 hover:bg-amber-200 flex items-center justify-center text-[10px] transition-all"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="stat-daily-sales-date" class="text-[9px] font-bold text-amber-900 font-mono">2026-08-03</span>
-                        <button id="btn-daily-next" onclick="event.stopPropagation(); navigateDailyStats(1)" class="w-5 h-5 rounded bg-amber-100 text-amber-700 hover:bg-amber-200 flex items-center justify-center text-[10px] transition-all"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-
-                <!-- Monthly Sales Navigation Card -->
-                <div class="p-4 bg-purple-50/50 rounded-xl border border-purple-100 flex flex-col justify-between">
-                    <div class="flex items-center gap-3 mb-2 cursor-pointer hover:opacity-80 transition-opacity" onclick="openReportForPeriod('month')">
-                        <div class="w-10 h-10 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center text-lg flex-shrink-0"><i class="fa-solid fa-calendar-days"></i></div>
-                        <div>
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block" data-translate="monthly_sales_title">Monthly Sales</span>
-                            <span id="stat-monthly-sales-amount" class="text-xs md:text-sm font-black text-slate-800">Rs. 0</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center justify-between gap-1 mt-1 border-t border-purple-100/50 pt-2 no-print">
-                        <button onclick="event.stopPropagation(); navigateMonthlyStats(-1)" class="w-5 h-5 rounded bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center text-[10px] transition-all"><i class="fa-solid fa-chevron-left"></i></button>
-                        <span id="stat-monthly-sales-date" class="text-[9px] font-bold text-purple-900 font-mono">August 2026</span>
-                        <button id="btn-monthly-next" onclick="event.stopPropagation(); navigateMonthlyStats(1)" class="w-5 h-5 rounded bg-purple-100 text-purple-700 hover:bg-purple-200 flex items-center justify-center text-[10px] transition-all"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Detailed Stats Panel -->
-            <div id="detailed-stats-panel" class="w-full pt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-4 text-xs text-slate-500 border-t border-dashed border-slate-200 mt-3">
-                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="registered_items">Total Registered Items:</span>
-                    <span id="detail-total-items" class="font-bold text-slate-800">0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="cooked_portions">Daily Cooked Portions:</span>
-                    <span id="detail-total-cooked" class="font-bold text-slate-800">0 Plates</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="sold_portions">Daily Sold Portions:</span>
-                    <span id="detail-total-sold" class="font-bold text-slate-800">0 Plates</span>
-                </div>
-                <div id="stat-discounts-box" class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="total_discounts">Total Discounts:</span>
-                    <span id="stat-discounts" class="font-bold text-slate-800">Rs. 0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="total_delivery_charges">Total Delivery Charges:</span>
-                    <span id="stat-total-delivery" class="font-bold text-slate-800">Rs. 0</span>
-                </div>
-                <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="low_stock_alert">Low Stock Alert:</span>
-                    <span id="stat-low-stock" class="font-bold text-slate-800">0 Items</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- CAROUSEL STOCK DISPLAYER CARD -->
-        <section id="carousel-card" class="app-card bg-white border border-slate-200 rounded-2xl p-5 mb-6 shadow-sm relative overflow-hidden">
-            <h3 class="text-xs font-bold uppercase tracking-widest pb-2 border-b border-slate-100 mb-4" data-translate="stock_carousel"><i class="fa-solid fa-circle-nodes mr-1 text-blue-500"></i> Stock Remaining Carousel</h3>
-            
-            <div class="flex items-center justify-between gap-4 max-w-md mx-auto py-2">
-                <button onclick="scrollCarousel(-1)" class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-700 transition-all"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="text-center space-y-1 select-none">
-                    <h4 id="carousel-item-name" class="text-base font-extrabold text-blue-950">Loading...</h4>
-                    <p class="text-xs text-slate-400 font-bold uppercase" id="carousel-item-cat">Bakery Menu</p>
-                </div>
-                <button onclick="scrollCarousel(1)" class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 hover:bg-slate-200 flex items-center justify-center font-bold text-slate-700 transition-all"><i class="fa-solid fa-chevron-right"></i></button>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 max-w-xs mx-auto text-center border-t border-dashed border-slate-200 pt-3 mt-3">
-                <div class="bg-emerald-50/50 p-2.5 rounded-lg border border-emerald-100">
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-left-lbl" data-translate="servings_left">Plates Remaining</span>
-                    <span id="carousel-plates-left" class="text-sm font-black text-emerald-700">0</span>
-                </div>
-                <div class="bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-sold-lbl" data-translate="plates_sold">Plates Sold</span>
-                    <span id="carousel-plates-sold" class="text-sm font-black text-blue-700">0</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- SPLIT POS MAIN INTERFACE WORKSPACE -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
-            
-            <!-- Left Side: POS BILLING TERMINAL -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-200 pb-4 gap-3">
-                    <div class="flex items-center gap-3">
-                        <h3 class="text-lg font-black"><span class="text-blue-700">🍽️</span> <span data-translate="pos_terminal">POS Counter Invoicing</span></h3>
-                        <button onclick="togglePrepModal(true)" class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all shadow flex items-center gap-1.5" data-translate="manage_cooked">
-                            <i class="fa-solid fa-fire-burner"></i> Manage Prepared Stock
-                        </button>
-                    </div>
-
-                    <!-- LIVE POS ITEM SEARCH BAR -->
-                    <div class="relative w-full md:w-56">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                         <input type="text" id="pos-search-input" oninput="handlePOSSearch(this.value)" placeholder="Search item (Bread, Cake...)" class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-blue-600">
                     </div>
 
@@ -1449,7 +959,7 @@
             }
         };
 
-        const CATALOG_VERSION = 'v2_86items';
+        const CATALOG_VERSION = 'v3_bakery_86';
         const DEFAULT_MENU_ITEMS = [
             // Bread & Bakery (1-15)
             [1, "Plain Bread", "Bread & Bakery", 120, "896001"],
@@ -1587,8 +1097,11 @@
                     barcode: (prev.barcode && String(prev.barcode).trim()) ? String(prev.barcode).trim() : def.barcode
                 };
             });
+            const BAKERY_CATS = new Set(DEFAULT_MENU_ITEMS.map(d => d.category));
             (existingList || []).forEach(it => {
-                if (it && Number(it.id) > 1000 && it.name && !defaultNames.has(String(it.name).toLowerCase().trim())) {
+                if (it && Number(it.id) > 1000 && it.name
+                    && !defaultNames.has(String(it.name).toLowerCase().trim())
+                    && BAKERY_CATS.has(it.category)) {
                     upgraded.push(it);
                 }
             });
@@ -1612,6 +1125,391 @@
         let activeDate = localDateInfo.dateStr;
         let statsSelectedDate = activeDate;
         let statsSelectedMonth = localDateInfo.monthStr;
+
+        /* ===================== RESTORED FUNCTIONS ===================== */
+        const byId = (id) => document.getElementById(id);
+        const getSettings = () => { try { return JSON.parse(localStorage.getItem('ab_settings') || '{}'); } catch (e) { return {}; } };
+        const getPin = () => getSettings().pin || '7150';
+
+        window.safeCacheOrdersLocally = function (list) {
+            try { localStorage.setItem('alphabakers_pos_orders_v1', JSON.stringify(list)); }
+            catch (e) {
+                try { localStorage.setItem('alphabakers_pos_orders_v1', JSON.stringify(list.slice(-500))); } catch (e2) {}
+            }
+        };
+
+        window.refreshDetailTotals = function () {
+            let cooked = 0, sold = 0;
+            menuItems.forEach(i => { cooked += parseInt(i.cooked) || 0; sold += parseInt(i.sold) || 0; });
+            const a = byId('detail-total-items'), b = byId('detail-total-cooked'), c = byId('detail-total-sold');
+            if (a) a.textContent = menuItems.length;
+            if (b) b.textContent = `${cooked} Plates`;
+            if (c) c.textContent = `${sold} Plates`;
+        };
+
+        /* ---------- Carousel ---------- */
+        window.updateCarouselDisplay = function () {
+            if (!menuItems.length) return;
+            if (activeCarouselIndex >= menuItems.length) activeCarouselIndex = 0;
+            if (activeCarouselIndex < 0) activeCarouselIndex = menuItems.length - 1;
+            const it = menuItems[activeCarouselIndex];
+            const n = byId('carousel-item-name'), c = byId('carousel-item-cat'), l = byId('carousel-plates-left'), s = byId('carousel-plates-sold');
+            if (n) n.textContent = it.name;
+            if (c) c.textContent = it.category;
+            if (l) l.textContent = (parseInt(it.cooked) || 0) - (parseInt(it.sold) || 0);
+            if (s) s.textContent = parseInt(it.sold) || 0;
+        };
+        window.scrollCarousel = function (dir) {
+            if (!menuItems.length) return;
+            activeCarouselIndex = (activeCarouselIndex + dir + menuItems.length) % menuItems.length;
+            updateCarouselDisplay();
+        };
+
+        /* ---------- Search ---------- */
+        window.handlePOSSearch = function (v) { posSearchQuery = String(v || '').toLowerCase().trim(); renderPOSMenu(); };
+        window.handlePrepSearch = function (v) { prepSearchQuery = String(v || '').toLowerCase().trim(); renderKitchenProductionGrid(); };
+
+        /* ---------- Opening cash ---------- */
+        let openCashEditing = false;
+        window.enableOpenCashEdit = function () {
+            openCashEditing = true;
+            byId('opening-cash-label').classList.add('hidden');
+            const inp = byId('opening-cash-input'); inp.classList.remove('hidden'); inp.value = openingCash; inp.focus(); inp.select();
+        };
+        window.disableOpenCashEdit = function () {
+            if (!openCashEditing) return;
+            openCashEditing = false;
+            const inp = byId('opening-cash-input');
+            openingCash = parseFloat(inp.value) || 0;
+            inp.classList.add('hidden');
+            const lbl = byId('opening-cash-label'); lbl.classList.remove('hidden'); lbl.textContent = `Rs. ${openingCash}`;
+            try { set(ref(db, 'alpha_bakers/openingCash'), openingCash).catch(e => console.warn(e)); } catch (e) {}
+            renderLedgerDashboard();
+        };
+        window.handleOpenCashKey = function (e) { if (e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
+
+        /* ---------- Date ---------- */
+        window.changeSystemDate = function (v) {
+            if (!v) return;
+            activeDate = v; statsSelectedDate = v; statsSelectedMonth = v.slice(0, 7); ledgerFilterMode = 'day';
+            updateDateMonthStats(); renderLedgerDashboard(); renderDailySamanList();
+        };
+
+        /* ---------- Theme & view ---------- */
+        (function () {
+            const st = document.createElement('style');
+            st.textContent = `body.theme-dark{background:#0f172a!important;color:#fff!important}
+            body.theme-dark .app-card{background:#1e293b!important;border-color:#334155!important}
+            body.theme-dark .app-card .text-slate-800,body.theme-dark .app-card .text-blue-900,body.theme-dark .app-card .text-blue-950,body.theme-dark .app-card .text-slate-700,body.theme-dark .app-card h3{color:#fff!important}
+            body.theme-dark .app-card .bg-slate-50{background:#334155!important}
+            body.theme-design{background:linear-gradient(135deg,#fbf5e6,#ecd391,#fbf5e6)!important;background-size:300% 300%;animation:abGrad 12s ease infinite}
+            @keyframes abGrad{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}`;
+            document.head.appendChild(st);
+        })();
+        window.applyCardTheme = function (t) {
+            document.body.classList.remove('theme-dark', 'theme-design');
+            if (t === 'dark') document.body.classList.add('theme-dark');
+            if (t === 'design') document.body.classList.add('theme-design');
+        };
+        window.setSystemTheme = function (t) {
+            systemTheme = t;
+            if (designInterval) { clearInterval(designInterval); designInterval = null; }
+            applyCardTheme(t);
+            const on = 'px-2.5 py-1 rounded text-xs font-bold bg-white text-slate-800 shadow-sm border border-slate-200';
+            const off = 'px-2.5 py-1 rounded text-xs font-bold text-slate-600 hover:text-slate-800';
+            ['white', 'dark', 'design'].forEach(k => { const b = byId('theme-' + k + '-btn'); if (b) b.className = (k === t) ? on : off; });
+            renderPOSMenu(); renderCartUI(); renderDailySamanList();
+        };
+        window.setViewMode = function (m) {
+            const w = byId('app-wrapper');
+            if (w) { w.style.maxWidth = (m === 'mobile') ? '28rem' : ''; }
+            const on = 'px-3 py-1 rounded text-xs font-bold transition-all bg-blue-700 text-white';
+            const off = 'px-3 py-1 rounded text-xs font-bold transition-all text-slate-500 hover:text-blue-700';
+            const c = byId('btn-mode-computer'), mo = byId('btn-mode-mobile');
+            if (c) c.className = (m === 'computer') ? on : off;
+            if (mo) mo.className = (m === 'mobile') ? on : off;
+        };
+
+        /* ---------- Secret logo click: change owner phone ---------- */
+        window.handleLogoClick = function () {
+            logoClickCount++;
+            if (logoClickTimer) clearTimeout(logoClickTimer);
+            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 3000);
+            if (logoClickCount >= 5) {
+                logoClickCount = 0;
+                const pin = prompt('Enter PIN:');
+                if (pin === null) return;
+                if (pin !== getPin()) { alert('Incorrect PIN Code! Access Denied.'); return; }
+                const ph = prompt('New owner phone number:', getSettings().phone || '03000000000');
+                if (ph === null || !ph.trim()) return;
+                const s = getSettings(); s.phone = ph.trim();
+                localStorage.setItem('ab_settings', JSON.stringify(s));
+                const inp = byId('owner-phone-input'); if (inp) inp.value = s.phone;
+                alert('Owner phone saved.');
+            }
+        };
+
+        /* ---------- Ledger lock ---------- */
+        window.toggleLockSection = function () {
+            const box = byId('container-ledger-table'), txt = byId('lock-text-ledger');
+            if (!isLedgerUnlocked) {
+                const pin = prompt('Enter PIN to unlock ledger:');
+                if (pin === null) return;
+                if (pin !== getPin()) { alert('Incorrect PIN Code! Access Denied.'); return; }
+                isLedgerUnlocked = true; box.classList.remove('list-blur-locked'); txt.textContent = 'Lock Ledger';
+            } else {
+                isLedgerUnlocked = false; box.classList.add('list-blur-locked'); txt.textContent = 'Unlock Ledger';
+            }
+        };
+
+        /* ---------- Prepared stock board ---------- */
+        window.togglePrepModal = function (show) {
+            const m = byId('modal-prep-board');
+            if (show) {
+                m.classList.remove('hidden');
+                populatePrepCategoriesTabs(); switchPrepTab('stocklist'); renderKitchenProductionGrid();
+            } else {
+                m.classList.add('hidden');
+            }
+        };
+        window.switchPrepTab = function (tab) {
+            const isStock = tab === 'stocklist';
+            byId('prep-panel-stocklist-container').classList.toggle('hidden', !isStock);
+            byId('prep-search-wrapper').classList.toggle('hidden', !isStock);
+            byId('prep-panel-additem').classList.toggle('hidden', isStock);
+            byId('btn-save-stocklist-action').classList.toggle('hidden', !isStock);
+            const on = 'px-4 py-2 text-xs font-bold border-b-2 border-blue-700 text-blue-700';
+            const off = 'px-4 py-2 text-xs font-bold text-slate-500 hover:text-blue-700';
+            byId('tab-btn-stocklist').className = isStock ? on : off;
+            byId('tab-btn-additem').className = isStock ? off : on;
+        };
+        window.renderKitchenProductionGrid = function () {
+            const box = byId('prep-panel-stocklist'); if (!box) return;
+            let list = menuItems.slice();
+            if (activePrepCategory !== 'All') list = list.filter(i => i.category === activePrepCategory);
+            if (prepSearchQuery) list = list.filter(i => String(i.name).toLowerCase().includes(prepSearchQuery) || String(i.barcode || '').includes(prepSearchQuery));
+            if (!list.length) { box.innerHTML = '<div class="col-span-full text-center py-8 text-slate-400 text-xs font-bold">No items found.</div>'; return; }
+            const inp = 'w-full bg-white border border-slate-200 rounded p-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-500';
+            const lbl = 'text-[9px] text-slate-400 font-bold uppercase block';
+            box.innerHTML = list.map(i => `<div data-prep-id="${i.id}" class="p-3 rounded-xl border border-slate-200 bg-slate-50 space-y-2 text-xs">
+                <div class="flex justify-between items-start gap-2">
+                    <b class="text-slate-800 leading-tight">${i.name}</b>
+                    <button type="button" onclick="deleteMenuItem(${i.id})" class="text-red-500 hover:text-red-700" title="Delete item"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+                <div class="text-[9px] text-slate-400 uppercase font-bold">${i.category} &middot; Sold: ${i.sold || 0}</div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><label class="${lbl}">Cooked</label><input type="number" min="0" class="prep-cooked ${inp}" value="${i.cooked || 0}"></div>
+                    <div><label class="${lbl}">Price</label><input type="number" class="prep-price ${inp}" value="${i.price}"></div>
+                </div>
+                <div><label class="${lbl}">Barcode</label><input type="text" data-barcode-field="1" value="${i.barcode || ''}" onchange="setItemBarcode(${i.id}, this.value)" placeholder="Barcode" class="${inp} font-mono"></div>
+            </div>`).join('');
+        };
+        window.deleteMenuItem = function (id) {
+            const it = menuItems.find(i => Number(i.id) === Number(id)); if (!it) return;
+            if (!confirm(`Delete "${it.name}" permanently?`)) return;
+            menuItems = menuItems.filter(i => Number(i.id) !== Number(id));
+            activeCart = activeCart.filter(c => Number(c.id) !== Number(id));
+            window.saveMenuToCloud();
+            populateCategoriesTabs(); populatePrepCategoriesTabs(); renderPOSMenu(); renderCartUI(); renderKitchenProductionGrid(); updateCarouselDisplay(); refreshDetailTotals();
+        };
+        window.saveKitchenPreparedStock = function () {
+            document.querySelectorAll('#prep-panel-stocklist [data-prep-id]').forEach(card => {
+                const it = menuItems.find(i => Number(i.id) === Number(card.dataset.prepId)); if (!it) return;
+                it.cooked = Math.max(0, parseInt(card.querySelector('.prep-cooked').value) || 0);
+                const p = parseFloat(card.querySelector('.prep-price').value);
+                if (!isNaN(p)) it.price = p;
+            });
+            window.saveMenuToCloud();
+            populateCategoriesTabs(); renderPOSMenu(); renderKitchenProductionGrid(); updateCarouselDisplay(); renderLedgerDashboard();
+            alert(activeLanguage === 'ur' ? 'اسٹاک محفوظ ہو گیا۔' : 'Stock saved successfully.');
+        };
+        window.handleNewItemImagePreview = function (e) {
+            const f = e.target.files && e.target.files[0]; if (!f) return;
+            const rd = new FileReader();
+            rd.onload = () => {
+                const img = new Image();
+                img.onload = () => {
+                    const max = 400, r = Math.min(1, max / Math.max(img.width, img.height));
+                    const cv = document.createElement('canvas'); cv.width = Math.round(img.width * r); cv.height = Math.round(img.height * r);
+                    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+                    newItemBase64Image = cv.toDataURL('image/jpeg', 0.75);
+                    const pv = byId('new-item-img-preview'); pv.src = newItemBase64Image; pv.classList.remove('hidden');
+                };
+                img.src = rd.result;
+            };
+            rd.readAsDataURL(f);
+        };
+        window.submitAddNewMenuItem = function () {
+            const name = byId('new-item-name').value.trim();
+            const price = parseFloat(byId('new-item-price').value);
+            if (!name || isNaN(price)) { alert('Please enter item name and price.'); return; }
+            let cat = byId('new-item-category').value;
+            if (cat === '__other__') cat = byId('new-item-category-other').value.trim();
+            if (!cat) { alert('Please enter a category name.'); return; }
+            const barcode = byId('new-item-barcode').value.trim();
+            if (barcode && menuItems.some(i => i.barcode && String(i.barcode).trim().toUpperCase() === barcode.toUpperCase())) { alert('This barcode is already used by another item.'); return; }
+            if (menuItems.some(i => String(i.name).toLowerCase().trim() === name.toLowerCase())) { alert('An item with this name already exists.'); return; }
+            const maxId = menuItems.reduce((m, i) => Math.max(m, Number(i.id) || 0), 1000);
+            menuItems.push({
+                id: maxId + 1, name, category: cat, price,
+                cooked: Math.max(0, parseInt(byId('new-item-cooked').value) || 0), sold: 0, barcode,
+                image: newItemBase64Image || byId('new-item-image-url').value.trim(),
+                description: byId('new-item-desc').value.trim()
+            });
+            window.saveMenuToCloud();
+            ['new-item-name', 'new-item-price', 'new-item-barcode', 'new-item-category-other', 'new-item-image-url', 'new-item-desc'].forEach(id => byId(id).value = '');
+            byId('new-item-cooked').value = 0; byId('new-item-image-file').value = '';
+            byId('new-item-img-preview').classList.add('hidden'); newItemBase64Image = '';
+            populateCategoriesTabs(); populatePrepCategoriesTabs(); renderPOSMenu(); renderKitchenProductionGrid(); updateCarouselDisplay(); refreshDetailTotals();
+            switchPrepTab('stocklist');
+            alert('Item added successfully.');
+        };
+
+        /* ---------- Checkout ---------- */
+        function nextInvoiceNum() {
+            let max = 1000;
+            orders.concat(getOfflineQueue()).forEach(o => {
+                const m = String(o.invoiceNum || '').match(/(\d+)$/);
+                if (m) max = Math.max(max, parseInt(m[1]));
+            });
+            return 'ALB-' + (max + 1);
+        }
+        function buildOrderFromCart() {
+            if (!activeCart.length) { alert(activeLanguage === 'ur' ? 'ٹوکری خالی ہے۔' : 'Basket is empty.'); return null; }
+            for (const c of activeCart) {
+                const src = menuItems.find(i => Number(i.id) === Number(c.id));
+                if (!src || c.qty > (src.cooked - src.sold)) { alert(`Not enough prepared stock for ${c.name}.`); return null; }
+            }
+            const discount = parseFloat(byId('discount-input').value) || 0;
+            const type = byId('bill-type-select').value;
+            const delivery = type === 'Delivery' ? (parseFloat(byId('delivery-charge-input').value) || 0) : 0;
+            const gross = activeCart.reduce((s, i) => s + (parseFloat(i.price) * parseInt(i.qty)), 0);
+            const id = Date.now();
+            return {
+                id, _fbKey: String(id), invoiceNum: nextInvoiceNum(),
+                customer: byId('cust-name-input').value.trim() || 'Walk-In Customer',
+                date: getShiftedBusinessDate(new Date()).dateStr,
+                orderType: type, paymentMethod: byId('payment-method-select').value,
+                items: activeCart.map(i => ({ id: i.id, name: i.name, price: parseFloat(i.price), qty: parseInt(i.qty), category: i.category })),
+                grossPrice: gross, discount, deliveryCharge: delivery,
+                netPayable: Math.max(0, gross - discount + delivery),
+                ownerPhone: getSettings().phone || byId('owner-phone-input').value,
+                syncStatus: 'synced', createdAt: new Date().toISOString()
+            };
+        }
+        function finalizeOrder(order) {
+            order.items.forEach(ci => {
+                const m = menuItems.find(i => Number(i.id) === Number(ci.id));
+                if (m) m.sold = (parseInt(m.sold) || 0) + ci.qty;
+            });
+            if (!orders.some(o => String(o.id) === String(order.id))) orders.push(order);
+            window.saveMenuToCloud();
+            safeCacheOrdersLocally(orders);
+            activeCart = [];
+            byId('cust-name-input').value = ''; byId('discount-input').value = 0; byId('delivery-charge-input').value = 0;
+            byId('bill-type-select').value = 'Takeaway'; byId('delivery-charge-row').classList.add('hidden');
+            populateCategoriesTabs(); renderPOSMenu(); renderCartUI(); renderKitchenProductionGrid();
+            renderLedgerDashboard(); updateCarouselDisplay(); updateDateMonthStats(); renderDailySamanList(); updateSyncStatusUI();
+            loadInvoiceReceipt(order);
+        }
+        let checkoutBusy = false;
+        window.processCheckoutBill = async function () {
+            if (checkoutBusy) return;
+            const order = buildOrderFromCart(); if (!order) return;
+            checkoutBusy = true;
+            const btn = byId('btn-process-checkout'); if (btn) btn.disabled = true;
+            try {
+                if (navigator.onLine === false) throw new Error('OFFLINE');
+                await Promise.race([
+                    set(ref(db, 'alpha_bakers/orders/' + order.id), order),
+                    new Promise((_, rej) => setTimeout(() => rej(new Error('TIMEOUT')), 4000))
+                ]);
+                finalizeOrder(order);
+            } catch (e) {
+                pendingCheckoutOrder = order;
+                byId('modal-emergency-fallback').classList.remove('hidden');
+            } finally {
+                checkoutBusy = false; if (btn) btn.disabled = false;
+            }
+        };
+        window.executeEmergencyOfflineCheckout = function () {
+            const order = pendingCheckoutOrder; if (!order) return;
+            order.syncStatus = 'offline_pending';
+            saveToOfflineQueue(order);
+            byId('modal-emergency-fallback').classList.add('hidden');
+            pendingCheckoutOrder = null;
+            finalizeOrder(order);
+        };
+        window.cancelEmergencyModal = function () {
+            pendingCheckoutOrder = null;
+            byId('modal-emergency-fallback').classList.add('hidden');
+        };
+
+        /* ---------- Detail reports (daily / monthly) ---------- */
+        let reportMode = 'day', currentReport = null;
+        function buildReport() {
+            if (reportMode === 'day') {
+                const map = {};
+                orders.filter(o => o.date === statsSelectedDate).forEach(o => (o.items || []).forEach(i => {
+                    const q = parseInt(i.qty) || 1, p = Number(i.price) || 0;
+                    if (!map[i.name]) map[i.name] = { name: i.name, qty: 0, amount: 0 };
+                    map[i.name].qty += q; map[i.name].amount += p < 0 ? p : p * q;
+                }));
+                const arr = Object.values(map).sort((a, b) => b.amount - a.amount);
+                return { title: 'Daily Summary Report', sub: `Date: ${statsSelectedDate}`, head: ['Item', 'Qty', 'Amount'],
+                    rows: arr.map(r => [r.name, r.qty, r.amount]), hlLabel: 'Item',
+                    hi: arr[0] && { n: arr[0].name, v: arr[0].amount }, lo: arr.length > 1 ? { n: arr[arr.length - 1].name, v: arr[arr.length - 1].amount } : null, paged: false };
+            }
+            const [yr, mo] = statsSelectedMonth.split('-').map(Number);
+            const days = new Date(yr, mo, 0).getDate();
+            const rows = [], withSales = [];
+            for (let d = 1; d <= days; d++) {
+                const ds = `${statsSelectedMonth}-${String(d).padStart(2, '0')}`;
+                const os = orders.filter(o => o.date === ds);
+                const sales = os.reduce((s, o) => s + (parseFloat(o.netPayable) || 0), 0);
+                rows.push([ds, os.length, sales]);
+                if (sales > 0) withSales.push({ n: ds, v: sales });
+            }
+            withSales.sort((a, b) => b.v - a.v);
+            return { title: 'Monthly Summary Report', sub: `Month: ${getMonthName(statsSelectedMonth)}`, head: ['Date', 'Bills', 'Sales'],
+                rows, hlLabel: 'Day', hi: withSales[0] || null, lo: withSales.length > 1 ? withSales[withSales.length - 1] : null, paged: true };
+        }
+        function renderDetailReport() {
+            const r = currentReport = buildReport();
+            byId('detail-report-title').textContent = r.title;
+            byId('detail-report-date').textContent = r.sub;
+            const card = (cap, x, cls) => `<div class="p-3 rounded-xl border ${cls}"><div class="text-[9px] font-bold uppercase text-slate-500">${cap}</div><div class="font-black text-slate-800 truncate">${x ? x.n : '-'}</div><div class="font-mono font-bold">${x ? 'Rs. ' + x.v : ''}</div></div>`;
+            byId('report-high-low-container').innerHTML = card(`Highest ${r.hlLabel}`, r.hi, 'bg-emerald-50 border-emerald-200') + card(`Lowest ${r.hlLabel}`, r.lo, 'bg-rose-50 border-rose-200');
+            byId('report-table-header').innerHTML = r.head.map((h, i) => `<th class="p-2 ${i ? 'text-right' : ''}">${h}</th>`).join('');
+            let rows = r.rows, pag = byId('report-pagination-row');
+            if (r.paged) {
+                const per = 15, pages = Math.ceil(rows.length / per);
+                reportPage = Math.min(Math.max(1, reportPage), pages);
+                const from = (reportPage - 1) * per;
+                rows = rows.slice(from, from + per);
+                byId('report-page-indicator').textContent = `Page ${reportPage} of ${pages} (Dates ${from + 1} - ${from + rows.length})`;
+                byId('btn-report-prev').classList.toggle('opacity-40', reportPage <= 1);
+                byId('btn-report-next').classList.toggle('opacity-40', reportPage >= pages);
+                pag.classList.remove('hidden');
+            } else pag.classList.add('hidden');
+            byId('report-table-body').innerHTML = rows.length
+                ? rows.map(row => `<tr>${row.map((c, i) => `<td class="p-2 ${i ? 'text-right' : ''}">${c}</td>`).join('')}</tr>`).join('')
+                : '<tr><td colspan="3" class="p-6 text-center text-slate-400 font-sans">No data for this period.</td></tr>';
+        }
+        window.openReportForPeriod = function (period) { reportMode = period; reportPage = 1; renderDetailReport(); toggleDetailReportModal(true); };
+        window.changeReportPage = function (d) { reportPage += d; renderDetailReport(); };
+        window.toggleDetailReportModal = function (show) { byId('modal-detail-report').classList.toggle('hidden', !show); };
+        window.printDetailReport = function () {
+            if (!currentReport) return;
+            const r = currentReport;
+            const rowsHtml = r.rows.map(row => `<tr style="border-bottom:1px dashed #000;">${row.map((c, i) => `<td style="padding:3px 0;text-align:${i ? 'right' : 'left'};">${c}</td>`).join('')}</tr>`).join('');
+            const w = window.open('', '_blank', 'width=380,height=600');
+            if (!w) { window.print(); return; }
+            w.document.open();
+            w.document.write(`<!DOCTYPE html><html><head><title>${r.title} - ALPHA BAKERS</title><style>*{box-sizing:border-box!important;margin:0;padding:0}html,body{width:72mm;margin:0 auto;padding:1mm 2mm 18mm 2mm;background:#fff;color:#000;font-family:Arial,Helvetica,sans-serif;font-size:10px;font-weight:bold}table{width:100%;border-collapse:collapse;font-size:10px;font-weight:bold}@media print{@page{size:80mm auto;margin:0mm}}</style></head><body><div style="border-bottom:1.5px solid #000;padding-bottom:4px;margin-bottom:6px;text-align:center;"><h2 style="font-size:13px;font-weight:900;">ALPHA BAKERS</h2><h3 style="margin-top:2px;font-size:10px;">${r.title}</h3><p style="font-size:9px;">${r.sub}</p></div><table><thead><tr style="border-bottom:1.5px solid #000;">${r.head.map((h, i) => `<th style="text-align:${i ? 'right' : 'left'};">${h}</th>`).join('')}</tr></thead><tbody>${rowsHtml}</tbody></table><div style="text-align:center;margin-top:12px;font-size:8px;border-top:1px dashed #000;padding-top:4px;">Designed &amp; Developed by Scale Soft Group | 03162967150</div><script>window.onload=function(){window.focus();window.print();setTimeout(function(){window.close();},500);};<\/script></body></html>`);
+            w.document.close();
+        };
+        /* =================== END RESTORED FUNCTIONS =================== */
 
         document.getElementById('bill-type-select').addEventListener('change', function() {
             const deliveryRow = document.getElementById('delivery-charge-row');
