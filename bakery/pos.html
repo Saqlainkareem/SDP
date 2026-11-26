@@ -959,7 +959,7 @@
             }
         };
 
-        const CATALOG_VERSION = 'v4_bakery_only';
+        const CATALOG_VERSION = 'v5_bakery_sweets';
         const DEFAULT_MENU_ITEMS = [
             // Bread & Bakery
             [1, "Plain Bread", "Bread & Bakery", 120, "896001"],
@@ -1060,7 +1060,19 @@
             [123, "Dry Fruit Biscuits", "Biscuits & Cookies", 400, "896123"],
             [124, "Salted Biscuits", "Biscuits & Cookies", 240, "896124"],
             [125, "Shakar Para", "Biscuits & Cookies", 300, "896125"],
-            // Local Bakery Items
+                        [157, "Jam Full Biscuit", "Biscuits & Cookies", 300, "896157", 100],
+            [158, "Chocolate Fruit Biscuit", "Biscuits & Cookies", 320, "896158", 100],
+            [159, "Carella Biscuit", "Biscuits & Cookies", 300, "896159", 100],
+            [160, "Ringo Biscuit", "Biscuits & Cookies", 300, "896160", 100],
+            [161, "Marble Biscuit", "Biscuits & Cookies", 300, "896161", 100],
+            [162, "Check Biscuit", "Biscuits & Cookies", 300, "896162", 100],
+            [163, "Pista Biscuit", "Biscuits & Cookies", 340, "896163", 100],
+            [164, "Til Wale Biscuit", "Biscuits & Cookies", 300, "896164", 100],
+            [165, "Phali Wale Biscuit", "Biscuits & Cookies", 300, "896165", 100],
+            [166, "Walnut Cookies", "Biscuits & Cookies", 400, "896166", 100],
+            [167, "Fauji Corn Flakes Cookies", "Biscuits & Cookies", 320, "896167", 100],
+            [168, "Kalonji Biscuit", "Biscuits & Cookies", 280, "896168", 100],
+// Local Bakery Items
             [57, "Gulab Jamun", "Local Bakery Items", 350, "896057"],
             [58, "Jalebi", "Local Bakery Items", 300, "896058"],
             [59, "Rasgulla", "Local Bakery Items", 350, "896059"],
@@ -1079,7 +1091,23 @@
             [132, "Sohan Halwa", "Local Bakery Items", 600, "896132"],
             [133, "Khoya Barfi", "Local Bakery Items", 450, "896133"],
             [134, "Pista Barfi", "Local Bakery Items", 600, "896134"],
-            // Savory Bakery Items
+                        [141, "Akhrot Halwa", "Local Bakery Items", 600, "896141", 100],
+            [142, "Habshi Halwa", "Local Bakery Items", 550, "896142", 100],
+            [143, "Besan Patisa", "Local Bakery Items", 380, "896143", 100],
+            [144, "Milky Patisa", "Local Bakery Items", 400, "896144", 100],
+            [145, "Kalakand Sada", "Local Bakery Items", 500, "896145", 100],
+            [146, "Kesar Papri", "Local Bakery Items", 420, "896146", 100],
+            [147, "Pan Pera", "Local Bakery Items", 450, "896147", 100],
+            [148, "Gutki Pera", "Local Bakery Items", 450, "896148", 100],
+            [149, "Gol Pera", "Local Bakery Items", 420, "896149", 100],
+            [150, "Badami Pera", "Local Bakery Items", 500, "896150", 100],
+            [151, "Kala Jamun", "Local Bakery Items", 380, "896151", 100],
+            [152, "Choti Jamun", "Local Bakery Items", 330, "896152", 100],
+            [153, "Bengali Cham Cham", "Local Bakery Items", 400, "896153", 100],
+            [154, "Gulabi Kheer Mohan", "Local Bakery Items", 450, "896154", 100],
+            [155, "Malai Chop", "Local Bakery Items", 450, "896155", 100],
+            [156, "Choti Cham Cham", "Local Bakery Items", 350, "896156", 100],
+// Savory Bakery Items
             [66, "Chicken Sandwich", "Savory Bakery Items", 220, "896066"],
             [68, "Vegetable Sandwich", "Savory Bakery Items", 180, "896068"],
             [135, "Aloo Samosa", "Savory Bakery Items", 40, "896135"],
@@ -1098,8 +1126,8 @@
             [84, "Fresh Juice", "Drinks", 220, "896084"],
             [85, "Soft Drink", "Drinks", 90, "896085"],
             [86, "Mineral Water", "Drinks", 60, "896086"]
-        ].map(([id, name, category, price, barcode]) => ({
-            id, name, category, price, cooked: 0, sold: 0, barcode, image: ""
+        ].map(([id, name, category, price, barcode, cooked]) => ({
+            id, name, category, price, cooked: cooked || 0, sold: 0, barcode, image: ""
         }));
 
         let menuItems = DEFAULT_MENU_ITEMS.map(i => ({ ...i }));
