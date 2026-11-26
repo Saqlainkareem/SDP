@@ -320,12 +320,12 @@
                     <span id="detail-total-items" class="font-bold text-slate-800">0</span>
                 </div>
                 <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="cooked_portions">Daily Cooked Portions:</span>
-                    <span id="detail-total-cooked" class="font-bold text-slate-800">0 Plates</span>
+                    <span data-translate="cooked_portions">Daily Ready Stock:</span>
+                    <span id="detail-total-cooked" class="font-bold text-slate-800">0 Pcs</span>
                 </div>
                 <div class="bg-slate-50 p-3 rounded-lg flex justify-between">
-                    <span data-translate="sold_portions">Daily Sold Portions:</span>
-                    <span id="detail-total-sold" class="font-bold text-slate-800">0 Plates</span>
+                    <span data-translate="sold_portions">Daily Sold Pieces:</span>
+                    <span id="detail-total-sold" class="font-bold text-slate-800">0 Pcs</span>
                 </div>
                 <div id="stat-discounts-box" class="bg-slate-50 p-3 rounded-lg flex justify-between">
                     <span data-translate="total_discounts">Total Discounts:</span>
@@ -357,11 +357,11 @@
 
             <div class="grid grid-cols-2 gap-4 max-w-xs mx-auto text-center border-t border-dashed border-slate-200 pt-3 mt-3">
                 <div class="bg-emerald-50/50 p-2.5 rounded-lg border border-emerald-100">
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-left-lbl" data-translate="servings_left">Plates Remaining</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-left-lbl" data-translate="servings_left">Pieces Remaining</span>
                     <span id="carousel-plates-left" class="text-sm font-black text-emerald-700">0</span>
                 </div>
                 <div class="bg-blue-50/50 p-2.5 rounded-lg border border-blue-100">
-                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-sold-lbl" data-translate="plates_sold">Plates Sold</span>
+                    <span class="text-[9px] text-slate-400 font-bold uppercase tracking-wide block" id="carousel-plates-sold-lbl" data-translate="plates_sold">Pieces Sold</span>
                     <span id="carousel-plates-sold" class="text-sm font-black text-blue-700">0</span>
                 </div>
             </div>
@@ -376,7 +376,7 @@
                     <div class="flex items-center gap-3">
                         <h3 class="text-lg font-black"><span class="text-blue-700">🍽️</span> <span data-translate="pos_terminal">POS Counter Invoicing</span></h3>
                         <button onclick="togglePrepModal(true)" class="bg-blue-700 hover:bg-blue-800 text-white text-[11px] font-bold px-3 py-1.5 rounded-lg transition-all shadow flex items-center gap-1.5" data-translate="manage_cooked">
-                            <i class="fa-solid fa-fire-burner"></i> Manage Prepared Stock
+                            <i class="fa-solid fa-fire-burner"></i> Manage Bakery Stock
                         </button>
                     </div>
 
@@ -403,7 +403,7 @@
                     </h3>
 
                     <div class="divide-y divide-slate-100 max-h-44 overflow-y-auto pr-1 my-3 space-y-2.5" id="pos-cart-container">
-                        <p class="text-slate-400 text-center py-10 text-xs" data-translate="basket_empty">Basket is empty. Select foods from menu.</p>
+                        <p class="text-slate-400 text-center py-10 text-xs" data-translate="basket_empty">Basket is empty. Select items from menu.</p>
                     </div>
                 </div>
 
@@ -540,19 +540,19 @@
             
             <div class="border-b border-slate-100 pb-2">
                 <h4 class="text-lg font-black flex items-center gap-2">
-                    <i class="fa-solid fa-fire-burner text-blue-700"></i> <span data-translate="manage_cooked_title">Daily Prepared Stock & Dishes Management</span>
+                    <i class="fa-solid fa-fire-burner text-blue-700"></i> <span data-translate="manage_cooked_title">Daily Bakery Stock & Items Management</span>
                 </h4>
-                <p class="text-xs text-slate-500" data-translate="manage_cooked_desc">Manage cooked quantities, images, and pricing.</p>
+                <p class="text-xs text-slate-500" data-translate="manage_cooked_desc">Manage ready quantities, images, and pricing.</p>
             </div>
 
             <div class="flex border-b border-slate-200">
-                <button id="tab-btn-stocklist" onclick="switchPrepTab('stocklist')" class="px-4 py-2 text-xs font-bold border-b-2 border-blue-700 text-blue-700" data-translate="adjust_cooked">Adjust Cooked Stock</button>
+                <button id="tab-btn-stocklist" onclick="switchPrepTab('stocklist')" class="px-4 py-2 text-xs font-bold border-b-2 border-blue-700 text-blue-700" data-translate="adjust_cooked">Adjust Bakery Stock</button>
                 <button id="tab-btn-additem" onclick="switchPrepTab('additem')" class="px-4 py-2 text-xs font-bold text-slate-500 hover:text-blue-700" data-translate="add_custom_item">➕ Add Custom New Item</button>
             </div>
 
             <div id="prep-search-wrapper" class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="prep-search-input" oninput="handlePrepSearch(this.value)" placeholder="Search dish/item name in stock..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-blue-600">
+                <input type="text" id="prep-search-input" oninput="handlePrepSearch(this.value)" placeholder="Search item name in stock..." class="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs text-slate-800 focus:outline-none focus:border-blue-600">
             </div>
 
             <div id="prep-panel-stocklist-container" class="space-y-3">
@@ -565,8 +565,8 @@
             <div id="prep-panel-additem" class="hidden space-y-4">
                 <form id="new-item-form" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs" onsubmit="event.preventDefault();">
                     <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="item_name_lbl">Item/Dish Name</label>
-                        <input type="text" id="new-item-name" required placeholder="e.g., Mutton Korma (Single)" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
+                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="item_name_lbl">Item Name</label>
+                        <input type="text" id="new-item-name" required placeholder="e.g., Chocolate Cake (1 lb)" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="price_lbl">Price (Rs.)</label>
@@ -587,7 +587,7 @@
                             <option value="Pastries & Sweet Items">Pastries &amp; Sweet Items</option>
                             <option value="Biscuits & Cookies">Biscuits &amp; Cookies</option>
                             <option value="Local Bakery Items">Local Bakery Items</option>
-                            <option value="Snacks / Fast Food">Snacks / Fast Food</option>
+                            <option value="Savory Bakery Items">Savory Bakery Items</option>
                             <option value="Drinks">Drinks</option>
                             <option value="Special Discount">Special Discount</option>
                             <option value="__other__">Other</option>
@@ -595,26 +595,26 @@
                         <input type="text" id="new-item-category-other" placeholder="Type new category name..." class="hidden mt-2 w-full bg-white border border-blue-300 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
                     </div>
                     <div>
-                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="initial_cooked_lbl">Initial Cooked Stock</label>
+                        <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="initial_cooked_lbl">Initial Stock</label>
                         <input type="number" id="new-item-cooked" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
                     </div>
                     
                     <div class="md:col-span-2">
                         <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
-                            <i class="fa-solid fa-image text-blue-600 mr-1"></i> Dish Image (Upload or enter Path/URL)
+                            <i class="fa-solid fa-image text-blue-600 mr-1"></i> Item Image (Upload or enter Path/URL)
                         </label>
                         <div class="space-y-2 bg-slate-50 p-2.5 border border-slate-200 rounded-lg">
                             <div class="flex items-center gap-3">
                                 <input type="file" id="new-item-image-file" accept="image/*" onchange="handleNewItemImagePreview(event)" class="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
                                 <img id="new-item-img-preview" src="" class="h-10 w-10 object-cover rounded-lg border border-slate-300 hidden">
                             </div>
-                            <input type="text" id="new-item-image-url" placeholder="Or enter image URL/path (e.g., images/burger.jpg)" class="w-full bg-white border border-slate-200 rounded p-1.5 text-xs focus:outline-none text-slate-700">
+                            <input type="text" id="new-item-image-url" placeholder="Or enter image URL/path (e.g., images/cake.jpg)" class="w-full bg-white border border-slate-200 rounded p-1.5 text-xs focus:outline-none text-slate-700">
                         </div>
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1">Deal Details / Sub-items (Optional)</label>
-                        <input type="text" id="new-item-desc" placeholder="e.g., 1 Zinger Burger + 1 Cold Drink" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
+                        <input type="text" id="new-item-desc" placeholder="e.g., 1 Chocolate Cake + 6 Cup Cakes" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
                     </div>
                     <div class="md:col-span-2 flex justify-end">
                         <button type="button" onclick="submitAddNewMenuItem()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-5 rounded-lg" data-translate="add_item_btn">Add Item to Terminal</button>
@@ -624,7 +624,7 @@
 
             <div class="flex justify-end gap-2 pt-4 border-t border-slate-100">
                 <button onclick="togglePrepModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs px-5 py-2.5 rounded-lg transition-all" data-translate="close_board_btn">Close Board</button>
-                <button id="btn-save-stocklist-action" onclick="saveKitchenPreparedStock()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-6 py-2.5 rounded-lg transition-all shadow-sm" data-translate="save_cooked_btn">Save Cooked Stock</button>
+                <button id="btn-save-stocklist-action" onclick="saveKitchenPreparedStock()" class="bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs px-6 py-2.5 rounded-lg transition-all shadow-sm" data-translate="save_cooked_btn">Save Stock</button>
             </div>
         </div>
     </div>
@@ -887,7 +887,7 @@
             if (catSel) {
                 catSel.innerHTML = [
                     'Bread & Bakery', 'Cakes', 'Pastries & Sweet Items',
-                    'Biscuits & Cookies', 'Local Bakery Items', 'Snacks / Fast Food',
+                    'Biscuits & Cookies', 'Local Bakery Items', 'Savory Bakery Items',
                     'Drinks', 'Special Discount'
                 ].map(c => `<option value="${c}">${c}</option>`).join('') + '<option value="__other__">Other</option>';
             }
@@ -898,27 +898,27 @@
                 title: "ALPHA BAKERS", screen: "Screen:", themes: "Themes:", white: "White", dark: "Dark", design: "Design",
                 open_cash: "Opening Cash", total_sales: "Total Sales", cash_paid: "Cash Paid", cash_in_hand: "Cash in Hand",
                 online_paid: "Online Paid", bills_issued: "Bills Issued", registered_items: "Total Registered Items:",
-                cooked_portions: "Daily Cooked Portions:", sold_portions: "Daily Sold Portions:", total_discounts: "Total Discounts:",
+                cooked_portions: "Daily Ready Stock:", sold_portions: "Daily Sold Pieces:", total_discounts: "Total Discounts:",
                 total_delivery_charges: "Total Delivery Charges:", low_stock_alert: "Low Stock Alert:",
-                stock_carousel: "Stock Remaining Carousel", servings_left: "Servings Left", plates_sold: "Plates Sold",
-                pos_terminal: "POS Counter Invoicing", manage_cooked: "Manage Prepared Stock", current_cart: "Current Order Cart",
+                stock_carousel: "Stock Remaining Carousel", servings_left: "Pieces Left", plates_sold: "Pieces Sold",
+                pos_terminal: "POS Counter Invoicing", manage_cooked: "Manage Bakery Stock", current_cart: "Current Order Cart",
                 clear_basket: "Clear Basket", cust_name_placeholder: "Enter Customer Name", gross_sum: "Gross Sum:",
                 discounts: "Discounts (Rs.):", delivery_charges: "Delivery Charges (Rs.):", net_payable: "Net Payable:",
                 process_invoice: "Process Invoice & Open Slip", saved_ledger: "Saved Billing Ledger",
                 ledger_desc: "Only Owner Can access.", realtime_sync: "Online Synced", inv_id: "Invoice ID",
                 cust_name: "Customer Name", date: "Date", order_type: "Order Type", pay_method: "Payment Method",
                 breakdown: "Food Items Breakdown", net_bill: "Price (Net Bill)", clear_stock_btn: "Clear",
-                manage_cooked_title: "Daily Prepared Stock & Dishes Management",
-                manage_cooked_desc: "Manage cooked quantities and pricing.", adjust_cooked: "Adjust Cooked Stock",
-                add_custom_item: "Add Custom New Item", item_name_lbl: "Item/Dish Name", price_lbl: "Price (Rs.)",
-                category_lbl: "Category", initial_cooked_lbl: "Initial Cooked Stock", add_item_btn: "Add Item to Terminal",
-                close_board_btn: "Close Board", save_cooked_btn: "Save Cooked Stock", owner_contact_lbl: "Owner Contact",
+                manage_cooked_title: "Daily Bakery Stock & Items Management",
+                manage_cooked_desc: "Manage ready quantities and pricing.", adjust_cooked: "Adjust Bakery Stock",
+                add_custom_item: "Add Custom New Item", item_name_lbl: "Item Name", price_lbl: "Price (Rs.)",
+                category_lbl: "Category", initial_cooked_lbl: "Initial Stock", add_item_btn: "Add Item to Terminal",
+                close_board_btn: "Close Board", save_cooked_btn: "Save Stock", owner_contact_lbl: "Owner Contact",
                 checkout_takeaway: "Takeaway", checkout_dinein: "Dine-In", checkout_delivery: "Delivery",
                 checkout_catering: "Custom Order", checkout_cash: "Cash Pay", checkout_online: "Online Bank",
                 checkout_card: "Card Swipe", no_ledger_records: "No saved operations recorded for period: ",
-                basket_empty: "Basket is empty. Select foods from menu.", sold_out: "SOLD OUT", left: "Left",
+                basket_empty: "Basket is empty. Select items from menu.", sold_out: "SOLD OUT", left: "Left",
                 logout_confirm: "Are you sure you want to lock the console?",
-                clear_stock_confirm: "Are you sure you want to soft-reset all cooked and sold stock counts to 0?",
+                clear_stock_confirm: "Are you sure you want to soft-reset all ready and sold stock counts to 0?",
                 low_stock: "Low Stock", daily_sales_title: "Daily Sales", monthly_sales_title: "Monthly Sales",
                 detailed_report_title: "Daily Summary Report", items_sold_breakdown: "Sold Items Breakdown",
                 selected_date_saman: "Selected Date Items Summary", print_saman_btn: "Print Item List",
@@ -928,9 +928,9 @@
                 title: "الفا بیکرز", screen: "اسکرین:", themes: "تھیمز:", white: "سفید", dark: "ڈارک", design: "ڈیزائن",
                 open_cash: "اوپن کیش", total_sales: "کل فروخت", cash_paid: "کیش ادائیگی", cash_in_hand: "کل کیش (دراز)",
                 online_paid: "آن لائن ادائیگی", bills_issued: "کل بلز", registered_items: "کل رجسٹرڈ اشیاء:",
-                cooked_portions: "روزانہ تیار پلیٹیں:", sold_portions: "روزانہ فروخت پلیٹیں:", total_discounts: "کل ڈسکاؤنٹ:",
+                cooked_portions: "روزانہ تیار پیس:", sold_portions: "روزانہ فروخت پیس:", total_discounts: "کل ڈسکاؤنٹ:",
                 total_delivery_charges: "کل ڈیلیوری چارجز:", low_stock_alert: "کم اسٹاک والی اشیاء:",
-                stock_carousel: "باقی اسٹاک کیروسل", servings_left: "باقی پلیٹیں", plates_sold: "فروخت شدہ",
+                stock_carousel: "باقی اسٹاک کیروسل", servings_left: "باقی پیس", plates_sold: "فروخت شدہ",
                 pos_terminal: "پی او ایس بلنگ کاؤنٹر", manage_cooked: "روزانہ تیار اسٹاک مینج کریں",
                 current_cart: "موجودہ آرڈر ٹوکری", clear_basket: "ٹوکری خالی کریں",
                 cust_name_placeholder: "کسٹمر کا نام لکھیں", gross_sum: "کل رقم:", discounts: "ڈسکاؤنٹ (روپے):",
@@ -940,10 +940,10 @@
                 realtime_sync: "ریئل ٹائم فائر بیس سے مطابقت پذیر", inv_id: "بل نمبر", cust_name: "کسٹمر کا نام",
                 date: "تاریخ", order_type: "آرڈر کی قسم", pay_method: "ادائیگی کا طریقہ", breakdown: "آئٹمز کی تفصیل",
                 net_bill: "کل بل رقم", clear_stock_btn: "صاف کریں",
-                manage_cooked_title: "روزانہ تیار اسٹاک اور ڈشز مینیجر",
+                manage_cooked_title: "روزانہ تیار اسٹاک اور آئٹمز مینیجر",
                 manage_cooked_desc: "ڈیش بورڈ میں تیار شدہ مقدار شامل کریں یا نئی اشیاء درج کریں۔",
-                adjust_cooked: "تیار اسٹاک درست کریں", add_custom_item: "نئی ڈش شامل کریں",
-                item_name_lbl: "ڈش کا نام", price_lbl: "قیمت (روپے)", category_lbl: "کیٹیگری",
+                adjust_cooked: "تیار اسٹاک درست کریں", add_custom_item: "نئی آئٹم شامل کریں",
+                item_name_lbl: "آئٹم کا نام", price_lbl: "قیمت (روپے)", category_lbl: "کیٹیگری",
                 initial_cooked_lbl: "اسٹاک کی مقدار", add_item_btn: "آئٹم شامل کریں", close_board_btn: "بند کریں",
                 save_cooked_btn: "اسٹاک محفوظ کریں", owner_contact_lbl: "مالک کا نمبر",
                 checkout_takeaway: "ٹیک اوے", checkout_dinein: "ڈائن ان", checkout_delivery: "ڈیلیوری",
@@ -959,9 +959,9 @@
             }
         };
 
-        const CATALOG_VERSION = 'v3_bakery_86';
+        const CATALOG_VERSION = 'v4_bakery_only';
         const DEFAULT_MENU_ITEMS = [
-            // Bread & Bakery (1-15)
+            // Bread & Bakery
             [1, "Plain Bread", "Bread & Bakery", 120, "896001"],
             [2, "Milk Bread", "Bread & Bakery", 180, "896002"],
             [3, "Brown Bread", "Bread & Bakery", 200, "896003"],
@@ -977,7 +977,17 @@
             [13, "Vegetable Patties", "Bread & Bakery", 70, "896013"],
             [14, "Chicken Samosa", "Bread & Bakery", 70, "896014"],
             [15, "Spring Roll", "Bread & Bakery", 80, "896015"],
-            // Cakes (16-30)
+            [87, "Sweet Bun", "Bread & Bakery", 50, "896087"],
+            [88, "Cream Bun", "Bread & Bakery", 70, "896088"],
+            [89, "Fruit Bun", "Bread & Bakery", 60, "896089"],
+            [90, "Chicken Bun", "Bread & Bakery", 100, "896090"],
+            [91, "Garlic Bread", "Bread & Bakery", 250, "896091"],
+            [92, "Dinner Rolls", "Bread & Bakery", 200, "896092"],
+            [93, "Croissant", "Bread & Bakery", 180, "896093"],
+            [94, "Baguette", "Bread & Bakery", 220, "896094"],
+            [95, "Pizza Base", "Bread & Bakery", 200, "896095"],
+            [96, "Fruit Rusk", "Bread & Bakery", 330, "896096"],
+            // Cakes
             [16, "Plain Cake", "Cakes", 650, "896016"],
             [17, "Chocolate Cake", "Cakes", 1200, "896017"],
             [18, "Vanilla Cake", "Cakes", 1100, "896018"],
@@ -993,7 +1003,17 @@
             [28, "Customized Cake", "Cakes", 2200, "896028"],
             [29, "Cup Cake", "Cakes", 100, "896029"],
             [30, "Cake Slice", "Cakes", 150, "896030"],
-            // Pastries & Sweet Items (31-46)
+            [97, "Chocolate Truffle Cake", "Cakes", 1600, "896097"],
+            [98, "Butterscotch Cake", "Cakes", 1300, "896098"],
+            [99, "Mango Cake", "Cakes", 1300, "896099"],
+            [100, "Lemon Cake", "Cakes", 900, "896100"],
+            [101, "Banana Cake", "Cakes", 800, "896101"],
+            [102, "Carrot Cake", "Cakes", 1100, "896102"],
+            [103, "Pound Cake", "Cakes", 600, "896103"],
+            [104, "Muffin", "Cakes", 120, "896104"],
+            [105, "Chocolate Muffin", "Cakes", 140, "896105"],
+            [106, "Blueberry Muffin", "Cakes", 150, "896106"],
+            // Pastries & Sweet Items
             [31, "Chocolate Pastry", "Pastries & Sweet Items", 160, "896031"],
             [32, "Vanilla Pastry", "Pastries & Sweet Items", 140, "896032"],
             [33, "Pineapple Pastry", "Pastries & Sweet Items", 150, "896033"],
@@ -1010,7 +1030,17 @@
             [44, "Fruit Tart", "Pastries & Sweet Items", 150, "896044"],
             [45, "Apple Pie", "Pastries & Sweet Items", 180, "896045"],
             [46, "Chocolate Tart", "Pastries & Sweet Items", 170, "896046"],
-            // Biscuits & Cookies (47-56)
+            [107, "Danish Pastry", "Pastries & Sweet Items", 150, "896107"],
+            [108, "Cheese Danish", "Pastries & Sweet Items", 170, "896108"],
+            [109, "Cream Puff", "Pastries & Sweet Items", 100, "896109"],
+            [110, "Cream Horn", "Pastries & Sweet Items", 120, "896110"],
+            [111, "Cinnamon Roll", "Pastries & Sweet Items", 160, "896111"],
+            [112, "Mango Pastry", "Pastries & Sweet Items", 150, "896112"],
+            [113, "Strawberry Pastry", "Pastries & Sweet Items", 150, "896113"],
+            [114, "Butterscotch Pastry", "Pastries & Sweet Items", 150, "896114"],
+            [115, "Black Forest Pastry", "Pastries & Sweet Items", 170, "896115"],
+            [116, "Red Velvet Pastry", "Pastries & Sweet Items", 180, "896116"],
+            // Biscuits & Cookies
             [47, "Plain Biscuits", "Biscuits & Cookies", 250, "896047"],
             [48, "Butter Cookies", "Biscuits & Cookies", 320, "896048"],
             [49, "Coconut Cookies", "Biscuits & Cookies", 300, "896049"],
@@ -1021,7 +1051,16 @@
             [54, "Jeera Biscuits", "Biscuits & Cookies", 280, "896054"],
             [55, "Nan Khatai", "Biscuits & Cookies", 280, "896055"],
             [56, "Macarons", "Biscuits & Cookies", 450, "896056"],
-            // Local Bakery Items (57-65)
+            [117, "Ajwain Biscuits", "Biscuits & Cookies", 280, "896117"],
+            [118, "Atta Biscuits", "Biscuits & Cookies", 260, "896118"],
+            [119, "Ghee Biscuits", "Biscuits & Cookies", 340, "896119"],
+            [120, "Cream Biscuits", "Biscuits & Cookies", 260, "896120"],
+            [121, "Choco Chip Cookies", "Biscuits & Cookies", 360, "896121"],
+            [122, "Oatmeal Cookies", "Biscuits & Cookies", 340, "896122"],
+            [123, "Dry Fruit Biscuits", "Biscuits & Cookies", 400, "896123"],
+            [124, "Salted Biscuits", "Biscuits & Cookies", 240, "896124"],
+            [125, "Shakar Para", "Biscuits & Cookies", 300, "896125"],
+            // Local Bakery Items
             [57, "Gulab Jamun", "Local Bakery Items", 350, "896057"],
             [58, "Jalebi", "Local Bakery Items", 300, "896058"],
             [59, "Rasgulla", "Local Bakery Items", 350, "896059"],
@@ -1031,20 +1070,25 @@
             [63, "Soan Papdi", "Local Bakery Items", 380, "896063"],
             [64, "Coconut Barfi", "Local Bakery Items", 400, "896064"],
             [65, "Besan Barfi", "Local Bakery Items", 380, "896065"],
-            // Snacks / Fast Food (66-77)
-            [66, "Chicken Sandwich", "Snacks / Fast Food", 220, "896066"],
-            [67, "Club Sandwich", "Snacks / Fast Food", 380, "896067"],
-            [68, "Vegetable Sandwich", "Snacks / Fast Food", 180, "896068"],
-            [69, "Pizza", "Snacks / Fast Food", 950, "896069"],
-            [70, "Pizza Slice", "Snacks / Fast Food", 200, "896070"],
-            [71, "Chicken Roll", "Snacks / Fast Food", 180, "896071"],
-            [72, "Shawarma", "Snacks / Fast Food", 250, "896072"],
-            [73, "Chicken Burger", "Snacks / Fast Food", 300, "896073"],
-            [74, "Zinger Burger", "Snacks / Fast Food", 400, "896074"],
-            [75, "French Fries", "Snacks / Fast Food", 150, "896075"],
-            [76, "Chicken Nuggets", "Snacks / Fast Food", 350, "896076"],
-            [77, "Chicken Wings", "Snacks / Fast Food", 380, "896077"],
-            // Drinks (78-86)
+            [126, "Motichoor Laddu", "Local Bakery Items", 400, "896126"],
+            [127, "Besan Laddu", "Local Bakery Items", 380, "896127"],
+            [128, "Imarti", "Local Bakery Items", 350, "896128"],
+            [129, "Kalakand", "Local Bakery Items", 500, "896129"],
+            [130, "Milk Cake", "Local Bakery Items", 500, "896130"],
+            [131, "Cham Cham", "Local Bakery Items", 380, "896131"],
+            [132, "Sohan Halwa", "Local Bakery Items", 600, "896132"],
+            [133, "Khoya Barfi", "Local Bakery Items", 450, "896133"],
+            [134, "Pista Barfi", "Local Bakery Items", 600, "896134"],
+            // Savory Bakery Items
+            [66, "Chicken Sandwich", "Savory Bakery Items", 220, "896066"],
+            [68, "Vegetable Sandwich", "Savory Bakery Items", 180, "896068"],
+            [135, "Aloo Samosa", "Savory Bakery Items", 40, "896135"],
+            [136, "Cheese Patties", "Savory Bakery Items", 110, "896136"],
+            [137, "Sausage Roll", "Savory Bakery Items", 120, "896137"],
+            [138, "Chicken Bun Kebab", "Savory Bakery Items", 130, "896138"],
+            [139, "Namak Para", "Savory Bakery Items", 300, "896139"],
+            [140, "Cheese Straws", "Savory Bakery Items", 280, "896140"],
+            // Drinks
             [78, "Tea", "Drinks", 70, "896078"],
             [79, "Green Tea", "Drinks", 80, "896079"],
             [80, "Coffee", "Drinks", 160, "896080"],
@@ -1143,8 +1187,8 @@
             menuItems.forEach(i => { cooked += parseInt(i.cooked) || 0; sold += parseInt(i.sold) || 0; });
             const a = byId('detail-total-items'), b = byId('detail-total-cooked'), c = byId('detail-total-sold');
             if (a) a.textContent = menuItems.length;
-            if (b) b.textContent = `${cooked} Plates`;
-            if (c) c.textContent = `${sold} Plates`;
+            if (b) b.textContent = `${cooked} Pcs`;
+            if (c) c.textContent = `${sold} Pcs`;
         };
 
         /* ---------- Carousel ---------- */
@@ -1298,7 +1342,7 @@
                 </div>
                 <div class="text-[9px] text-slate-400 uppercase font-bold">${i.category} &middot; Sold: ${i.sold || 0}</div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="${lbl}">Cooked</label><input type="number" min="0" class="prep-cooked ${inp}" value="${i.cooked || 0}"></div>
+                    <div><label class="${lbl}">Ready</label><input type="number" min="0" class="prep-cooked ${inp}" value="${i.cooked || 0}"></div>
                     <div><label class="${lbl}">Price</label><input type="number" class="prep-price ${inp}" value="${i.price}"></div>
                 </div>
                 <div><label class="${lbl}">Barcode</label><input type="text" data-barcode-field="1" value="${i.barcode || ''}" onchange="setItemBarcode(${i.id}, this.value)" placeholder="Barcode" class="${inp} font-mono"></div>
@@ -1378,7 +1422,7 @@
             if (!activeCart.length) { alert(activeLanguage === 'ur' ? 'ٹوکری خالی ہے۔' : 'Basket is empty.'); return null; }
             for (const c of activeCart) {
                 const src = menuItems.find(i => Number(i.id) === Number(c.id));
-                if (!src || c.qty > (src.cooked - src.sold)) { alert(`Not enough prepared stock for ${c.name}.`); return null; }
+                if (!src || c.qty > (src.cooked - src.sold)) { alert(`Not enough stock for ${c.name}.`); return null; }
             }
             const discount = parseFloat(byId('discount-input').value) || 0;
             const type = byId('bill-type-select').value;
@@ -1722,7 +1766,7 @@
             const existingInCart = activeCart.find(c => Number(c.id) === Number(itemId));
             const currentCartQty = existingInCart ? existingInCart.qty : 0;
             if (currentCartQty + 1 > remaining) {
-                alert(`Cannot add more! Kitchen only prepared ${item.cooked} servings of ${item.name} today.`);
+                alert(`Cannot add more! Only ${item.cooked} pieces of ${item.name} are in stock today.`);
                 return;
             }
             if (existingInCart) existingInCart.qty += 1;
@@ -1734,7 +1778,7 @@
             const itemInCart = activeCart.find(c => Number(c.id) === Number(itemId));
             const sourceItem = menuItems.find(i => Number(i.id) === Number(itemId));
             if (!itemInCart || !sourceItem) return;
-            if (itemInCart.qty + amount > (sourceItem.cooked - sourceItem.sold)) { alert(`Not enough stock prepared left!`); return; }
+            if (itemInCart.qty + amount > (sourceItem.cooked - sourceItem.sold)) { alert(`Not enough stock left!`); return; }
             itemInCart.qty += amount;
             if (itemInCart.qty <= 0) activeCart = activeCart.filter(c => Number(c.id) !== Number(itemId));
             renderCartUI();
