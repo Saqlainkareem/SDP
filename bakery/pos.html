@@ -588,6 +588,7 @@
                             <option value="Biscuits & Cookies">Biscuits &amp; Cookies</option>
                             <option value="Local Bakery Items">Local Bakery Items</option>
                             <option value="Savory Bakery Items">Savory Bakery Items</option>
+                            <option value="Fast Food">Fast Food</option>
                             <option value="Drinks">Drinks</option>
                             <option value="Special Discount">Special Discount</option>
                             <option value="__other__">Other</option>
@@ -887,7 +888,7 @@
             if (catSel) {
                 catSel.innerHTML = [
                     'Bread & Bakery', 'Cakes', 'Pastries & Sweet Items',
-                    'Biscuits & Cookies', 'Local Bakery Items', 'Savory Bakery Items',
+                    'Biscuits & Cookies', 'Local Bakery Items', 'Savory Bakery Items', 'Fast Food',
                     'Drinks', 'Special Discount'
                 ].map(c => `<option value="${c}">${c}</option>`).join('') + '<option value="__other__">Other</option>';
             }
@@ -959,7 +960,7 @@
             }
         };
 
-        const CATALOG_VERSION = 'v5_bakery_sweets';
+        const CATALOG_VERSION = 'v6_fastfood_papay';
         const DEFAULT_MENU_ITEMS = [
             // Bread & Bakery
             [1, "Plain Bread", "Bread & Bakery", 120, "896001"],
@@ -1013,6 +1014,9 @@
             [104, "Muffin", "Cakes", 120, "896104"],
             [105, "Chocolate Muffin", "Cakes", 140, "896105"],
             [106, "Blueberry Muffin", "Cakes", 150, "896106"],
+            [174, "Dollar Cake 100 gm", "Cakes", 100, "896174"],
+            [175, "Dollar Cake 200 gm", "Cakes", 200, "896175"],
+            [176, "Dollar Cake 400 gm", "Cakes", 400, "896176"],
             // Pastries & Sweet Items
             [31, "Chocolate Pastry", "Pastries & Sweet Items", 160, "896031"],
             [32, "Vanilla Pastry", "Pastries & Sweet Items", 140, "896032"],
@@ -1072,6 +1076,11 @@
             [166, "Walnut Cookies", "Biscuits & Cookies", 400, "896166", 100],
             [167, "Fauji Corn Flakes Cookies", "Biscuits & Cookies", 320, "896167", 100],
             [168, "Kalonji Biscuit", "Biscuits & Cookies", 280, "896168", 100],
+            [169, "Slice Papay", "Biscuits & Cookies", 150, "896169", 37],
+            [170, "Candy Packet Papay", "Biscuits & Cookies", 150, "896170", 6],
+            [171, "Goal Papay", "Biscuits & Cookies", 150, "896171", 8],
+            [172, "Budget Papay", "Biscuits & Cookies", 120, "896172", 9],
+            [173, "Badam Papay", "Biscuits & Cookies", 200, "896173", 9],
 // Local Bakery Items
             [57, "Gulab Jamun", "Local Bakery Items", 350, "896057"],
             [58, "Jalebi", "Local Bakery Items", 300, "896058"],
@@ -1116,6 +1125,17 @@
             [138, "Chicken Bun Kebab", "Savory Bakery Items", 130, "896138"],
             [139, "Namak Para", "Savory Bakery Items", 300, "896139"],
             [140, "Cheese Straws", "Savory Bakery Items", 280, "896140"],
+            // Fast Food
+            [177, "Chicken Burger", "Fast Food", 300, "896177"],
+            [178, "Zinger Burger", "Fast Food", 400, "896178"],
+            [179, "Chicken Tikka Pizza", "Fast Food", 1200, "896179"],
+            [180, "Pizza Slice", "Fast Food", 250, "896180"],
+            [181, "Chicken Shawarma", "Fast Food", 250, "896181"],
+            [182, "French Fries", "Fast Food", 200, "896182"],
+            [183, "Chicken Nuggets", "Fast Food", 350, "896183"],
+            [184, "Chicken Wings", "Fast Food", 400, "896184"],
+            [185, "Club Sandwich", "Fast Food", 350, "896185"],
+            [186, "Chicken Roll", "Fast Food", 250, "896186"],
             // Drinks
             [78, "Tea", "Drinks", 70, "896078"],
             [79, "Green Tea", "Drinks", 80, "896079"],
