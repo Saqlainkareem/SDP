@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Milk Collection Agent</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#0b2a6f">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23071e54'/%3E%3Cstop offset='55%25' stop-color='%23124ec9'/%3E%3Cstop offset='100%25' stop-color='%2300b4ff'/%3E%3C/linearGradient%3E%3ClinearGradient id='g2' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23124ec9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='57' fill='%23ffffff' stroke='url(%23g1)' stroke-width='6'/%3E%3Cpath d='M60,18 C60,18 35,47 35,68 A25,25 0 0,0 85,68 C85,47 60,18 60,18 Z' fill='url(%23g1)'/%3E%3Cpath d='M60,26 C60,26 42,50 42,67 A18,18 0 0,0 78,67 C78,50 60,26 60,26 Z' fill='%23ffffff'/%3E%3Cpath d='M44,68 Q52,61 60,68 T76,68 A16,16 0 0,1 44,68 Z' fill='url(%23g2)'/%3E%3Ccircle cx='53' cy='52' r='3.5' fill='%2300b4ff' opacity='0.7'/%3E%3C/svg%3E">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+    [dir="rtl"] body, [dir="rtl"] * { font-family: 'Noto Nastaliq Urdu', 'Plus Jakarta Sans', sans-serif; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .brand-top { background: linear-gradient(90deg, #071e54 0%, #124ec9 58%, #00b4ff 100%) !important; }
+    .brand-login { background: radial-gradient(circle at 20% 20%, rgba(0,180,255,0.28), transparent 45%), radial-gradient(circle at 80% 80%, rgba(34,211,238,0.25), transparent 45%), linear-gradient(135deg, #071e54 0%, #0b2a6f 50%, #124ec9 100%) !important; }
+    .btn-ssg { background: linear-gradient(90deg, #0b2a6f 0%, #124ec9 55%, #0099e6 100%); }
+    .btn-ssg:hover { filter: brightness(1.08); }
+    img[data-logo] { background: #fff; }
+    @media print {
+      body * { visibility: hidden !important; }
+      #thermalReceipt, #thermalReceipt * { visibility: visible !important; }
+      #thermalReceipt { position: fixed; left: 0; top: 0; width: 58mm; margin: 0; padding: 5px; background: #fff; color: #000; }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-sky-50 via-white to-blue-50/80 min-h-screen text-slate-800 flex flex-col justify-between selection:bg-sky-200">
+
+  <header class="brand-top text-white px-3.5 py-2.5 shadow-md shadow-blue-900/15 flex items-center justify-between sticky top-0 z-30">
+    <div class="flex items-center gap-2.5 min-w-0">
+      <div class="w-10 h-10 rounded-full bg-white p-0.5 border-2 border-[#22d3ee] shadow-md flex-shrink-0">
+        <img data-logo alt="Dairy Logo" class="w-full h-full object-cover rounded-full">
+      </div>
+      <div class="min-w-0">
+        <h1 id="headerBizTitle" class="font-extrabold text-sm tracking-wide leading-tight truncate">Dairy Milk Collector</h1>
+        <p class="text-[10px] text-cyan-200 flex items-center gap-1.5 font-medium">
+          <span id="netDot" class="w-2 h-2 rounded-full bg-[#22d3ee] ring-2 ring-white/25 flex-shrink-0"></span>
+          <span class="truncate" data-i18n="agent_terminal">Agent Mobile Terminal</span>
+        </p>
+      </div>
+    </div>
+    <div class="flex items-center gap-1.5 flex-shrink-0">
+      <!-- Game-style Wi-Fi + Live Ping (ms) -->
+      <button type="button" onclick="checkPing(true)" id="pingBox" title="Network Ping (Tap to check)" class="flex flex-col items-center justify-center bg-[#071e54]/60 hover:bg-[#071e54]/85 px-2.5 py-1 rounded-xl border border-cyan-300/40 min-w-[54px] transition">
+        <i id="wifiIcon" class="fa-solid fa-wifi text-xs text-emerald-300 leading-none"></i>
+        <span id="pingMsText" class="text-[9px] font-black tracking-tight text-emerald-200 leading-none mt-1">-- ms</span>
+      </button>
+      <button onclick="toggleLang()" class="bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-2.5 py-1.5 rounded-xl border border-cyan-300/40 transition"><span id="langBtnText">اردو</span></button>
+      <button onclick="openProfileModal()" class="w-8 h-8 rounded-xl bg-white/15 hover:bg-white/25 flex items-center justify-center text-xs text-white border border-cyan-300/40 transition"><i class="fa-solid fa-user-gear"></i></button>
+    </div>
+  </header>
+
+  <!-- Unstable / Offline Red Warning Banner -->
+  <div id="netBanner" class="bg-rose-600 text-white border-b border-rose-700 text-xs font-extrabold text-center py-2 px-3 sticky top-[60px] z-20 hidden shadow-md"></div>
+  <div id="toast" class="hidden fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] max-w-xs w-[90%] text-xs font-bold text-white text-center px-4 py-3 rounded-2xl shadow-xl"></div>
+
+  <!-- Agent Login (Admin-Created Credentials Only) -->
+  <section id="agentLoginScreen" class="brand-login fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200 text-center">
+      <div class="flex justify-end mb-1">
+        <button type="button" onclick="toggleLang()" class="bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] text-[11px] font-bold px-2.5 py-1 rounded-xl border border-sky-200 transition"><span id="loginLangBtnText">اردو</span></button>
+      </div>
+      <div class="w-16 h-16 rounded-full bg-white p-0.5 shadow-lg shadow-blue-900/20 mx-auto mb-3">
+        <img data-logo alt="Dairy Logo" class="w-full h-full object-cover rounded-full">
+      </div>
+      <h2 class="text-lg font-black text-[#071e54]" data-i18n="agent_login_title">Agent Login</h2>
+      <p class="text-xs text-slate-500 mb-5" data-i18n="agent_login_desc">Enter the Agent ID and Password provided by your Dairy Admin.</p>
+      <form id="agentLoginForm" onsubmit="handleAgentLogin(event)" class="space-y-3.5 text-left">
+        <div>
+          <label class="block text-[11px] font-extrabold text-[#0b2a6f] uppercase mb-1" data-i18n="agent_id_lbl">Agent ID</label>
+          <input type="text" id="loginAgentId" required autocomplete="username" placeholder="e.g. fareed01" class="w-full bg-sky-50/60 border border-sky-200 rounded-xl px-3.5 py-2.5 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+        </div>
+        <div>
+          <label class="block text-[11px] font-extrabold text-[#0b2a6f] uppercase mb-1" data-i18n="password_lbl">Password</label>
+          <div class="relative">
+            <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="••••••••" class="w-full bg-sky-50/60 border border-sky-200 rounded-xl px-3.5 py-2.5 pr-10 text-xs font-bold focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+            <button type="button" onclick="toggleLoginPass()" class="absolute right-3 top-2.5 text-slate-400 hover:text-[#124ec9] text-xs"><i id="passEye" class="fa-solid fa-eye"></i></button>
+          </div>
+        </div>
+        <p id="loginError" class="hidden text-xs font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3 py-2 text-center"></p>
+        <button type="submit" id="loginSubmitBtn" class="btn-ssg w-full text-white font-extrabold py-3.5 rounded-2xl shadow-lg shadow-blue-900/25 text-xs transition flex justify-center items-center gap-2 mt-2">
+          <i class="fa-solid fa-right-to-bracket"></i> <span data-i18n="login_btn">Login & Start Collecting</span>
+        </button>
+      </form>
+      <p class="text-[10px] text-slate-400 mt-4" data-i18n="only_admin_creates">Only authorized agents created by Admin can log in.</p>
+    </div>
+  </section>
+
+  <main id="mainAppScreen" class="flex-1 p-4 max-w-lg mx-auto w-full space-y-4">
+    <div class="bg-white rounded-2xl p-3.5 border border-sky-200/80 shadow-sm shadow-blue-900/5 flex items-center justify-between text-xs">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#0b2a6f] to-[#00b4ff] text-white flex items-center justify-center font-bold text-xs shadow-sm" id="agentInitials">AG</div>
+        <div>
+          <h3 class="font-extrabold text-[#071e54] text-xs leading-none" id="agentCardName">Loading...</h3>
+          <span class="text-[10px] text-[#124ec9] font-medium" id="agentCardRoute">-</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1.5">
+        <button type="button" id="syncNowBtn" onclick="syncPendingCollections(true)" class="hidden text-[10px] bg-amber-50 text-amber-700 border border-amber-200 font-bold px-2 py-1 rounded-full"><i class="fa-solid fa-rotate"></i> Sync</button>
+        <span class="text-[10px] bg-sky-50 text-[#0b2a6f] border border-sky-200 font-bold px-2.5 py-1 rounded-full" id="cloudStatusTag"><i class="fa-solid fa-signal text-[#0099e6]"></i> Ready</span>
+      </div>
+    </div>
+
+    <!-- Red Circle Pending Entries Alert -->
+    <div id="pendingBox" class="hidden bg-rose-50 border-2 border-rose-300 rounded-2xl p-3 shadow-sm flex items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div id="pendingBadgeCircle" class="w-10 h-10 rounded-full bg-rose-600 text-white font-black text-base flex items-center justify-center flex-shrink-0 shadow-md shadow-rose-500/30 ring-4 ring-rose-200">0</div>
+        <div class="min-w-0">
+          <p id="pendingTitle" class="font-black text-xs text-rose-800 leading-tight">0 Entries Pending</p>
+          <p id="pendingSub" class="text-[10px] font-semibold text-rose-600 leading-snug">Not saved in Firebase yet — tap Sync when net is stable</p>
+        </div>
+      </div>
+      <button type="button" id="pendingSyncBtn" onclick="syncPendingCollections(true)" class="bg-rose-600 hover:bg-rose-700 text-white font-extrabold text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5 flex-shrink-0 shadow-sm">
+        <i class="fa-solid fa-rotate"></i> <span data-i18n="sync_btn">Sync</span>
+      </button>
+    </div>
+
+    <div class="bg-white rounded-3xl p-5 border border-sky-200/80 border-t-4 border-t-[#00b4ff] shadow-sm shadow-blue-900/5 space-y-4 relative overflow-hidden">
+      <div id="savingOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex-col items-center justify-center gap-3 hidden text-center px-4">
+        <div class="w-10 h-10 border-4 border-[#124ec9] border-t-transparent rounded-full animate-spin"></div>
+        <p class="font-bold text-xs text-[#0b2a6f]" data-i18n="saving_protect">Recording & Syncing Entry...</p>
+        <span class="text-[10px] text-slate-400">Please wait, do not close</span>
+      </div>
+
+      <div class="border-b border-sky-100 pb-3 flex justify-between items-center">
+        <div>
+          <h2 class="font-black text-[#071e54] text-base" data-i18n="milk_entry">Milk Collection Entry</h2>
+          <p class="text-[11px] text-slate-400" data-i18n="fill_details">Fill volume and test quality on spot</p>
+        </div>
+        <span class="bg-sky-100 text-[#0b2a6f] border border-sky-200 px-2.5 py-1 rounded-full text-[10px] font-black tracking-wider uppercase" data-i18n="rate_hidden">Rate Hidden</span>
+      </div>
+
+      <form id="milkEntryForm" onsubmit="submitMilkEntry(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="farmer_supplier">Farmer / Supplier</label>
+          <div class="flex gap-2">
+            <select id="farmerDropdown" required class="flex-1 bg-sky-50/60 border border-sky-200 rounded-2xl px-3 py-3 text-xs font-bold text-[#071e54] focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+              <option value="">-- Choose Farmer --</option>
+            </select>
+            <button type="button" id="newFarmerBtn" onclick="openNewFarmerModal()" class="bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-300 px-3.5 rounded-2xl text-xs font-extrabold transition flex items-center gap-1">
+              <i class="fa-solid fa-plus text-[#124ec9]"></i> <span data-i18n="new">New</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="shift">Shift</label>
+            <select id="entryShift" class="w-full bg-sky-50/60 border border-sky-200 rounded-2xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+              <option value="Morning">Morning (صبح)</option>
+              <option value="Evening">Evening (شام)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="pricing_mode">Pricing Mode</label>
+            <select id="entryMode" onchange="handleModeChange()" class="w-full bg-sky-50/60 border border-sky-200 rounded-2xl px-3 py-2.5 text-xs font-bold text-slate-800 focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+              <option value="13TS">13 TS (Fat + LR)</option>
+              <option value="DirectKG">Direct KG / Weight</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="quantity_ltr">Milk Quantity (Liters / KG)</label>
+          <div class="relative">
+            <input type="number" step="0.1" min="0.1" id="entryQty" required oninput="computeLivePreview()" placeholder="e.g. 50.0" class="w-full bg-sky-50/60 border border-sky-200 rounded-2xl px-4 py-3.5 text-xl font-extrabold text-[#071e54] focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none pr-16">
+            <span class="absolute right-4 top-4 text-xs font-bold text-[#124ec9]">Ltr / Kg</span>
+          </div>
+        </div>
+
+        <div id="qualityRow" class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="fat_pct">FAT (%)</label>
+            <input type="number" step="0.1" min="1" max="15" id="entryFat" oninput="computeLivePreview()" placeholder="e.g. 6.5" class="w-full bg-sky-50/60 border border-sky-200 rounded-2xl px-3 py-2.5 text-sm font-bold text-[#071e54] focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-xs font-extrabold text-[#0b2a6f] mb-1" data-i18n="lr_reading">LR Reading</label>
+            <input type="number" step="0.5" min="10" max="40" id="entryLR" oninput="computeLivePreview()" placeholder="e.g. 28.0" class="w-full bg-sky-50/60 border border-sky-200 rounded-2xl px-3 py-2.5 text-sm font-bold text-[#071e54] focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none">
+          </div>
+        </div>
+
+        <div id="tsResultCard" class="bg-gradient-to-r from-sky-50 to-cyan-50 border border-sky-200 rounded-2xl p-3.5 flex justify-between items-center text-xs">
+          <div>
+            <span class="text-slate-500 block text-[11px]" data-i18n="ts_pct">Total Solids (TS %)</span>
+            <strong class="text-base font-extrabold text-[#124ec9]" id="calcTSDisplay">0.00 %</strong>
+          </div>
+          <div class="text-right">
+            <span class="text-slate-500 block text-[11px]" data-i18n="ts_equiv">13 TS Equivalent Volume</span>
+            <strong class="text-base font-extrabold text-[#071e54]" id="calcVolDisplay">0.0 Ltr</strong>
+          </div>
+        </div>
+
+        <button type="submit" id="submitEntryBtn" class="btn-ssg w-full active:scale-[0.98] text-white font-extrabold py-4 rounded-2xl shadow-xl shadow-blue-900/25 text-sm transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-floppy-disk text-base"></i>
+          <span data-i18n="save_and_print">Save & Print Slip</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="bg-white rounded-3xl p-5 border border-sky-200/80 shadow-sm shadow-blue-900/5">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-extrabold text-xs uppercase text-[#0b2a6f] tracking-wider" data-i18n="my_collections">My Collections Today</h3>
+        <span class="bg-sky-100 text-[#0b2a6f] font-extrabold text-[11px] px-2.5 py-0.5 rounded-full border border-sky-200" id="agentTodayCounter">0 Entries</span>
+      </div>
+      <div id="agentHistoryStream" class="divide-y divide-sky-100 text-xs max-h-64 overflow-y-auto"></div>
+    </div>
+  </main>
+
+  <!-- Add Farmer -->
+  <div id="newFarmerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl border border-sky-200">
+      <h3 class="font-black text-sm text-[#071e54] mb-3" data-i18n="add_farmer">Add New Farmer</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="block font-extrabold text-[#0b2a6f] mb-1" data-i18n="farmer_name">Farmer Name</label>
+          <input type="text" id="mfName" placeholder="e.g. Haji Aslam" class="w-full bg-sky-50/60 border border-sky-200 rounded-xl px-3 py-2 font-bold focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none"></div>
+        <div><label class="block font-extrabold text-[#0b2a6f] mb-1" data-i18n="phone_number">Phone Number</label>
+          <input type="tel" id="mfPhone" placeholder="0300-xxxxxxx" class="w-full bg-sky-50/60 border border-sky-200 rounded-xl px-3 py-2 font-bold focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:outline-none"></div>
+      </div>
+      <div class="flex gap-2 mt-4">
+        <button onclick="closeNewFarmerModal()" class="w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200 font-bold py-2.5 rounded-xl text-xs" data-i18n="cancel">Cancel</button>
+        <button id="saveFarmerBtn" onclick="saveNewFarmer()" class="btn-ssg w-1/2 text-white font-bold py-2.5 rounded-xl text-xs" data-i18n="save">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Receipt -->
+  <div id="receiptModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl border border-sky-200">
+      <div id="thermalReceipt" class="text-center font-mono text-[11px] leading-snug border border-dashed border-sky-300 p-3 rounded-xl bg-white text-slate-900">
+        <img data-logo alt="Dairy Logo" class="w-11 h-11 rounded-full mx-auto mb-1">
+        <h4 class="font-black text-xs uppercase text-[#071e54]" id="slipBizName">DAIRY MILK TRADERS</h4>
+        <p class="text-[9px] text-slate-500" id="slipBizPhone"></p>
+        <p class="text-[9px] text-slate-500" id="slipAgentSubtitle">Agent: -</p>
+        <div class="border-b border-dashed border-sky-300 my-1.5"></div>
+        <p class="font-black uppercase tracking-wider text-[#0b2a6f]" data-i18n="slip_title">MILK INWARD RECEIPT</p>
+        <p class="text-[9px] text-slate-500" id="slipNo">No: -</p>
+        <p class="text-[9px] text-slate-500" id="slipDateTime">Date: -</p>
+        <div class="border-b border-dashed border-sky-300 my-1.5"></div>
+        <div class="text-left space-y-1">
+          <div class="flex justify-between"><span>Farmer:</span> <strong id="slipFarmer">-</strong></div>
+          <div class="flex justify-between"><span>Shift:</span> <strong id="slipShift">-</strong></div>
+          <div class="flex justify-between"><span>Mode:</span> <strong id="slipMode">-</strong></div>
+          <div class="flex justify-between"><span>Quantity:</span> <strong id="slipQty">-</strong></div>
+          <div class="flex justify-between" id="slipFatRow"><span>FAT:</span> <strong id="slipFat">-</strong></div>
+          <div class="flex justify-between" id="slipLrRow"><span>LR:</span> <strong id="slipLR">-</strong></div>
+          <div class="flex justify-between" id="slipTsRow"><span>TS%:</span> <strong id="slipTS">-</strong></div>
+          <div class="flex justify-between" id="slipTsVolRow"><span>13 TS Vol:</span> <strong id="slipTsVol">-</strong></div>
+        </div>
+        <div class="border-b border-dashed border-sky-300 my-1.5"></div>
+        <p class="text-[8px] text-slate-400 italic" data-i18n="slip_footer">Official collection slip. Ledger rates calculated at central terminal.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 mt-3">
+        <button onclick="shareWhatsApp()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-brands fa-whatsapp"></i> <span data-i18n="wa_share">WhatsApp</span>
+        </button>
+        <button onclick="shareSMS()" class="bg-sky-600 hover:bg-sky-700 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-comment-sms"></i> <span data-i18n="sms_share">Send SMS</span>
+        </button>
+      </div>
+      <div class="flex gap-2 mt-2">
+        <button onclick="closeReceiptModal()" class="w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200 font-bold py-2.5 rounded-xl text-xs" data-i18n="close">Close</button>
+        <button onclick="window.print()" class="btn-ssg w-1/2 text-white font-bold py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md">
+          <i class="fa-solid fa-print"></i> <span data-i18n="print_slip">Print Slip</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile -->
+  <div id="profileModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl border border-sky-200 text-center">
+      <div class="w-14 h-14 rounded-full bg-white p-0.5 shadow-md mx-auto mb-2">
+        <img data-logo alt="Dairy Logo" class="w-full h-full object-cover rounded-full">
+      </div>
+      <h3 class="font-extrabold text-sm text-[#071e54]" id="profModalName">Agent Profile</h3>
+      <p class="text-xs text-[#124ec9] font-bold mb-4" id="profModalLoginId">-</p>
+      <div class="space-y-2 text-xs text-left bg-sky-50/70 p-3 rounded-2xl border border-sky-200 mb-4">
+        <div class="flex justify-between"><span class="text-slate-500">Phone:</span> <strong class="text-[#071e54]" id="profModalPhone">-</strong></div>
+        <div class="flex justify-between"><span class="text-slate-500">Vehicle/Route:</span> <strong class="text-[#071e54]" id="profModalRoute">-</strong></div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="closeProfileModal()" class="w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200 font-bold py-2.5 rounded-xl text-xs" data-i18n="close">Close</button>
+        <button onclick="handleAgentLogout()" class="w-1/2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold py-2.5 rounded-xl text-xs border border-rose-200" data-i18n="logout">Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE (module) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, doc, setDoc, getDoc, getDocs, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+    try {
+      const app = initializeApp({
+        apiKey: "AIzaSyAgNQRFr-UWCjY0OYCbPYIPS71czHWMcxA",
+        authDomain: "dairy1-1c7f0.firebaseapp.com",
+        projectId: "dairy1-1c7f0",
+        storageBucket: "dairy1-1c7f0.firebasestorage.app",
+        messagingSenderId: "384398878301",
+        appId: "1:384398878301:web:7197d199b2bbafb337cfb4",
+        measurementId: "G-1EHNC26WXC"
+      });
+      isSupported().then(ok => { if (ok) getAnalytics(app); }).catch(() => {});
+      window.FB = { db: getFirestore(app), collection, doc, setDoc, getDoc, getDocs, onSnapshot, query, where };
+
+      const auth = getAuth(app);
+      signInAnonymously(auth)
+        .then(() => window.dispatchEvent(new Event('fb-ready')))
+        .catch(e => {
+          console.warn("Auth warning:", e.message);
+          window.dispatchEvent(new Event('fb-ready'));
+        });
+    } catch(err) {
+      console.warn("Firebase Init Error:", err);
+      window.dispatchEvent(new Event('fb-ready'));
+    }
+  </script>
+
+  <script>
+    const LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23071e54'/%3E%3Cstop offset='55%25' stop-color='%23124ec9'/%3E%3Cstop offset='100%25' stop-color='%2300b4ff'/%3E%3C/linearGradient%3E%3ClinearGradient id='g2' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23124ec9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='57' fill='%23ffffff' stroke='url(%23g1)' stroke-width='5'/%3E%3Cpath d='M12,74 Q36,60 60,72 T108,70 A48,48 0 0,1 12,74 Z' fill='url(%23g1)' opacity='0.14'/%3E%3Cpath d='M60,18 C60,18 35,47 35,68 A25,25 0 0,0 85,68 C85,47 60,18 60,18 Z' fill='url(%23g1)'/%3E%3Cpath d='M60,26 C60,26 42,50 42,67 A18,18 0 0,0 78,67 C78,50 60,26 60,26 Z' fill='%23ffffff'/%3E%3Cpath d='M44,68 Q52,61 60,68 T76,68 A16,16 0 0,1 44,68 Z' fill='url(%23g2)'/%3E%3Ccircle cx='53' cy='52' r='3.5' fill='%2300b4ff' opacity='0.7'/%3E%3Cpath d='M26,88 Q60,104 94,88' fill='none' stroke='%2300b4ff' stroke-width='3.5' stroke-linecap='round'/%3E%3C/svg%3E";
+    document.querySelectorAll("img[data-logo]").forEach(i => i.src = LOGO);
+
+    const COL_PARTIES = "dairy_milk_parties", COL_COLLECTIONS = "dairy_milk_collections", COL_AGENTS = "dairy_milk_agents", COL_SETTINGS = "dairy_milk_settings";
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), ms))]);
+    const localDate = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+
+    let FB = null, cloudLive = false, busy = false;
+    let dairyInfo = JSON.parse(localStorage.getItem('dairy_biz_info') || '{"bizName":"DAIRY MILK TRADERS","bizPhone":""}');
+    let appFarmers = JSON.parse(localStorage.getItem('dairy_local_farmers') || '[]');
+    let todayLogs = JSON.parse(localStorage.getItem('dairy_local_logs_' + localDate()) || '[]');
+    let pendingEntryId = null, pendingSelect = null, lastEntry = null;
+
+    // ============ GAME-STYLE PING (MS) & NETWORK STABILITY CHECK ============
+    let pingMs = null, pingOk = navigator.onLine, pingUnstable = !navigator.onLine, pingChecks = 0, pingTimer = null, syncingPending = false;
+
+    async function checkPing(manual) {
+      if (!navigator.onLine) {
+        pingMs = null;
+        pingOk = false;
+        pingUnstable = true;
+        renderPingUI();
+        updateNetUI();
+        return;
+      }
+      const ctrl = new AbortController();
+      const tOut = setTimeout(() => ctrl.abort(), 3000);
+      const t0 = performance.now();
+      try {
+        await fetch('https://www.gstatic.com/generate_204?t=' + Date.now(), {
+          method: 'GET',
+          mode: 'no-cors',
+          cache: 'no-store',
+          signal: ctrl.signal
+        });
+        clearTimeout(tOut);
+        pingChecks++;
+        const ms = Math.max(1, Math.round(performance.now() - t0));
+        pingMs = ms;
+        pingOk = true;
+        // First ping includes TLS handshake; allow slightly higher threshold on 1st check
+        const limit = pingChecks === 1 ? 1500 : 1000;
+        pingUnstable = ms >= limit;
+      } catch (err) {
+        clearTimeout(tOut);
+        pingMs = null;
+        pingOk = false;
+        pingUnstable = true;
+      }
+      renderPingUI();
+      updateNetUI();
+      if (manual && pingOk && !pingUnstable) {
+        toast(`Internet OK (${pingMs} ms) ✓`, true);
+      }
+      if (pingOk && !pingUnstable && getPendingInfo().count > 0) {
+        syncPendingCollections(false);
+      }
+    }
+
+    function renderPingUI() {
+      const icon = $('wifiIcon'), txt = $('pingMsText'), box = $('pingBox');
+      if (!navigator.onLine || !pingOk) {
+        icon.className = 'fa-solid fa-wifi text-xs text-rose-400 leading-none';
+        txt.className = 'text-[9px] font-black tracking-tight text-rose-300 leading-none mt-1';
+        txt.textContent = !navigator.onLine ? 'OFFLINE' : 'TIMEOUT';
+        box.classList.add('border-rose-400/70');
+        box.classList.remove('border-cyan-300/40', 'border-amber-300/70');
+      } else if (pingUnstable || pingMs >= 1000) {
+        icon.className = 'fa-solid fa-wifi text-xs text-rose-400 leading-none';
+        txt.className = 'text-[9px] font-black tracking-tight text-rose-300 leading-none mt-1';
+        txt.textContent = pingMs + ' ms';
+        box.classList.add('border-rose-400/70');
+        box.classList.remove('border-cyan-300/40', 'border-amber-300/70');
+      } else if (pingMs >= 450) {
+        icon.className = 'fa-solid fa-wifi text-xs text-amber-300 leading-none';
+        txt.className = 'text-[9px] font-black tracking-tight text-amber-200 leading-none mt-1';
+        txt.textContent = pingMs + ' ms';
+        box.classList.add('border-amber-300/70');
+        box.classList.remove('border-cyan-300/40', 'border-rose-400/70');
+      } else {
+        icon.className = 'fa-solid fa-wifi text-xs text-emerald-300 leading-none';
+        txt.className = 'text-[9px] font-black tracking-tight text-emerald-200 leading-none mt-1';
+        txt.textContent = (pingMs ?? '--') + ' ms';
+        box.classList.add('border-cyan-300/40');
+        box.classList.remove('border-rose-400/70', 'border-amber-300/70');
+      }
+    }
+
+    function startPingMonitor() {
+      clearInterval(pingTimer);
+      checkPing(false);
+      pingTimer = setInterval(() => {
+        if (document.visibilityState !== 'hidden') checkPing(false);
+      }, 5000);
+    }
+
+    // ============ PURANA LOCAL DATA -> NAYA FIREBASE (one-time migration) ============
+    const MIG_FLAG = 'dairy_migrated_to_dairy1-1c7f0';
+    if (!localStorage.getItem(MIG_FLAG)) {
+      appFarmers.forEach(f => { f.pendingSync = true; f.openingBalance = Number(f.openingBalance) || 0; f.currentBalance = f.openingBalance; });
+      localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+    }
+    async function pushFarmerIfMissing(f) {
+      const ref = FB.doc(FB.db, COL_PARTIES, f.id);
+      const ex = await withTimeout(FB.getDoc(ref), 5000);
+      if (!ex.exists()) {
+        const { pendingSync, ...clean } = f;
+        await withTimeout(FB.setDoc(ref, { ...clean, type: 'Farmer', openingBalance: Number(f.openingBalance) || 0, currentBalance: Number(f.openingBalance) || 0 }), 5000);
+      }
+      f.pendingSync = false;
+    }
+    let migrating = false;
+    async function migrateLocalToCloud() {
+      if (migrating || !FB || !navigator.onLine || localStorage.getItem(MIG_FLAG)) return;
+      migrating = true;
+      let allOk = true, uploaded = 0;
+      try {
+        for (const f of appFarmers) {
+          try {
+            const ref = FB.doc(FB.db, COL_PARTIES, f.id);
+            const ex = await withTimeout(FB.getDoc(ref), 8000);
+            if (!ex.exists()) {
+              const { pendingSync, ...clean } = f;
+              await withTimeout(FB.setDoc(ref, { ...clean, type: 'Farmer', openingBalance: Number(f.openingBalance) || 0, currentBalance: Number(f.openingBalance) || 0 }), 8000);
+              uploaded++;
+            }
+            f.pendingSync = false;
+          } catch (e) { allOk = false; }
+        }
+        localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!key || !key.startsWith('dairy_local_logs_')) continue;
+          let arr = [];
+          try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { continue; }
+          let changed = false;
+          for (const item of arr) {
+            if (!item || !item.id) continue;
+            try {
+              const ref = FB.doc(FB.db, COL_COLLECTIONS, item.id);
+              const ex = await withTimeout(FB.getDoc(ref), 8000);
+              if (!ex.exists()) { await withTimeout(FB.setDoc(ref, { ...item, synced: true }), 8000); uploaded++; }
+              if (!item.synced) { item.synced = true; changed = true; }
+            } catch (e) { allOk = false; }
+          }
+          if (changed) localStorage.setItem(key, JSON.stringify(arr));
+        }
+        if (allOk) {
+          localStorage.setItem(MIG_FLAG, '1');
+          if (uploaded > 0) toast('Purana saved data Firebase mein upload ho gaya ✓ (' + uploaded + ')', true);
+        }
+      } finally {
+        migrating = false;
+        todayLogs = JSON.parse(localStorage.getItem('dairy_local_logs_' + localDate()) || '[]');
+        renderLog(); updateNetUI();
+      }
+    }
+
+    let logUnsub = null, agentUnsub = null, farmersStarted = false;
+    let currentAgent = JSON.parse(localStorage.getItem('dairy_active_agent') || 'null');
+    if (currentAgent && !currentAgent.loginId) {
+      localStorage.removeItem('dairy_active_agent');
+      currentAgent = null;
+    }
+    let activeLang = 'en';
+
+    const MSG = {
+      en: {
+        offline: "⚠ No Internet! Entry will be saved locally",
+        unstable: "⚠ Internet not stable! Entry will be saved locally",
+        saved: "Saved & Synced ✓",
+        saved_local: "Internet not stable — Saved Locally (Pending Firebase Sync) ✓",
+        pick: "Please choose a farmer first.",
+        blocked: "Your account was blocked by Admin.",
+        removed: "Your account was removed by Admin.",
+        pass_changed: "Your password was changed by Admin. Please log in again.",
+        invalid_login: "Invalid Agent ID or Password.",
+        need_net_login: "Internet connection is required to verify Agent login.",
+        login_err: "Could not verify login. Check internet and try again.",
+        dup: "A farmer with this name already exists.",
+        noname: "Please enter farmer name.",
+        farmok: "Farmer added successfully ✓",
+        synced_all: "All pending entries synced to Firebase ✓",
+        sync_fail: "Internet still unstable — pending entries will retry automatically.",
+        nophone: "No phone number saved for this farmer — choose contact manually."
+      },
+      ur: {
+        offline: "⚠ انٹرنیٹ بند ہے! اندراج موبائل (لوکل) میں محفوظ ہوگا",
+        unstable: "⚠ انٹرنیٹ مستحکم نہیں ہے! اندراج لوکل (موبائل) میں محفوظ ہوگا",
+        saved: "کامیابی سے محفوظ ہو گیا ✓",
+        saved_local: "انٹرنیٹ مستحکم نہیں — موبائل میں محفوظ ہو گیا (فائربیس پینڈنگ) ✓",
+        pick: "پہلے کسان منتخب کریں۔",
+        blocked: "آپ کا اکاؤنٹ ایڈمن نے بلاک کر دیا ہے۔",
+        removed: "آپ کا اکاؤنٹ ایڈمن نے ہٹا دیا ہے۔",
+        pass_changed: "ایڈمن نے آپ کا پاسورڈ تبدیل کر دیا ہے، دوبارہ لاگ ان کریں۔",
+        invalid_login: "ایجنٹ آئی ڈی یا پاس ورڈ غلط ہے۔",
+        need_net_login: "لاگ ان کے لیے انٹرنیٹ ضروری ہے۔",
+        login_err: "لاگ ان تصدیق نہیں ہو سکی، انٹرنیٹ چیک کریں۔",
+        dup: "اس نام کا کسان پہلے سے موجود ہے۔",
+        noname: "کسان کا نام لکھیں۔",
+        farmok: "کسان کامیابی سے شامل ہو گیا ✓",
+        synced_all: "تمام پینڈنگ انٹریاں فائربیس پر محفوظ ہو گئیں ✓",
+        sync_fail: "انٹرنیٹ ابھی مستحکم نہیں — دوبارہ خود کوشش ہوگی۔",
+        nophone: "کسان کا نمبر محفوظ نہیں ہے — خود منتخب کریں۔"
+      }
+    };
+    const M = k => MSG[activeLang][k] || '';
+
+    const translations = {
+      en: {
+        agent_terminal: "Agent Mobile Terminal", agent_login_title: "Agent Login",
+        agent_login_desc: "Enter the Agent ID and Password provided by your Dairy Admin.",
+        agent_id_lbl: "Agent ID", password_lbl: "Password", login_btn: "Login & Start Collecting",
+        only_admin_creates: "Only authorized agents created by Admin can log in.",
+        saving_protect: "Recording & Syncing Entry...", milk_entry: "Milk Collection Entry",
+        fill_details: "Fill volume and test quality on spot", rate_hidden: "Rate Hidden",
+        farmer_supplier: "Farmer / Supplier", new: "New", shift: "Shift", pricing_mode: "Pricing Mode",
+        quantity_ltr: "Milk Quantity (Liters / KG)", fat_pct: "FAT (%)", lr_reading: "LR Reading",
+        ts_pct: "Total Solids (TS %)", ts_equiv: "13 TS Equivalent Volume",
+        save_and_print: "Save & Print Slip", my_collections: "My Collections Today",
+        add_farmer: "Add New Farmer", farmer_name: "Farmer Name", phone_number: "Mobile Number",
+        cancel: "Cancel", save: "Save", slip_title: "MILK INWARD RECEIPT",
+        slip_footer: "Official collection slip. Ledger rates calculated at central terminal.",
+        close: "Close", print_slip: "Print Slip", logout: "Logout",
+        wa_share: "WhatsApp", sms_share: "Send SMS", sync_btn: "Sync"
+      },
+      ur: {
+        agent_terminal: "ایجنٹ موبائل ٹرمینل", agent_login_title: "ایجنٹ لاگ ان",
+        agent_login_desc: "اپنے ڈیری ایڈمن کی طرف سے دی گئی ایجنٹ آئی ڈی اور پاس ورڈ درج کریں۔",
+        agent_id_lbl: "ایجنٹ آئی ڈی", password_lbl: "پاس ورڈ", login_btn: "لاگ ان کریں اور کام شروع کریں",
+        only_admin_creates: "صرف ایڈمن کے بنائے گئے ایجنٹ ہی لاگ ان ہو سکتے ہیں۔",
+        saving_protect: "اندراج محفوظ کیا جا رہا ہے...", milk_entry: "دودھ وصولی اندراج (انورڈ)",
+        fill_details: "دودھ کی مقدار اور موقع پر ٹیسٹ درج کریں", rate_hidden: "ریٹ محفوظ (خفیہ)",
+        farmer_supplier: "کسان / دودھ سپلائر", new: "نیا", shift: "شفٹ", pricing_mode: "طریقہ کار",
+        quantity_ltr: "دودھ کی مقدار (لیٹر / کلو)", fat_pct: "فیٹ FAT (%)", lr_reading: "ایل آر LR ریڈنگ",
+        ts_pct: "ٹوٹل سولڈز (TS %)", ts_equiv: "13 ٹی ایس والیم",
+        save_and_print: "محفوظ کریں اور پرچی پرنٹ کریں", my_collections: "آج کی میری دودھ وصولی لاگ",
+        add_farmer: "نیا کسان شامل کریں", farmer_name: "کسان کا نام", phone_number: "موبائل نمبر",
+        cancel: "منسوخ", save: "محفوظ کریں", slip_title: "دودھ وصولی پرچی",
+        slip_footer: "سرکاری رسید۔ ریٹ اور کھاتہ کا حساب دفتر ٹرمینل سے ہوگا۔",
+        close: "بند کریں", print_slip: "پرچی پرنٹ کریں", logout: "لاگ آؤٹ",
+        wa_share: "واٹس ایپ", sms_share: "ایس ایم ایس", sync_btn: "سنک کریں"
+      }
+    };
+
+    function toggleLang() {
+      activeLang = activeLang === 'en' ? 'ur' : 'en';
+      document.documentElement.dir = activeLang === 'ur' ? 'rtl' : 'ltr';
+      document.documentElement.lang = activeLang;
+      $('langBtnText').innerText = activeLang === 'en' ? 'اردو' : 'English';
+      $('loginLangBtnText').innerText = activeLang === 'en' ? 'اردو' : 'English';
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const v = translations[activeLang][el.getAttribute('data-i18n')];
+        if(v) el.innerText = v;
+      });
+      updateNetUI();
+    }
+
+    function toggleLoginPass() {
+      const inp = $('loginPassword'), eye = $('passEye');
+      const show = inp.type === 'password';
+      inp.type = show ? 'text' : 'password';
+      eye.className = show ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye';
+    }
+
+    function toast(msg, ok) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] max-w-xs w-[90%] text-xs font-bold text-white text-center px-4 py-3 rounded-2xl shadow-xl ' + (ok ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6]' : 'bg-rose-600');
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => t.classList.add('hidden'), 5000);
+    }
+
+    function getPendingInfo() {
+      let entryCount = 0;
+      const seen = new Set();
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith('dairy_local_logs_')) continue;
+        try {
+          const arr = JSON.parse(localStorage.getItem(key) || '[]');
+          arr.forEach(item => {
+            if (item && item.synced === false && (!currentAgent || item.agentId === currentAgent.id) && !seen.has(item.id)) {
+              seen.add(item.id);
+              entryCount++;
+            }
+          });
+        } catch (e) {}
+      }
+      const farmerCount = appFarmers.filter(f => f.pendingSync).length;
+      return { entryCount, farmerCount, count: entryCount + farmerCount };
+    }
+
+    function renderPendingBox() {
+      const p = getPendingInfo();
+      const box = $('pendingBox');
+      if (p.count <= 0 || !currentAgent) {
+        box.classList.add('hidden');
+        return;
+      }
+      box.classList.remove('hidden');
+      $('pendingBadgeCircle').textContent = p.entryCount > 0 ? p.entryCount : p.count;
+      if (activeLang === 'ur') {
+        $('pendingTitle').textContent = p.entryCount > 0
+          ? `${p.entryCount} انٹریاں ابھی پینڈنگ ہیں`
+          : `${p.farmerCount} کسان ابھی پینڈنگ ہیں`;
+        $('pendingSub').textContent = 'ابھی فائربیس میں محفوظ نہیں ہوئیں — نیٹ ٹھیک ہونے پر سنک کریں';
+      } else {
+        const n = p.entryCount > 0 ? p.entryCount : p.count;
+        const lbl = p.entryCount > 0 ? (n === 1 ? 'Entry' : 'Entries') : (n === 1 ? 'Farmer' : 'Farmers');
+        $('pendingTitle').textContent = `${n} ${lbl} Pending`;
+        $('pendingSub').textContent = 'Not saved in Firebase yet — tap Sync when net is stable';
+      }
+    }
+
+    function updateNetUI() {
+      const isOnline = navigator.onLine;
+      const banner = $('netBanner');
+      const p = getPendingInfo();
+      $('syncNowBtn').classList.toggle('hidden', p.count === 0 || !isOnline);
+
+      if (!isOnline) {
+        banner.classList.remove('hidden');
+        banner.textContent = M('offline');
+        $('netDot').className = 'w-2 h-2 rounded-full bg-rose-400 ring-2 ring-white/25';
+        $('cloudStatusTag').innerHTML = '<i class="fa-solid fa-hard-drive text-rose-600"></i> Offline Mode';
+      } else if (pingUnstable || !pingOk) {
+        banner.classList.remove('hidden');
+        banner.textContent = M('unstable') + (pingMs ? ` (${pingMs} ms)` : '');
+        $('netDot').className = 'w-2 h-2 rounded-full bg-rose-400 ring-2 ring-white/25';
+        $('cloudStatusTag').innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Unstable';
+      } else if (cloudLive || pingOk) {
+        banner.classList.add('hidden');
+        $('netDot').className = 'w-2 h-2 rounded-full bg-[#22d3ee] ring-2 ring-white/25';
+        $('cloudStatusTag').innerHTML = '<i class="fa-solid fa-cloud text-[#0099e6]"></i> Online';
+      } else {
+        banner.classList.add('hidden');
+        $('netDot').className = 'w-2 h-2 rounded-full bg-amber-400 ring-2 ring-white/25';
+        $('cloudStatusTag').innerHTML = '<i class="fa-solid fa-hard-drive text-[#124ec9]"></i> Device Ready';
+      }
+      renderPendingBox();
+      $('submitEntryBtn').disabled = busy;
+    }
+    window.addEventListener('online', () => { checkPing(false); syncPendingCollections(false); migrateLocalToCloud(); });
+    window.addEventListener('offline', () => { checkPing(false); });
+
+    function applyDairyInfo() {
+      $('slipBizName').innerText = (dairyInfo.bizName || 'DAIRY MILK TRADERS').toUpperCase();
+      $('slipBizPhone').innerText = dairyInfo.bizPhone || '';
+      if (dairyInfo.bizName && dairyInfo.bizName !== 'My Dairy') {
+        $('headerBizTitle').innerText = dairyInfo.bizName;
+      }
+    }
+
+    // ============ CLOUD & STORAGE INITIALIZATION ============
+    function startCloud() {
+      FB = window.FB;
+      applyDairyInfo();
+      renderFarmerDropdown();
+      renderLog();
+
+      if(!FB || farmersStarted) return;
+      farmersStarted = true;
+      const { db, collection, doc, query, where, onSnapshot } = FB;
+
+      try {
+        onSnapshot(doc(db, COL_SETTINGS, 'general'), snap => {
+          if (snap.exists()) {
+            const d = snap.data();
+            dairyInfo = { bizName: d.bizName || 'DAIRY MILK TRADERS', bizPhone: d.bizPhone || '' };
+            localStorage.setItem('dairy_biz_info', JSON.stringify(dairyInfo));
+            applyDairyInfo();
+          }
+        }, () => {});
+
+        onSnapshot(query(collection(db, COL_PARTIES), where("type", "==", "Farmer")), { includeMetadataChanges: true }, snap => {
+          cloudLive = !snap.metadata.fromCache;
+          const cloudFarmers = [];
+          snap.forEach(d => cloudFarmers.push({ id: d.id, ...d.data() }));
+          const pendingFarmers = appFarmers.filter(f => f.pendingSync && !cloudFarmers.some(c => c.id === f.id));
+          appFarmers = [...cloudFarmers, ...pendingFarmers];
+          localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+          appFarmers.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+          renderFarmerDropdown();
+          updateNetUI();
+        }, e => {
+          console.warn("Firestore listener fallback to local mode:", e.message);
+          cloudLive = false;
+          updateNetUI();
+        });
+
+        if(currentAgent) {
+          startAgentWatchers();
+          syncPendingCollections(false);
+        }
+        migrateLocalToCloud();
+      } catch(err) {
+        console.warn("Cloud connection error:", err);
+      }
+      updateNetUI();
+    }
+    window.addEventListener('fb-ready', startCloud);
+
+    function forceSignOutAgent(reason) {
+      logUnsub && logUnsub(); logUnsub = null;
+      agentUnsub && agentUnsub(); agentUnsub = null;
+      localStorage.removeItem('dairy_active_agent');
+      currentAgent = null;
+      todayLogs = [];
+      renderLog();
+      verifyAgentSession();
+      updateNetUI();
+      if(reason) toast(reason);
+    }
+
+    function startAgentWatchers() {
+      if(!FB || !currentAgent) return;
+      const { db, collection, doc, query, where, onSnapshot } = FB;
+      try {
+        logUnsub && logUnsub();
+        agentUnsub && agentUnsub();
+
+        agentUnsub = onSnapshot(doc(db, COL_AGENTS, currentAgent.id), snap => {
+          if (snap.metadata.fromCache && !navigator.onLine) return;
+          if (!snap.exists()) {
+            forceSignOutAgent(M('removed'));
+            return;
+          }
+          const data = { id: snap.id, ...snap.data() };
+          if (data.status === 'blocked') {
+            forceSignOutAgent(M('blocked'));
+            return;
+          }
+          if (data.status === 'deleted' || data.status !== 'active') {
+            forceSignOutAgent(M('removed'));
+            return;
+          }
+          if (currentAgent.password && String(data.password || '') !== String(currentAgent.password)) {
+            forceSignOutAgent(M('pass_changed'));
+            return;
+          }
+          currentAgent = data;
+          localStorage.setItem('dairy_active_agent', JSON.stringify(data));
+          renderAgentHeaderInfo();
+        }, () => {});
+
+        logUnsub = onSnapshot(query(collection(db, COL_COLLECTIONS), where("agentId", "==", currentAgent.id), where("date", "==", localDate())), snap => {
+          const cloudList = [];
+          snap.forEach(d => cloudList.push({ id: d.id, ...d.data(), synced: true }));
+          const unsynced = todayLogs.filter(l => !l.synced && l.agentId === currentAgent.id && !cloudList.some(c => c.id === l.id));
+          todayLogs = [...unsynced, ...cloudList].sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          localStorage.setItem('dairy_local_logs_' + localDate(), JSON.stringify(todayLogs));
+          renderLog();
+          updateNetUI();
+        }, () => {});
+      } catch(e) {}
+    }
+
+    // ============ AGENT LOGIN & PROFILE ============
+    function verifyAgentSession() {
+      if(!currentAgent || !currentAgent.loginId) {
+        $('agentLoginScreen').classList.remove('hidden');
+        return;
+      }
+      $('agentLoginScreen').classList.add('hidden');
+      renderAgentHeaderInfo();
+    }
+
+    async function handleAgentLogin(e) {
+      e.preventDefault();
+      const errEl = $('loginError');
+      errEl.classList.add('hidden');
+
+      if (!FB || !navigator.onLine) {
+        errEl.textContent = M('need_net_login');
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const rawId = $('loginAgentId').value.trim();
+      const loginId = rawId.toLowerCase().replace(/\s+/g, '');
+      const password = $('loginPassword').value.trim();
+      const btn = $('loginSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+
+      try {
+        const { db, collection, doc, getDoc, getDocs, query, where } = FB;
+        let matched = null;
+
+        const directId = 'AGT_' + loginId.replace(/[^a-z0-9_-]/g, '_');
+        try {
+          const dSnap = await withTimeout(getDoc(doc(db, COL_AGENTS, directId)), 5000);
+          if (dSnap.exists()) {
+            const d = { id: dSnap.id, ...dSnap.data() };
+            if (String(d.password || '') === password) matched = d;
+          }
+        } catch(e) {}
+
+        if (!matched) {
+          try {
+            const qSnap = await withTimeout(getDocs(query(collection(db, COL_AGENTS), where("loginId", "==", loginId))), 5000);
+            qSnap.forEach(d => {
+              const data = { id: d.id, ...d.data() };
+              if (!matched && String(data.password || '') === password) matched = data;
+            });
+          } catch(e) {}
+        }
+
+        if (!matched) {
+          const snap = await withTimeout(getDocs(collection(db, COL_AGENTS)), 8000);
+          snap.forEach(d => {
+            const data = { id: d.id, ...d.data() };
+            const aLogin = String(data.loginId || '').trim().toLowerCase();
+            if (aLogin && aLogin === loginId && String(data.password || '') === password) {
+              matched = data;
+            }
+          });
+        }
+
+        if (!matched) {
+          errEl.textContent = M('invalid_login');
+          errEl.classList.remove('hidden');
+          return;
+        }
+        if (matched.status === 'blocked') {
+          errEl.textContent = M('blocked');
+          errEl.classList.remove('hidden');
+          return;
+        }
+        if (matched.status === 'deleted' || matched.status !== 'active') {
+          errEl.textContent = M('removed');
+          errEl.classList.remove('hidden');
+          return;
+        }
+
+        currentAgent = matched;
+        localStorage.setItem('dairy_active_agent', JSON.stringify(matched));
+        todayLogs = JSON.parse(localStorage.getItem('dairy_local_logs_' + localDate()) || '[]')
+          .filter(l => l.agentId === matched.id);
+        $('agentLoginForm').reset();
+        verifyAgentSession();
+        startAgentWatchers();
+        renderLog();
+        updateNetUI();
+        syncPendingCollections(false);
+      } catch(err) {
+        errEl.textContent = M('login_err');
+        errEl.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> <span>' + (translations[activeLang].login_btn || 'Login') + '</span>';
+      }
+    }
+
+    function renderAgentHeaderInfo() {
+      if(!currentAgent) return;
+      $('agentCardName').innerText = currentAgent.name;
+      $('agentCardRoute').innerText = `${currentAgent.vehicle || 'General'} • ID: ${currentAgent.loginId}`;
+      const p = (currentAgent.name || 'AG').trim().split(/\s+/);
+      $('agentInitials').innerText = p.length > 1 ? (p[0][0] + p[1][0]).toUpperCase() : p[0].slice(0, 2).toUpperCase();
+      $('slipAgentSubtitle').innerText = `Agent: ${currentAgent.name} (${currentAgent.vehicle || '-'})`;
+    }
+
+    // ============ FARMERS ============
+    function renderFarmerDropdown() {
+      const sel = $('farmerDropdown');
+      const keep = pendingSelect || sel.value;
+      sel.innerHTML = '<option value="">-- Choose Farmer --</option>';
+      appFarmers.forEach(f => {
+        const o = document.createElement('option');
+        o.value = f.id;
+        o.textContent = `${f.name} (${f.phone || 'No phone'})`;
+        sel.appendChild(o);
+      });
+      if(keep && appFarmers.some(f => f.id === keep)) {
+        sel.value = keep;
+        pendingSelect = null;
+      }
+    }
+
+    function openNewFarmerModal() {
+      $('newFarmerModal').classList.remove('hidden');
+      $('newFarmerModal').classList.add('flex');
+    }
+    function closeNewFarmerModal() {
+      $('newFarmerModal').classList.add('hidden');
+      $('newFarmerModal').classList.remove('flex');
+    }
+
+    async function saveNewFarmer() {
+      const name = $('mfName').value.trim(), phone = $('mfPhone').value.trim();
+      if(!name) { toast(M('noname')); return; }
+      if(appFarmers.some(f => (f.name || '').trim().toLowerCase() === name.toLowerCase())) {
+        toast(M('dup'));
+        return;
+      }
+
+      const btn = $('saveFarmerBtn');
+      btn.disabled = true;
+      const id = 'F_' + Date.now();
+      const obj = { id, name, phone, type: "Farmer", openingBalance: 0, currentBalance: 0, createdAt: Date.now(), addedByAgent: currentAgent ? currentAgent.id : '', pendingSync: true };
+
+      appFarmers.push(obj);
+      localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+      pendingSelect = id;
+      renderFarmerDropdown();
+      $('mfName').value = '';
+      $('mfPhone').value = '';
+      closeNewFarmerModal();
+      btn.disabled = false;
+      toast(M('farmok'), true);
+
+      if(FB && navigator.onLine && pingOk) {
+        try {
+          await pushFarmerIfMissing(obj);
+          localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+        } catch(e) {
+          console.warn("Farmer saved locally, cloud sync pending.");
+        }
+      }
+      updateNetUI();
+    }
+
+    // ============ ENTRY FORM ============
+    function setAutoShift() {
+      $('entryShift').value = new Date().getHours() < 14 ? 'Morning' : 'Evening';
+    }
+
+    function handleModeChange() {
+      const direct = $('entryMode').value === 'DirectKG';
+      $('qualityRow').classList.toggle('hidden', direct);
+      $('tsResultCard').classList.toggle('hidden', direct);
+      $('entryFat').required = !direct;
+      $('entryLR').required = !direct;
+      computeLivePreview();
+    }
+
+    const calcTS = (fat, lr) => fat + (lr / 4) + (0.22 * fat) + 0.72;
+
+    function computeLivePreview() {
+      if($('entryMode').value === 'DirectKG') return;
+      const qty = parseFloat($('entryQty').value) || 0, fat = parseFloat($('entryFat').value) || 0, lr = parseFloat($('entryLR').value) || 0;
+      if(fat > 0 && lr > 0) {
+        const ts = calcTS(fat, lr);
+        $('calcTSDisplay').innerText = ts.toFixed(2) + " %";
+        $('calcVolDisplay').innerText = ((qty * ts) / 13).toFixed(1) + " Ltr";
+      } else {
+        $('calcTSDisplay').innerText = "0.00 %";
+        $('calcVolDisplay').innerText = "0.0 Ltr";
+      }
+    }
+
+    async function submitMilkEntry(e) {
+      e.preventDefault();
+      if(busy) return;
+      if(!currentAgent || !currentAgent.loginId) { verifyAgentSession(); return; }
+
+      const farmerId = $('farmerDropdown').value;
+      const farmer = appFarmers.find(f => f.id === farmerId);
+      if(!farmer) { toast(M('pick')); return; }
+
+      const mode = $('entryMode').value, qty = parseFloat($('entryQty').value);
+      const fat = mode === '13TS' ? (parseFloat($('entryFat').value) || 0) : 0;
+      const lr = mode === '13TS' ? (parseFloat($('entryLR').value) || 0) : 0;
+      if(!(qty > 0) || (mode === '13TS' && (!(fat > 0) || !(lr > 0)))) return;
+
+      let ts = 0, tsVol = qty;
+      if(mode === '13TS') {
+        ts = parseFloat(calcTS(fat, lr).toFixed(2));
+        tsVol = parseFloat(((qty * ts) / 13).toFixed(2));
+      }
+
+      if(!pendingEntryId) pendingEntryId = (currentAgent.id || 'AGT') + '_' + Date.now();
+      const now = new Date();
+      const payload = {
+        id: pendingEntryId,
+        farmerId,
+        farmerName: farmer.name,
+        shift: $('entryShift').value,
+        mode,
+        qty,
+        fat,
+        lr,
+        ts,
+        ts13Vol: tsVol,
+        timestamp: Date.now(),
+        date: localDate(),
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        agentId: currentAgent.id,
+        agentLoginId: currentAgent.loginId,
+        agentName: currentAgent.name,
+        agentEmail: currentAgent.email || '',
+        agentPhone: currentAgent.phone || '',
+        agentVehicle: currentAgent.vehicle || 'General',
+        synced: false
+      };
+
+      busy = true;
+      $('savingOverlay').classList.remove('hidden');
+      $('savingOverlay').classList.add('flex');
+
+      let savedCloud = false;
+      // Only attempt Firebase upload if online & ping wasn't completely dead; use short timeout if unstable
+      if (FB && navigator.onLine && pingOk) {
+        const msLimit = pingUnstable ? 3000 : 5000;
+        try {
+          const aSnap = await withTimeout(FB.getDoc(FB.doc(FB.db, COL_AGENTS, currentAgent.id)), msLimit);
+          if (!aSnap.exists() || aSnap.data().status !== 'active' || (currentAgent.password && String(aSnap.data().password || '') !== String(currentAgent.password))) {
+            busy = false;
+            $('savingOverlay').classList.add('hidden');
+            $('savingOverlay').classList.remove('flex');
+            forceSignOutAgent(!aSnap.exists() ? M('removed') : (aSnap.data().status !== 'active' ? M('blocked') : M('pass_changed')));
+            return;
+          }
+          if (farmer.pendingSync) {
+            await pushFarmerIfMissing(farmer);
+            localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+          }
+          await withTimeout(FB.setDoc(FB.doc(FB.db, COL_COLLECTIONS, pendingEntryId), { ...payload, synced: true }), msLimit);
+          savedCloud = true;
+          payload.synced = true;
+        } catch(err) {
+          console.warn("Saved locally due to unstable/slow network:", err.message);
+        }
+      }
+
+      if (!todayLogs.some(x => x.id === payload.id)) {
+        todayLogs.unshift(payload);
+      }
+      localStorage.setItem('dairy_local_logs_' + localDate(), JSON.stringify(todayLogs));
+      renderLog();
+
+      const id = pendingEntryId;
+      pendingEntryId = null;
+      $('milkEntryForm').reset();
+      setAutoShift();
+      handleModeChange();
+
+      toast(savedCloud ? M('saved') : M('saved_local'), savedCloud);
+      openThermalReceipt({ ...payload, id });
+
+      busy = false;
+      $('savingOverlay').classList.add('hidden');
+      $('savingOverlay').classList.remove('flex');
+      updateNetUI();
+    }
+
+    async function syncPendingCollections(manual) {
+      if(syncingPending || !FB || !navigator.onLine || !currentAgent) return;
+      syncingPending = true;
+      const btn = $('pendingSyncBtn');
+      if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; }
+      let count = 0, hadError = false;
+
+      try {
+        for (const f of appFarmers.filter(x => x.pendingSync)) {
+          try {
+            await pushFarmerIfMissing(f);
+            count++;
+          } catch(e) { hadError = true; }
+        }
+        localStorage.setItem('dairy_local_farmers', JSON.stringify(appFarmers));
+
+        const todayKey = 'dairy_local_logs_' + localDate();
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (!key || !key.startsWith('dairy_local_logs_')) continue;
+          let arr = [];
+          try { arr = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { continue; }
+          let changed = false;
+          for (const item of arr) {
+            if (!item || item.synced !== false || item.agentId !== currentAgent.id) continue;
+            try {
+              const ref = FB.doc(FB.db, COL_COLLECTIONS, item.id);
+              const ex = await withTimeout(FB.getDoc(ref), 5000);
+              if (!ex.exists()) {
+                await withTimeout(FB.setDoc(ref, { ...item, synced: true }), 5000);
+              }
+              item.synced = true;
+              changed = true;
+              count++;
+            } catch(e) { hadError = true; }
+          }
+          if (changed) {
+            localStorage.setItem(key, JSON.stringify(arr));
+            if (key === todayKey) todayLogs = arr;
+          }
+        }
+      } finally {
+        syncingPending = false;
+        if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-rotate"></i> <span>${translations[activeLang].sync_btn || 'Sync'}</span>`; }
+        renderLog();
+        updateNetUI();
+      }
+      if (manual) {
+        if (count > 0 && !hadError) toast(M('synced_all'), true);
+        else if (hadError) toast(M('sync_fail'), false);
+      }
+    }
+
+    // ============ RECEIPT & MESSAGING ============
+    function openThermalReceipt(d) {
+      lastEntry = d;
+      applyDairyInfo();
+      $('slipNo').innerText = 'No: ' + String(d.id || '').slice(-6).toUpperCase();
+      $('slipFarmer').innerText = d.farmerName;
+      $('slipShift').innerText = d.shift;
+      $('slipMode').innerText = d.mode;
+      $('slipQty').innerText = d.qty + " Ltr/Kg";
+      $('slipDateTime').innerText = `Date: ${d.date} ${d.time}`;
+      $('slipAgentSubtitle').innerText = `Agent: ${d.agentName || currentAgent?.name || '-'} (${d.agentVehicle || currentAgent?.vehicle || '-'})`;
+      const show = d.mode === '13TS' ? 'flex' : 'none';
+      ['slipFatRow', 'slipLrRow', 'slipTsRow', 'slipTsVolRow'].forEach(i => $(i).style.display = show);
+      if(d.mode === '13TS') {
+        $('slipFat').innerText = d.fat + "%";
+        $('slipLR').innerText = d.lr;
+        $('slipTS').innerText = d.ts + "%";
+        $('slipTsVol').innerText = d.ts13Vol + " Ltr";
+      }
+      $('receiptModal').classList.remove('hidden');
+      $('receiptModal').classList.add('flex');
+    }
+    function closeReceiptModal() {
+      $('receiptModal').classList.add('hidden');
+      $('receiptModal').classList.remove('flex');
+    }
+    function reopenSlip(id) {
+      const item = todayLogs.find(x => x.id === id);
+      if (item) openThermalReceipt(item);
+    }
+
+    function buildSlipText(d) {
+      const biz = dairyInfo.bizName || 'Dairy Milk Traders';
+      let t = `*${biz} - Receipt #${String(d.id).slice(-6).toUpperCase()}*\n${d.date} ${d.time} (${d.shift})\nFarmer: ${d.farmerName}\nQty: ${d.qty} Ltr/Kg`;
+      if(d.mode === '13TS') t += `\nFat: ${d.fat}%  LR: ${d.lr}\nTS: ${d.ts}%  13TS Vol: ${d.ts13Vol} Ltr`;
+      t += `\nAgent: ${d.agentName}`;
+      return t;
+    }
+
+    function shareWhatsApp() {
+      const d = lastEntry; if(!d) return;
+      const f = appFarmers.find(x => x.id === d.farmerId);
+      let p = ((f && f.phone) || '').replace(/\D/g, '');
+      if(p.startsWith('0')) p = '92' + p.slice(1);
+      if(!p) toast(M('nophone'));
+      window.open('https://wa.me/' + p + '?text=' + encodeURIComponent(buildSlipText(d)), '_blank');
+    }
+
+    function shareSMS() {
+      const d = lastEntry; if(!d) return;
+      const f = appFarmers.find(x => x.id === d.farmerId);
+      const p = ((f && f.phone) || '').replace(/[^\d+]/g, '');
+      if(!p) toast(M('nophone'));
+      const txt = buildSlipText(d).replace(/\*/g, '');
+      window.location.href = `sms:${p}?body=${encodeURIComponent(txt)}`;
+    }
+
+    // ============ TODAY LOG ============
+    function renderLog() {
+      const myLogs = currentAgent ? todayLogs.filter(i => i.agentId === currentAgent.id) : [];
+      $('agentTodayCounter').innerText = `${myLogs.length} Entries`;
+      const total = myLogs.reduce((a, i) => a + (parseFloat(i.qty) || 0), 0);
+      const stream = $('agentHistoryStream');
+      if(!myLogs.length) {
+        stream.innerHTML = `<p class="py-4 text-center text-slate-400">No collection entries yet today.</p>`;
+        return;
+      }
+      stream.innerHTML = `<div class="py-2 text-[11px] font-extrabold text-[#0b2a6f]">Total today: ${total.toLocaleString()} Ltr/Kg</div>` + myLogs.slice(0, 30).map(i => `
+        <div class="py-2.5 flex justify-between items-center gap-2 text-xs">
+          <div class="min-w-0 flex-1">
+            <strong class="text-[#071e54] text-sm block truncate">${esc(i.farmerName)}</strong>
+            <span class="text-[10px] ${i.synced === false ? 'text-rose-600 font-bold' : 'text-slate-400'}">${i.synced === false ? '⏳ Pending Sync' : '✓'} ${esc(i.time)} &bull; ${esc(i.shift)} &bull; ${esc(i.mode)}</span>
+          </div>
+          <div class="text-right">
+            <span class="font-black text-[#124ec9] text-sm">${esc(i.qty)} Ltr/Kg</span>
+            <span class="text-[10px] text-[#0088cc] font-semibold block">${i.mode === '13TS' ? '13TS: ' + esc(i.ts13Vol) + 'L' : 'Weight Basis'}</span>
+          </div>
+          <button type="button" onclick="reopenSlip('${esc(i.id)}')" class="w-8 h-8 rounded-xl bg-sky-50 hover:bg-sky-100 text-[#124ec9] border border-sky-200 flex items-center justify-center flex-shrink-0" title="View / Print Slip">
+            <i class="fa-solid fa-receipt"></i>
+          </button>
+        </div>`).join('');
+    }
+
+    // ============ PROFILE ============
+    function openProfileModal() {
+      if(!currentAgent) return;
+      $('profModalName').innerText = currentAgent.name;
+      $('profModalLoginId').innerText = 'ID: ' + (currentAgent.loginId || currentAgent.id);
+      $('profModalPhone').innerText = currentAgent.phone || '-';
+      $('profModalRoute').innerText = currentAgent.vehicle || '-';
+      $('profileModal').classList.remove('hidden');
+      $('profileModal').classList.add('flex');
+    }
+    function closeProfileModal() {
+      $('profileModal').classList.add('hidden');
+      $('profileModal').classList.remove('flex');
+    }
+    function handleAgentLogout() {
+      if(confirm("Do you want to log out of this agent account?")) {
+        closeProfileModal();
+        forceSignOutAgent('');
+      }
+    }
+
+    window.onload = function() {
+      setAutoShift();
+      verifyAgentSession();
+      handleModeChange();
+      applyDairyInfo();
+      renderFarmerDropdown();
+      renderLog();
+      renderPingUI();
+      updateNetUI();
+      startPingMonitor();
+      if (window.FB) startCloud();
+    };
+  </script>
+</body>
+</html>
