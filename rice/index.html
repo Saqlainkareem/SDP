@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rice Trader Khata - چاول کھاتہ و بینک رجسٹر</title>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&display=swap">
+<style id="pst"></style>
+<style>
+html{font-size:16px}body{font-family:'Noto Naskh Arabic','Segoe UI',Tahoma,sans-serif}
+#side{width:72px;transition:width .3s cubic-bezier(.4,0,.2,1)}#side:hover,#side.open{width:270px}
+#side .lb{opacity:0;transform:translateX(-10px);transition:all .25s;white-space:nowrap}
+#side:hover .lb,#side.open .lb{opacity:1;transform:none}
+.nv{display:flex;align-items:center;gap:16px;padding:14px 22px;width:100%;font-size:16px;font-weight:700;border-left:4px solid transparent;transition:all .2s}
+.nv:hover{background:#1e293b;color:#fff;padding-left:26px}.nv.on{background:#15803d;color:#fff;border-left-color:#fbbf24}
+.nv i{font-size:18px;width:24px;text-align:center}
+#main{margin-left:72px}.pg{animation:fi .3s ease}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.inp{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px;margin-top:4px;font-weight:500;background:#f8fafc;font-size:.95rem}
+.inp:focus{outline:2px solid #15803d;background:#fff}
+.btn{padding:9px 15px;border-radius:10px;font-weight:700;font-size:.9rem;transition:all .2s;cursor:pointer}
+.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px #0002}.btn:active{transform:scale(.97)}
+.card{transition:all .25s}.card:hover{transform:translateY(-3px);box-shadow:0 8px 20px #0001}
+.cbl span:hover{background:#dcfce7}
+.pop{animation:pop .3s both}@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+#md>div{animation:pop .25s}.toast{animation:fi .3s;transition:opacity .3s}
+.reg td,.reg th{border:1px solid #e2e8f0;padding:8px 10px}.reg th{background:#f8fafc;font-weight:700}
+.reg tbody tr:hover{background:#f0fdf4}
+#pa{display:none}@media print{body>*:not(#pa){display:none!important}#pa{display:block!important}}
+</style>
+</head>
+<body class="bg-slate-100 text-slate-800">
+<aside id="side" class="fixed inset-y-0 left-0 bg-slate-900 text-slate-300 z-40 overflow-hidden flex flex-col" onclick="this.classList.toggle('open')">
+  <div class="h-14 flex items-center px-5 gap-4 border-b border-slate-700 text-white shrink-0"><span class="text-2xl">🌾</span><b class="lb text-lg" id="sbName">Rice Khata</b></div>
+  <nav id="nav" class="flex-1 py-2 overflow-y-auto"></nav>
+</aside>
+<div id="main" class="min-h-screen">
+  <header class="bg-white border-b sticky top-0 z-30 px-4 py-2 flex flex-wrap items-center justify-between gap-2">
+    <h1 id="title" class="font-black text-xl text-slate-800"></h1>
+    <div class="flex items-center gap-2">
+      <input type="date" id="dt" onchange="D=this.value||today();go(cur)" class="border rounded-lg p-1.5 text-sm font-bold bg-slate-50">
+      <button id="syb" onclick="pickFolder()"></button>
+    </div>
+  </header>
+  <div id="view" class="p-4 max-w-7xl mx-auto"></div>
+</div>
+
+<!-- Modal Container -->
+<div id="md" class="fixed inset-0 bg-black/60 hidden z-50 items-center justify-center p-4">
+  <div class="bg-white rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-y-auto p-5 shadow-2xl">
+    <div class="flex justify-between items-center border-b pb-3 mb-4">
+      <h3 id="mt" class="font-black text-lg text-slate-800"></h3>
+      <button onclick="closeM()" class="text-slate-400 hover:text-slate-700 text-2xl font-bold">✕</button>
+    </div>
+    <div id="mb"></div>
+  </div>
+</div>
+
+<div id="pa"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+const ymd=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const today=()=>ymd(new Date());
+const uid=()=>Date.now()*1000+Math.floor(Math.random()*1000);
+const cfm=m=>window.confirm(m);
+const escA=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mk=s=>s==null?'':String(s);
+const esc=s=>escA(s);
+const sum=(a,k)=>a.reduce((s,x)=>s+(+(typeof k==='function'?k(x):x[k])||0),0);
+const N=n=>Math.round(+n||0).toLocaleString('en-US');
+
+let D=today(),cur='home',S=null;
+let selMonth=today().slice(0,7);
+let khFilter='all',bkFilter='all';
+
+function def(){
+  return {
+    ts:0,seq:0,
+    settings:{shop:'AL EDHAAM RICE TRADERS',owner:'',phone:'',address:'',footer:'Shukriya / شکریہ',basis:'maund',openCash:0,openBank:0,openStock:0,lang:'normal'},
+    parties:[],bills:[],purchases:[],entries:[],banks:[],btx:[]
+  };
+}
+
+function fix(x){
+  const d=def();if(!x||typeof x!=='object')return d;
+  const o=Object.assign(d,x);
+  o.settings=Object.assign(def().settings,x.settings||{});
+  if(!Array.isArray(o.parties))o.parties=[];
+  if(!Array.isArray(o.bills))o.bills=[];
+  if(!Array.isArray(o.purchases))o.purchases=[];
+  if(!Array.isArray(o.entries))o.entries=[];
+  if(!Array.isArray(o.banks))o.banks=[];
+  if(!Array.isArray(o.btx))o.btx=[];
+  return o;
+}
+
+// ===== OFFLINE STORAGE & SYNC =====
+const LSK='edh_offline_v2',DBN='edh_fs',FN='khata-data.json';
+let FH=null,tid=null,lastErr='',rts=0,pend=false,fq=Promise.resolve();
+const fsOK=!!window.showDirectoryPicker;
+
+const idb=()=>new Promise((res,rej)=>{const r=indexedDB.open(DBN,1);r.onupgradeneeded=()=>r.result.createObjectStore('k');r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});
+async function idbGet(k){const d=await idb();return new Promise((res,rej)=>{const q=d.transaction('k').objectStore('k').get(k);q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)})}
+async function idbSet(k,v){const d=await idb();return new Promise((res,rej)=>{const t=d.transaction('k','readwrite');t.objectStore('k').put(v,k);t.oncomplete=()=>res();t.onerror=()=>rej(t.error)})}
+
+function setSync(st,msg){
+  if(st==='err')lastErr=msg||'';else lastErr='';const e=$('syb');if(!e)return;
+  const m={
+    ok:['Folder: '+(FH?FH.name:'')+' \u2713','bg-emerald-50 text-emerald-700 border-emerald-300'],
+    wait:['Saving...','bg-amber-50 text-amber-700 border-amber-300'],
+    local:['Folder Select Karein','bg-blue-50 text-blue-700 border-blue-300'],
+    perm:['Folder Connect Karein','bg-amber-50 text-amber-700 border-amber-300'],
+    err:['Folder Error','bg-rose-50 text-rose-700 border-rose-300']
+  }[st];
+  e.className='px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer '+m[1];e.textContent=m[0];
+}
+
+const perm=async()=>!!FH&&(await FH.queryPermission({mode:'readwrite'}))==='granted';
+async function readF(h){h=h||FH;try{const f=await(await h.getFileHandle(FN)).getFile();const t=await f.text();return t.trim()?JSON.parse(t):null}catch(e){if(e.name==='NotFoundError')return null;throw e}}
+async function writeF(v){const w=await(await FH.getFileHandle(FN,{create:true})).createWritable();await w.write(JSON.stringify(v));await w.close()}
+function save(){
+  S.ts=Date.now();pend=true;
+  try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){toast('Storage full! Backup download karein')}
+  clearTimeout(tid);
+  if(FH){setSync('wait');tid=setTimeout(pushF,400)}else setSync('local');
+}
+function pushF(){clearTimeout(tid);pend=false;fq=fq.then(doPush);return fq}
+async function doPush(){
+  if(!FH)return setSync('local');
+  try{
+    if(!await perm())return setSync('perm');
+    await writeF(S);rts=S.ts;setSync('ok');
+  }catch(e){setSync('err',e.message||String(e))}
+}
+async function pickFolder(change){
+  if(!fsOK)return toast('Chrome ya Edge browser use karein');
+  try{
+    if(!change&&FH&&!(await perm())){
+      const p=await FH.requestPermission({mode:'readwrite'});
+      if(p==='granted'){
+        const r=await readF(FH);
+        if(r){S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}toast('Folder connect ho gaya',1)}
+        else{await pushF();toast('Folder connect ho gaya',1)}
+        setSync('ok');go(cur);return;
+      }
+    }
+    const h=await showDirectoryPicker({mode:'readwrite',id:'khata'}),r=await readF(h);
+    FH=h;await idbSet('dir',h);
+    if(r){S=fix(r);save();toast('Data load ho gaya',1)}else{await pushF();toast('Folder attach ho gaya',1)}
+    setSync('ok');go(cur);
+  }catch(e){if(e.name!=='AbortError')toast('Error: '+(e.message||e))}
+}
+
+function loadLocal(){try{const x=JSON.parse(localStorage.getItem(LSK));if(x)return x}catch(e){}return null}
+async function boot(){
+  S=fix(loadLocal());$('dt').value=D;go('home');setSync('local');
+  if(fsOK){
+    try{
+      FH=await idbGet('dir')||null;
+      if(FH){
+        if(await perm()){
+          const r=await readF();
+          if(r){S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}go(cur)}
+          setSync('ok');
+        }else setSync('perm');
+      }
+    }catch(e){}
+  }
+}
+
+// ===== COMBOBOX =====
+const CBO={};
+function combo(f){CBO[f.k]=f.o.map(a=>Array.isArray(a)?a:[a,a]);const c=CBO[f.k].find(a=>String(a[0])===String(f.v));
+ return `<span class="relative block" data-combo="${f.k}"><input type="hidden" name="${f.k}" value="${c?escA(c[0]):''}" data-req="${f.r?1:''}"><input type="text" autocomplete="off" placeholder="Talaash karein..." value="${c?escA(c[1]):''}" class="inp" oninput="cbF(this,1)" onfocus="this.select();cbF(this)" onblur="cbB(this)" onkeydown="cbK(event,this)"><span class="cbl hidden absolute left-0 right-0 z-20 bg-white border rounded-lg shadow-xl max-h-52 overflow-auto" style="top:100%"></span></span>`}
+function cbF(inp,t){const w=inp.closest('[data-combo]'),h=w.firstChild,l=w.lastChild,q=t?inp.value.trim().toLowerCase():'';if(t)h.value='';
+ const o=CBO[w.dataset.combo].filter(a=>String(a[1]).toLowerCase().includes(q));
+ l.innerHTML=o.length?o.map((a,i)=>`<span class="block px-3 py-2 cursor-pointer ${i?'':'bg-green-50'}" data-i="${escA(a[0])}" data-n="${escA(a[1])}" onmousedown="event.preventDefault();cbS(this)">${esc(a[1])}</span>`).join(''):'<span class="block px-3 py-2 text-slate-400">Record nahi mila</span>';l.classList.remove('hidden')}
+function cbS(el){const w=el.closest('[data-combo]');w.firstChild.value=el.dataset.i;w.querySelector('input[type=text]').value=el.dataset.n;w.lastChild.classList.add('hidden')}
+function cbB(inp){const w=inp.closest('[data-combo]'),h=w.firstChild;if(!h.value){const m=CBO[w.dataset.combo].filter(a=>String(a[1]).toLowerCase()===inp.value.trim().toLowerCase());if(m.length===1)h.value=m[0][0]}w.lastChild.classList.add('hidden')}
+function cbK(e,inp){const l=inp.parentNode.lastChild,it=[...l.querySelectorAll('[data-i]')];let a=it.findIndex(x=>x.classList.contains('bg-green-50'));
+ if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(l.classList.contains('hidden')){cbF(inp);return}if(!it.length)return;if(it[a])it[a].classList.remove('bg-green-50');a=(a+(e.key==='ArrowDown'?1:-1)+it.length)%it.length;it[a].classList.add('bg-green-50');it[a].scrollIntoView({block:'nearest'})}
+ else if(e.key==='Enter'){if(!l.classList.contains('hidden')&&it.length){e.preventDefault();cbS(it[Math.max(a,0)])}else if(!inp.parentNode.firstChild.value)e.preventDefault()}
+ else if(e.key==='Escape'){l.classList.add('hidden')}}
+const ksBox=()=>'<input type="search" placeholder="Search / تلاش karein..." oninput="ksF(this.value)" class="inp mb-3 max-w-md bg-white shadow-sm">';
+function ksF(v){v=v.trim().toLowerCase();document.querySelectorAll('#view tbody tr').forEach(r=>r.style.display=r.textContent.toLowerCase().includes(v)?'':'none')}
+
+// ===== NAVIGATION =====
+const NAV=[
+  ['home','ہوم / Home','fa-house'],
+  ['truck','ٹرک بل / Truck Bill','fa-truck'],
+  ['bill','سنگل بل / Cash Memo','fa-file-invoice'],
+  ['bank','بینک اکاؤنٹس / Bank Khata','fa-building-columns'],
+  ['party','پارٹی کھاتہ / Party','fa-users'],
+  ['mill','مل کھاتہ / Mill','fa-industry'],
+  ['roz','روزنامچہ / Roznamcha','fa-book-open'],
+  ['stock','سٹاک / Stock Katte','fa-boxes-stacked'],
+  ['set','سیٹنگز / Settings','fa-gear']
+];
+
+function go(p){
+  cur=p;$('title').textContent=NAV.find(n=>n[0]===p)[1];$('sbName').textContent=S.settings.shop;
+  $('nav').innerHTML=NAV.map(n=>`<button onclick="go('${n[0]}');$('side').classList.remove('open')" class="nv ${n[0]===p?'on':''}"><i class="fa-solid ${n[2]}"></i><span class="lb">${n[1]}</span></button>`).join('');
+  $('view').innerHTML='<div class="pg">'+PG[p]()+'</div>';
+}
+
+const openM=()=>{$('md').classList.remove('hidden');$('md').classList.add('flex')},closeM=()=>{$('md').classList.add('hidden');$('md').classList.remove('flex')};
+const card=(l,v,c,s)=>`<div class="card bg-white rounded-xl p-4 border shadow-sm"><div class="text-xs font-bold text-slate-500">${l}</div><div class="text-xl md:text-2xl font-black ${c||''} mt-1">${v}</div><div class="text-xs text-slate-400 mt-0.5">${s||''}</div></div>`;
+const tbl=(h,r,e)=>`<div class="overflow-x-auto bg-white rounded-xl border shadow-sm"><table class="reg w-full text-sm text-left"><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${r.length?r.map(x=>`<tr>${x.map(c=>`<td>${c}</td>`).join('')}</tr>`).join(''):`<tr><td colspan="${h.length}" class="text-center text-slate-400 p-6">${e||'Koi record nahi'}</td></tr>`}</tbody></table></div>`;
+const bt=(t,fn,c)=>`<button onclick="${fn}" class="btn ${c||'bg-green-700'} text-white shadow-sm">${t}</button>`;
+const lk=(t,fn,c)=>`<button onclick="${fn}" class="${c||'text-green-700'} font-bold px-1.5 hover:underline text-xs md:text-sm">${t}</button>`;
+const bar=(t,b)=>`<div class="flex flex-wrap justify-between items-center gap-2 mb-3"><h2 class="font-black text-lg text-slate-800">${t}</h2><div class="flex gap-2 flex-wrap">${b||''}</div></div>`;
+const blkBadge='<span class="ml-1.5 inline-block text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-300 px-1.5 py-0.5 rounded">BLOCKED / بلاک</span>';
+
+function toast(m,ok){
+  const e=document.createElement('div');
+  e.className='toast fixed bottom-5 right-5 z-[60] px-5 py-3 rounded-xl text-sm font-bold text-white shadow-2xl '+(ok?'bg-emerald-600':'bg-rose-600');
+  e.textContent=m;document.body.appendChild(e);setTimeout(()=>{e.style.opacity=0;setTimeout(()=>e.remove(),300)},2800);
+}
+
+let fcb=null;
+function form(title,fields,cb,btn){
+  $('mt').textContent=title;
+  $('mb').innerHTML=`<form onsubmit="return fsub(event)" class="space-y-3"><div class="grid sm:grid-cols-2 gap-3">`+fields.map(f=>`<label class="block text-sm font-bold text-slate-600">${f.l}${f.t==='combo'?combo(f):f.t==='select'?`<select name="${f.k}" class="inp">${f.o.map(o=>{const a=Array.isArray(o)?o:[o,o];return `<option value="${escA(a[0])}" ${String(f.v)===String(a[0])?'selected':''}>${esc(a[1])}</option>`}).join('')}</select>`:`<input name="${f.k}" type="${f.t||'text'}" value="${escA(f.v)}" ${f.r?'required':''} ${f.t==='number'?'step="any" min="0"':''} class="inp">`}</label>`).join('')+`</div><div class="flex gap-2 pt-2 border-t"><button type="button" onclick="closeM()" class="btn bg-slate-200 flex-1">Wapas / Cancel</button><button class="btn bg-green-700 text-white flex-1">${btn||'Save / محفوظ'}</button></div></form>`;
+  fcb=cb;openM();
+}
+function fsub(e){e.preventDefault();const bad=[...e.target.querySelectorAll('[data-combo]')].find(w=>w.firstChild.dataset.req&&!w.firstChild.value);if(bad){toast('List mein se select karein');return false}const o={};new FormData(e.target).forEach((v,k)=>o[k]=v);if(fcb(o)!==false)closeM();return false}
+
+// ===== BUSINESS LOGIC HELPERS =====
+const bs=()=>S.settings.basis==='kg'?1:40,RB=()=>S.settings.basis==='kg'?'per KG':'per 40 KG (man)';
+const pf=b=>b.amt-(b.wt*(b.cost||0))/bs();
+const pty=(t,activeOnly)=>S.parties.filter(p=>p.type===t&&(!activeOnly||!p.blocked));
+const ptyOpts=(t,curId)=>S.parties.filter(p=>p.type===t&&(!p.blocked||p.id===curId)).map(p=>[p.id,p.name+(p.blocked?' [BLOCKED]':'')]);
+const nm=id=>{const p=S.parties.find(x=>x.id===id);return p?p.name:'-'};
+const isT=b=>b&&b.lines&&b.lines.length;
+
+function led(p){
+  if(!p)return [];
+  const m=p.type==='mill',L=[];
+  if(+p.ob)L.push({d:'0000',t:'Opening Balance / پچھلا بقایا',a:+p.ob,b:0});
+  (m?S.purchases:S.bills).filter(x=>x.pid===p.id).forEach(x=>L.push({d:x.date,t:(m?'Maal ':'Bill #'+x.no+' ')+x.katte+' katte, '+x.wt+' KG @ '+x.rate,a:x.amt,b:0,k:x.id}));
+  if(m)S.bills.filter(x=>x.mid===p.id&&x.mamt>0).forEach(x=>L.push({d:x.date,t:'Maal Bill #'+x.no+' '+mk(nm(x.pid))+' - '+x.katte+' katte @ '+x.cost,a:x.mamt,b:0,bk:x.id}));
+  S.entries.filter(e=>e.pid===p.id).forEach(e=>L.push({d:e.date,t:e.mode+(e.note?' - '+mk(e.note):''),a:0,b:e.amt,e:e.id}));
+  L.sort((x,y)=>x.d<y.d?-1:x.d>y.d?1:0);let r=0;L.forEach(x=>{r+=x.a-x.b;x.r=r});return L;
+}
+const bal=p=>{const L=led(p);return L.length?L[L.length-1].r:0};
+const stk=()=>{const o=+S.settings.openStock||0,b=sum(S.purchases,'katte'),s=sum(S.bills,'katte');return{o,b,s,r:o+b-s}};
+
+function cb(d,strict){
+  const f=c=>S.entries.filter(e=>(strict?e.date<d:e.date<=d)&&(c?e.mode==='Cash':e.mode!=='Cash')).reduce((s,e)=>s+(e.type==='in'?e.amt:-e.amt),0);
+  return{cash:(+S.settings.openCash||0)+f(1),bank:(+S.settings.openBank||0)+f(0)};
+}
+
+// =========================================================================
+// BANK KHATA CORE (Debits / Credits / Monthly Hisaab)
+// =========================================================================
+const BK=()=>S.banks||(S.banks=[]),BX=()=>S.btx||(S.btx=[]);
+const bankOpts=curId=>BK().filter(b=>!b.blocked||b.id===curId).map(b=>[b.id,b.name+(b.blocked?' [BLOCKED]':'')]);
+
+function bled(b){
+  if(!b)return [];
+  const L=[];
+  if(+b.ob)L.push({d:'0000',t:'Opening Balance / شروع کا بیلنس',i:+b.ob,o:0});
+  BX().filter(x=>x.bid===b.id).forEach(x=>{
+    let whoInfo='';
+    if(x.lid){const p=S.parties.find(item=>item.id===x.lid);if(p)whoInfo=' ['+mk(p.name)+']'}
+    L.push({
+      d:x.date,
+      t:(x.mode||'Online')+whoInfo+(x.who?' - '+mk(x.who):'')+(x.note?' ('+mk(x.note)+')':''),
+      i:x.type==='dep'?x.amt:0, // Green
+      o:x.type==='wd'?x.amt:0,  // Red
+      x:x.id
+    });
+  });
+  L.sort((a,c)=>a.d<c.d?-1:a.d>c.d?1:0);let r=0;
+  L.forEach(x=>{r+=x.i-x.o;x.r=r});
+  return L;
+}
+const bbal=b=>{const L=bled(b);return L.length?L[L.length-1].r:0};
+
+const filterBar=(curVal,setFn,allCnt,actCnt,blkCnt)=>`
+  <div class="flex flex-wrap items-center gap-2 mb-3">
+    <div class="flex bg-white border rounded-lg p-1 text-xs font-bold shadow-sm">
+      <button onclick="${setFn}('all')" class="px-3 py-1 rounded-md ${curVal==='all'?'bg-slate-800 text-white':'text-slate-600 hover:bg-slate-100'}">Sab (${allCnt})</button>
+      <button onclick="${setFn}('active')" class="px-3 py-1 rounded-md ${curVal==='active'?'bg-emerald-700 text-white':'text-slate-600 hover:bg-slate-100'}">Active (${actCnt})</button>
+      <button onclick="${setFn}('blocked')" class="px-3 py-1 rounded-md ${curVal==='blocked'?'bg-rose-700 text-white':'text-slate-600 hover:bg-slate-100'}">Blocked (${blkCnt})</button>
+    </div>
+  </div>
+`;
+
+function pgBank(){
+  const allBanks=BK(),allTx=BX();
+  const totalDep=sum(allTx.filter(x=>x.type==='dep'),'amt')+sum(allBanks,'ob');
+  const totalWd=sum(allTx.filter(x=>x.type==='wd'),'amt');
+  const totalBal=sum(allBanks,bbal);
+
+  // Month-wise Hisaab
+  const mTx=allTx.filter(x=>(x.date||'').startsWith(selMonth));
+  const mDep=sum(mTx.filter(x=>x.type==='dep'),'amt');
+  const mWd=sum(mTx.filter(x=>x.type==='wd'),'amt');
+  const mBachat=mDep-mWd;
+
+  const banks=bkFilter==='active'?allBanks.filter(b=>!b.blocked):bkFilter==='blocked'?allBanks.filter(b=>b.blocked):allBanks;
+
+  return `
+    ${bar('Bank Khata / بینک اکاؤنٹس رجسٹر',
+      bt('+ Naya Bank Khata','bankForm()','bg-blue-700')+
+      bt('+ Jama / Aamdan (In)',"btxForm('dep')",'bg-emerald-600')+
+      bt('- Nikalna / Payment (Out)',"btxForm('wd')",'bg-rose-600')
+    )}
+
+    <!-- OVERALL SUMMARY -->
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4">
+      ${card('Total Jama (Debit / Green)','+ '+N(totalDep),'text-emerald-700','Sab Banks Ka Jama')}
+      ${card('Total Nikla (Credit / Red)','- '+N(totalWd),'text-rose-700','Sab Banks Ka Kharch')}
+      ${card('Total Bank Balance',N(totalBal),totalBal>=0?'text-blue-800':'text-rose-700','Baqaya Bachat')}
+    </div>
+
+    <!-- MONTHLY HISAAB-KITAB & NET BACHAT -->
+    <div class="bg-white border rounded-xl p-4 shadow-sm mb-5">
+      <div class="flex flex-wrap justify-between items-center gap-3 border-b pb-2 mb-3">
+        <div>
+          <h3 class="font-black text-slate-800"><i class="fa-solid fa-calendar-days text-indigo-600 mr-1"></i> Mahana Hisaab / Monthly Statement</h3>
+          <p class="text-xs text-slate-400">Har mahine ki kul aamdan, kharch aur bacha hua paisa</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <label class="text-xs font-bold text-slate-600">Mahina:</label>
+          <input type="month" value="${selMonth}" onchange="selMonth=this.value;go('bank')" class="inp !mt-0 !w-auto text-xs font-bold">
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-center">
+        <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+          <span class="text-xs font-bold text-emerald-800 block">Is Mahine Aamdan (+ In)</span>
+          <b class="text-xl font-black text-emerald-700">+ ${N(mDep)}</b>
+        </div>
+        <div class="p-3 bg-rose-50 border border-rose-200 rounded-xl">
+          <span class="text-xs font-bold text-rose-800 block">Is Mahine Kharch (- Out)</span>
+          <b class="text-xl font-black text-rose-700">- ${N(mWd)}</b>
+        </div>
+        <div class="p-3 ${mBachat>=0?'bg-blue-50 border-blue-200':'bg-amber-50 border-amber-200'} rounded-xl border">
+          <span class="text-xs font-bold ${mBachat>=0?'text-blue-800':'text-amber-800'} block">Is Mahine Bacha (Bachat)</span>
+          <b class="text-xl font-black ${mBachat>=0?'text-blue-700':'text-amber-700'}">${N(mBachat)}</b>
+        </div>
+      </div>
+    </div>
+
+    <!-- BANK LIST TABLE -->
+    <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+      <h3 class="font-black text-slate-800">Mojooda Bank Accounts</h3>
+      ${filterBar(bkFilter,'setBkFilter',allBanks.length,allBanks.filter(b=>!b.blocked).length,allBanks.filter(b=>b.blocked).length)}
+    </div>
+    ${ksBox()}
+    ${tbl(
+      ['#','Bank Name','Debit (Aaya +)','Credit (Nikla -)','Balance','Actions'],
+      banks.map((b,i)=>{
+        const l=bled(b),ba=bbal(b);
+        return [
+          i+1,
+          `<div class="${b.blocked?'opacity-70':''}"><b>${esc(b.name)}</b>${b.blocked?blkBadge:''}<div class="text-xs text-slate-400">${esc(b.acc||'')}</div></div>`,
+          `<b class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">+ ${N(sum(l,'i'))}</b>`,
+          `<b class="text-rose-700 bg-rose-50 px-2 py-0.5 rounded">- ${N(sum(l,'o'))}</b>`,
+          `<b class="text-base ${ba>=0?'text-blue-800':'text-rose-700'}">${N(ba)}</b>`,
+          lk('Statement',`bstmt(${b.id})`)+
+          (!b.blocked?lk('+ Jama',`btxForm('dep',${b.id})`,'text-emerald-700')+lk('Nikalna',`btxForm('wd',${b.id})`,'text-rose-600'):'')+
+          lk('Edit',`bankForm(${b.id})`,'text-blue-700')+
+          lk(b.blocked?'Unblock':'Block',`toggleBlockBank(${b.id})`,b.blocked?'text-emerald-700':'text-amber-700')+
+          lk('Del',`delBank(${b.id})`,'text-rose-500')
+        ];
+      }),
+      bkFilter==='blocked'?'Koi bank account block nahi hai.':'Abhi koi bank khata nahi banaya gaya. Upar se "+ Naya Bank Khata" dabayein.'
+    )}
+  `;
+}
+
+function setBkFilter(v){bkFilter=v;go('bank')}
+
+function bankForm(id){
+  const f=BK().find(x=>x.id===id)||{};
+  const fields=[
+    {k:'pre',l:'Bank Select Karein',t:'select',o:[['','-- Apna naam khud likhein --'],'HBL','Bank Alfalah','UBL','Bank of Punjab (BOP)','Meezan Bank','Allied Bank (ABL)','MCB Bank','JazzCash','Easypaisa','Other Bank'],v:''},
+    {k:'name',l:'Bank Ka Naam (Title)',v:f.name||''},
+    {k:'acc',l:'Account No. / IBAN',v:f.acc||''},
+    {k:'ob',l:'Shuru Ka Balance (Opening)',t:'number',v:f.ob||0}
+  ];
+  if(id)fields.push({k:'blocked',l:'Account Status',t:'select',o:[['0','Active / فعال'],['1','Blocked / بلاک']],v:f.blocked?'1':'0'});
+  form(id?'Bank Edit Karein':'Naya Bank Khata',fields,o=>{
+    const n=(o.name.trim()||o.pre).trim();if(!n){toast('Bank ka naam enter karein');return false}
+    const oldName=f.name;
+    const d={name:n,acc:o.acc.trim(),ob:+o.ob||0,blocked:id?(o.blocked==='1'):!!f.blocked};
+    if(id){
+      Object.assign(f,d);
+      if(oldName&&oldName!==n){
+        const txIds=new Set(BX().filter(x=>x.bid===id).map(x=>x.id));
+        S.entries.forEach(e=>{if(e.bx&&txIds.has(e.bx))e.mode=n});
+      }
+    }else BK().push(Object.assign({id:uid()},d));
+    save();go(cur);toast('Bank save ho gaya',1);
+  });
+}
+
+function toggleBlockBank(id){
+  const b=BK().find(x=>x.id===id);if(!b)return;
+  const msg=b.blocked?`"${b.name}" ko Unblock karein?`:`"${b.name}" ko Block karein? Block karne ke baad is mein nayi entry nahi ho sakegi, lekin purana hisaab mehfooz rahega.`;
+  if(!cfm(msg))return;
+  b.blocked=!b.blocked;save();go(cur);
+  toast(b.blocked?'Bank account block ho gaya':'Bank account unblock ho gaya',1);
+}
+
+function delBank(id){
+  if(BX().some(x=>x.bid===id))return toast('Is bank mein pehle se entries hain - isay Block kar sakte hain ya pehle entries delete karein');
+  if(cfm('Bank delete karein?')){S.banks=BK().filter(x=>x.id!==id);save();go(cur);toast('Bank delete ho gaya',1)}
+}
+
+function btxForm(kind,bid,id){
+  const t=BX().find(x=>x.id===id)||{};kind=t.type||kind;const dep=kind==='dep';
+  if(!BK().length)return toast('Pehle bank add karein');
+  if(!id&&bid){const sb=BK().find(x=>x.id===bid);if(sb&&sb.blocked)return toast('Yeh bank account block hai — pehle unblock karein')}
+  if(!id&&!BK().some(b=>!b.blocked))return toast('Sab bank accounts block hain — pehle kisi account ko unblock karein');
+
+  form(dep?'Paisa Aaya / Jama (Deposit - Green)':'Paisa Nikala / Transfer (Withdraw - Red)',[
+    {k:'date',l:'Tareekh / تاریخ',t:'date',v:t.date||D,r:1},
+    {k:'bid',l:'Bank Khata',t:'combo',o:bankOpts(t.bid||bid),v:t.bid||bid,r:1},
+    {k:'amt',l:'Raqam / رقم',t:'number',v:t.amt||'',r:1},
+    {k:'mode',l:'Tareeqa (Mode)',t:'select',o:dep?['Cash Deposit','Online Received','Cheque Deposit','Transfer From Other Bank']:['Online Transfer to Mill/Party','Cheque Payment','Cash Withdrawal','Bank to Bank Transfer'],v:t.mode},
+    {k:'lid',l:dep?'Party se aaya? (Party khata mein khud jama hoga)':'Mill ya Party ko bheja? (Khata mein khud payment hogi)',t:'combo',o:[['','-- Kisi Party/Mill se talluq nahi --'],...ptyOpts(dep?'party':'mill',t.lid)],v:t.lid||''},
+    {k:'who',l:dep?'Kis se aaya / From':'Kisko bheja / To',v:t.who||''},
+    {k:'note',l:'Tafseel / Note',v:t.note||''}
+  ],o=>{
+    const a=+o.amt;if(!(a>0)){toast('Durust raqam likhein');return false}
+    const b=BK().find(x=>x.id===+o.bid);
+    if(!b){toast('Bank select karein');return false}
+    if(b.blocked&&(!id||t.bid!==b.id)){toast('Yeh bank account block hai');return false}
+    const lid=+o.lid||0,linked=lid?S.parties.find(x=>x.id===lid):null;
+    if(linked&&linked.blocked&&(!id||t.lid!==lid)){toast('Yeh '+(linked.type==='mill'?'Mill':'Party')+' block hai');return false}
+
+    const av=bbal(b)+(id&&t.bid===b.id?(t.type==='wd'?t.amt:-t.amt):0);
+    if(!dep&&a>av&&!cfm('Bank mein sirf Rs. '+N(av)+' hain. Phir bhi transfer karein?'))return false;
+
+    const d={date:o.date,bid:b.id,type:kind,amt:Math.round(a),mode:o.mode,lid,who:linked?linked.name:o.who.trim(),note:o.note.trim()};
+    
+    let curTx=t;
+    if(id)Object.assign(t,d);else{curTx=Object.assign({id:uid()},d);BX().push(curTx)}
+
+    // Sync Roznamcha & Ledgers
+    S.entries=S.entries.filter(e=>e.bx!==curTx.id);
+    if(lid){
+      S.entries.unshift({
+        id:uid(),date:d.date,type:dep?'in':'out',mode:b.name,pid:lid,amt:d.amt,
+        note:'Bank: '+b.name+' ('+d.mode+')'+(d.note?' - '+d.note:''),bx:curTx.id
+      });
+    }
+
+    save();go(cur);toast('Entry darj ho gayi',1);
+  });
+}
+
+function bsTbl(b){
+  return tbl(
+    ['Tareekh','Tafseel','Aamdan (+ Green)','Kharch (- Red)','Balance',''],
+    bled(b).map(x=>[
+      x.d==='0000'?'-':x.d,
+      escA(x.t),
+      x.i?`<b class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">+ ${N(x.i)}</b>`:'',
+      x.o?`<b class="text-rose-700 bg-rose-50 px-2 py-0.5 rounded">- ${N(x.o)}</b>`:'',
+      `<b>${N(x.r)}</b>`,
+      x.x?lk('Edit',`btxForm('',${b.id},${x.x})`,'text-blue-700')+lk('✕ Del',`delTx(${x.x},${b.id})`,'text-rose-600'):''
+    ])
+  );
+}
+
+function bstmt(id){
+  const b=BK().find(x=>x.id===id);if(!b)return;
+  const l=bled(b);
+  $('mt').textContent='Bank Statement: '+mk(b.name)+(b.acc?` (${b.acc})`:'')+(b.blocked?' [BLOCKED]':'');
+  $('mb').innerHTML=`
+    <div class="grid grid-cols-3 gap-2 mb-3 text-center">
+      <div class="bg-emerald-50 p-2 rounded-lg"><span class="text-xs text-emerald-800 font-bold block">Kul Aaya (In)</span><b class="text-emerald-700 text-lg">+ ${N(sum(l,'i'))}</b></div>
+      <div class="bg-rose-50 p-2 rounded-lg"><span class="text-xs text-rose-800 font-bold block">Kul Gaya (Out)</span><b class="text-rose-700 text-lg">- ${N(sum(l,'o'))}</b></div>
+      <div class="bg-blue-50 p-2 rounded-lg"><span class="text-xs text-blue-800 font-bold block">Balance</span><b class="text-blue-800 text-lg">${N(bbal(b))}</b></div>
+    </div>
+    ${bsTbl(b)}
+    <div class="flex gap-2 mt-4"><button onclick="closeM()" class="btn bg-slate-200 flex-1">Wapas</button><button onclick="printBS(${id})" class="btn bg-green-700 text-white flex-1"><i class="fa-solid fa-print"></i> Print Statement</button></div>
+  `;
+  openM();
+}
+
+function printBS(id){
+  const b=BK().find(x=>x.id===id);if(!b)return;
+  const l=bled(b);
+  $('pst').textContent='@page{size:A4;margin:10mm}';
+  $('pa').innerHTML=`<div style="font:14px/1.6 'Noto Naskh Arabic',Tahoma,sans-serif;color:#000;padding:10px"><div style="text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px"><h2 style="font-size:24px;font-weight:bold">${esc(S.settings.shop)}</h2><p>${esc(S.settings.address)} - ${esc(S.settings.phone)}</p><h3>Bank Statement: <b>${esc(b.name)}</b></h3></div><div style="display:flex;justify-content:space-between;margin-bottom:10px"><span>Kul Jama: <b style="color:#15803d">+ ${N(sum(l,'i'))}</b></span><span>Kul Nikla: <b style="color:#b91c1c">- ${N(sum(l,'o'))}</b></span><span>Baqaya: <b>${N(bbal(b))}</b></span></div>${bsTbl(b).replace(/<button[^>]*>.*?<\/button>/g,'')}</div>`;
+  setTimeout(()=>window.print(),150);
+}
+
+function delTx(id,bid){
+  if(!cfm('Entry delete karein?'))return;
+  S.btx=BX().filter(x=>x.id!==id);S.entries=S.entries.filter(e=>e.bx!==id);
+  save();go(cur);bstmt(bid);
+}
+
+// =========================================================================
+// TRUCK / BULK INVOICING MODULE
+// =========================================================================
+function pgTruck(){
+  const L=S.bills.filter(isT).sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.no-a.no);
+  return `
+    ${bar('Truck / Bulk Bill / ٹرک اور بلک بل',bt('+ Naya Truck Bill','truckForm()','bg-blue-700'))}
+    <p class="text-sm text-slate-500 mb-3">Poore truck, tralla ya loader ka aik hi grand bill banayein.</p>
+    ${ksBox()}
+    ${tbl(
+      ['Bill #','Tareekh','Party','Gaari','Lots','Katte','Wazan KG','Raqam','Actions'],
+      L.map(b=>[
+        `<b>#${b.no}</b>`,b.date,`<b>${esc(nm(b.pid))}</b>`,esc(b.veh||'-'),b.lines.length+' lots',b.katte,N(b.wt),`<b class="text-blue-800">${N(b.amt)}</b>`,
+        lk('Print',`printT(${b.id})`)+lk('WhatsApp',`waT(${b.id})`,'text-emerald-700')+lk('Edit',`truckForm(${b.id})`,'text-slate-600')+lk('Del',`delBill(${b.id})`,'text-rose-600')
+      ]),
+      'Abhi koi truck bill nahi'
+    )}
+  `;
+}
+
+const tRow=(r,i)=>`
+  <div class="tr grid grid-cols-12 gap-2 items-center bg-slate-50 p-2 rounded-lg border">
+    <b class="ix col-span-1 text-center text-sm font-bold text-slate-500">${i+1}</b>
+    <input data-f="d" type="text" placeholder="Description / تفصیل" value="${escA(r.d||'')}" class="inp !mt-0 col-span-3 text-xs">
+    <input data-f="k" type="number" step="any" min="0" placeholder="Katte" value="${r.k||''}" class="inp !mt-0 col-span-2 text-sm font-bold text-emerald-800">
+    <input data-f="w" type="number" step="any" min="0" placeholder="KG Wazan" value="${r.w||''}" class="inp !mt-0 col-span-2 text-xs">
+    <input data-f="r" type="number" step="any" min="0" placeholder="Rate" value="${r.r||''}" class="inp !mt-0 col-span-2 text-xs">
+    <b data-f="a" class="col-span-1 text-right text-xs font-black">0</b>
+    <button type="button" onclick="this.closest('.tr').remove();tCalc()" class="col-span-1 text-rose-600 font-black">✕</button>
+  </div>
+`;
+
+function tAdd(n){const c=$('trows');for(let i=0;i<n;i++)c.insertAdjacentHTML('beforeend',tRow({},c.children.length));tCalc()}
+function tRd(){
+  const f=$('tf').elements,pb=+f.pb.value||0,dr=+f.rate.value||0;
+  return [...document.querySelectorAll('#trows .tr')].map(e=>{
+    const g=n=>e.querySelector('[data-f='+n+']'),k=+g('k').value||0,w=Math.round((+g('w').value||k*pb)*100)/100,r=+g('r').value||dr;
+    return{k,w,r,a:Math.round(w*r/bs()),d:g('d').value.trim(),el:e};
+  });
+}
+function tCalc(){
+  const R=tRd();R.forEach((x,i)=>{x.el.querySelector('[data-f=a]').textContent=N(x.a);x.el.querySelector('.ix').textContent=i+1});
+  $('ttot').innerHTML=`<div class="flex justify-between items-center text-sm font-bold"><span>Kul Katte: <b class="text-emerald-800">${sum(R,'k')}</b></span><span>Kul Wazan: <b>${N(sum(R,'w'))} KG</b></span><span>Grand Total: <b class="text-blue-800 text-lg">Rs. ${N(sum(R,'a'))}</b></span></div>`;
+}
+
+function truckForm(id){
+  const b=S.bills.find(x=>x.id===id)||{};
+  if(!id&&!pty('party',true).length)return toast('Pehle koi active party add ya unblock karein');
+  if(id&&!pty('party').length)return toast('Pehle party add karein');
+  const lp=S.purchases[0];
+  const L=(a,c)=>`<label class="block text-sm font-bold text-slate-600 mb-1">${a}${c}</label>`,inp=(n,t,v,x)=>`<input name="${n}" type="${t}" value="${escA(v==null?'':v)}" ${x||''} class="inp">`;
+  $('mt').textContent=id?'Truck Bill Edit':'Naya Truck / Bulk Bill';
+  $('mb').innerHTML=`
+    <form id="tf" onsubmit="return tSave(event,${id||0})" class="space-y-3">
+      <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border">
+        ${L('Tareekh',inp('date','date',b.date||D,'required'))}
+        ${L('Party / Dealer',combo({k:'pid',o:ptyOpts('party',b.pid),v:b.pid,r:1}))}
+        ${L('Gaari / Truck No',inp('veh','text',b.veh||''))}
+        ${L('Default Rate ('+RB()+')',inp('rate','number',b.lines?'':'','step="any" min="0"'))}
+        ${L('Wazan Per Katta (KG)',inp('pb','number',b.pb!=null?b.pb:50,'step="any" min="0"'))}
+        ${L('Mill (Khata Link)',combo({k:'mid',o:ptyOpts('mill',b.mid),v:b.mid}))}
+        ${L('Mill Kharid Rate (Munafa)',inp('cost','number',b.cost!=null?b.cost:(lp?lp.rate:''),'step="any" min="0"'))}
+        <div class="sm:col-span-2">${L('Note / Driver',inp('note','text',b.tnote||''))}</div>
+      </div>
+      <div class="flex justify-between items-center pt-1"><h4 class="font-black text-slate-800">Maal Rows:</h4><div class="flex gap-2"><button type="button" onclick="tAdd(1)" class="btn bg-slate-200 text-xs py-1">+ 1 Row</button><button type="button" onclick="tAdd(5)" class="btn bg-slate-200 text-xs py-1">+ 5 Rows</button></div></div>
+      <div id="trows" class="space-y-1.5 max-h-[35vh] overflow-y-auto pr-1">${(b.lines||[{},{},{}]).map(tRow).join('')}</div>
+      <div id="ttot" class="bg-blue-50 border border-blue-200 rounded-xl p-3"></div>
+      <div class="flex gap-2 pt-2 border-t"><button type="button" onclick="closeM()" class="btn bg-slate-200 flex-1">Cancel</button><button class="btn bg-green-700 text-white flex-1 font-bold">Save Bill</button></div>
+    </form>
+  `;
+  const f=$('tf');f.oninput=tCalc;if(b.lines&&b.lines.length&&b.lines[0].r)f.rate.value=b.lines[0].r;
+  openM();tCalc();
+}
+
+function tSave(e,id){
+  e.preventDefault();const f=$('tf').elements;if(!f.pid.value){toast('Party select karein');return false}
+  const b=S.bills.find(x=>x.id===id);
+  const pid=+f.pid.value,pObj=S.parties.find(x=>x.id===pid);
+  if(pObj&&pObj.blocked&&(!id||b.pid!==pid)){toast('Yeh party block hai — active party select karein');return false}
+  const mid=+f.mid.value||0,mObj=mid?S.parties.find(x=>x.id===mid):null;
+  if(mObj&&mObj.blocked&&(!id||b.mid!==mid)){toast('Yeh mill block hai — active mill select karein');return false}
+
+  const R=tRd().filter(x=>x.k>0||x.w>0);if(!R.length||R.some(x=>!(x.k>0&&x.w>0&&x.r>0))){toast('Rows mein wazan, katte aur rate enter karein');return false}
+  const amt=sum(R,'a'),wt=Math.round(sum(R,'w')*100)/100,katte=sum(R,'k'),cost=+f.cost.value||0;
+  if(mid&&!(cost>0)){toast('Mill ka Kharid Rate enter karein');return false}
+  const st=stk().r+(id?b.katte:0);
+  if(katte>st&&!cfm('Stock mein sirf '+st+' katte hain. Phir bhi bill banayein?'))return false;
+
+  const d={
+    date:f.date.value,pid,mid,katte,wt,rate:Math.round(amt*bs()/wt*100)/100,amt,cost,mamt:mid&&cost>0?Math.round(wt*cost/bs()):0,
+    veh:f.veh.value.trim(),pb:+f.pb.value||0,tnote:f.note.value.trim(),note:('Truck '+f.veh.value.trim()+' '+f.note.value.trim()).trim(),
+    lines:R.map(x=>({d:x.d,k:x.k,w:x.w,r:x.r,a:x.a}))
+  };
+
+  let n=b;if(id)Object.assign(b,d);else{n=Object.assign({id:uid(),no:++S.seq},d);S.bills.unshift(n)}
+  save();closeM();go(cur);if(!id&&cfm('Bill #'+n.no+' print karein?'))printT(n.id);return false;
+}
+
+function printT(id){
+  const b=typeof id==='object'?id:S.bills.find(x=>x.id===id);if(!b)return;
+  const p=S.parties.find(x=>x.id===b.pid);
+  const s=S.settings,r=(led(p).find(x=>x.k===b.id)||{}).r||0;
+  $('pst').textContent='@page{size:A4;margin:10mm}';
+  $('pa').innerHTML=`
+    <div style="font:14px/1.6 'Noto Naskh Arabic',Tahoma,sans-serif;color:#000;border:2px solid #000;padding:16px">
+      <div style="text-align:center;border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:12px">
+        <h1 style="font-size:26px;font-weight:bold">${esc(s.shop)}</h1><p>${esc(s.address)} - ${esc(s.phone)}</p><h2>TRUCK / BULK CASH MEMO (بل)</h2>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Bill #: <b>${b.no}</b></span><span>Date: ${b.date}</span><span>Gaari: <b>${esc(b.veh||'-')}</b></span></div>
+      <div>Party: <b style="font-size:17px">${esc(nm(b.pid))}</b></div>
+      <table style="width:100%;border-collapse:collapse;text-align:center;margin:12px 0" border="1" cellpadding="6">
+        <tr style="background:#eee"><th>#</th><th>Description</th><th>Katte</th><th>Wazan KG</th><th>Rate</th><th>Amount</th></tr>
+        ${(b.lines||[{d:'Chawal',k:b.katte,w:b.wt,r:b.rate,a:b.amt}]).map((l,i)=>`<tr><td>${i+1}</td><td>${esc(l.d||'')}</td><td><b>${l.k}</b></td><td>${N(l.w)}</td><td>${l.r}</td><td style="text-align:right"><b>${N(l.a)}</b></td></tr>`).join('')}
+        <tr style="font-weight:bold;background:#eee"><td colspan="2">Kul Total</td><td>${b.katte}</td><td>${N(b.wt)} KG</td><td>-</td><td style="text-align:right;font-size:16px">Rs. ${N(b.amt)}</td></tr>
+      </table>
+      <div style="display:flex;justify-content:space-between;border:1px dashed #000;padding:8px"><span>Pichla Baqaya: ${N(r-b.amt)}</span><span>Is Bill Ka Total: ${N(b.amt)}</span><span>Kul Baqaya: <b>${N(r)}</b></span></div>
+      ${b.tnote?`<p style="margin-top:8px">Note: ${esc(b.tnote)}</p>`:''}
+      <p style="text-align:center;margin-top:15px">${escA(s.footer)}</p>
+    </div>
+  `;
+  setTimeout(()=>window.print(),150);
+}
+
+function waT(id){
+  const b=S.bills.find(x=>x.id===id);if(!b)return;
+  const p=S.parties.find(x=>x.id===b.pid);if(!p)return toast('Party record nahi mila');
+  const r=(led(p).find(x=>x.k===id)||{}).r||0;
+  let ph=(p.phone||'').replace(/\D/g,'');if(ph[0]==='0')ph='92'+ph.slice(1);
+  const lines=(b.lines||[]).map((l,i)=>`${i+1}) ${l.k} katte, ${N(l.w)}KG @ ${l.r} = Rs. ${N(l.a)}`).join('\n');
+  const m=`*${S.settings.shop}*\nBill #${b.no} - ${b.date}\nParty: *${p.name}*\n${b.veh?'Gaari: '+b.veh+'\n':''}------------------\n${lines}\n------------------\n*Total Katte:* ${b.katte}\n*Total Raqam:* Rs. ${N(b.amt)}\n*Kul Baqaya:* Rs. ${N(r)}`;
+  window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(m),'_blank');
+}
+
+// =========================================================================
+// STANDARD VIEWS (Home, Roznamcha, Bills, Parties, Mills, Stock, Settings)
+// =========================================================================
+function pgHome(){
+  const tb=S.bills.filter(b=>b.date===D),sales=sum(tb,'amt'),c=cb(D),rec=sum(pty('party'),bal),pay=sum(pty('mill'),bal),s=stk();
+  return `
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      ${card('Aaj Ki Bikri',N(sales),'text-blue-800',tb.length+' bills')}
+      ${card('Aaj Ke Katte',N(sum(tb,'katte')),'text-emerald-700','katte')}
+      ${card('Cash Mojood',N(c.cash),'text-emerald-700','Tijori Cash')}
+      ${card('Total Bank Balance',N(sum(BK(),bbal)),'text-indigo-700','Sab Banks')}
+      ${card('Parties Se Wasooli (Lena)',N(rec),'text-amber-700','Total Baqaya')}
+      ${card('Mill Ko Dena (Adaigi)',N(pay),'text-rose-700','Total Baqaya')}
+      ${card('Stock Katte',s.r,'text-slate-800','Baqi Katte')}
+      ${card('Total Bills',S.bills.length,'text-teal-700')}
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
+      ${[['+ Naya Truck Bill','truckForm()','bg-blue-700'],['+ Party se Jama','entForm(\'pin\')','bg-emerald-600'],['+ Maal Khareeda','purForm()','bg-indigo-700'],['+ Bank Len Den',"btxForm('dep')",'bg-teal-700']].map(b=>`<button onclick="${b[1]}" class="btn ${b[2]} text-white py-4 text-base font-black">${b[0]}</button>`).join('')}
+    </div>
+    <h3 class="font-black mt-5 mb-2 text-slate-800">Aaj Ke Bills (${D})</h3>
+    ${billTbl(tb)}
+  `;
+}
+
+function billTbl(L){
+  return tbl(['Bill #','Tareekh','Party','Type','Katte','Wazan KG','Rate','Raqam',''],L.map(b=>[
+    b.no,b.date,`<b>${esc(nm(b.pid))}</b>`,b.lines?'<span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded font-bold">Truck</span>':'-',
+    b.katte,b.wt,b.rate,`<b>${N(b.amt)}</b>`,
+    lk('Print',b.lines?`printT(${b.id})`:`printB(${b.id})`)+lk('Edit',b.lines?`truckForm(${b.id})`:`billForm(${b.id})`,'text-blue-700')+lk('Del',`delBill(${b.id})`,'text-rose-600')
+  ]));
+}
+
+const pgBill=()=>bar('Bills Register / کیش میمو',bt('+ Naya Truck Bill','truckForm()','bg-blue-700')+bt('+ Simple Bill','billForm()'))+ksBox()+billTbl([...S.bills].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.no-a.no).slice(0,200));
+
+function billForm(id){
+  const b=S.bills.find(x=>x.id===id)||{};
+  if(!id&&!pty('party',true).length)return toast('Pehle koi active party add ya unblock karein');
+  if(id&&!pty('party').length)return toast('Pehle party add karein');
+  const lp=S.purchases[0];
+  form(id?'Bill Edit':'Naya Bill',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Party',t:'combo',o:ptyOpts('party',b.pid),v:b.pid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'cost',l:'Mill Kharid Rate',t:'number',v:b.cost!=null?b.cost:(lp?lp.rate:'')},{k:'mid',l:'Mill (Optional)',t:'combo',o:ptyOpts('mill',b.mid),v:b.mid},{k:'note',l:'Note',v:b.note}],o=>{
+    const pid=+o.pid,pObj=S.parties.find(x=>x.id===pid);
+    if(pObj&&pObj.blocked&&(!id||b.pid!==pid)){toast('Yeh party block hai — active party select karein');return false}
+    const mid=+o.mid||0,mObj=mid?S.parties.find(x=>x.id===mid):null;
+    if(mObj&&mObj.blocked&&(!id||b.mid!==mid)){toast('Yeh mill block hai — active mill select karein');return false}
+    const d={date:o.date,pid,mid,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),cost:+o.cost||0,note:o.note.trim()};
+    d.mamt=d.mid&&d.cost>0?Math.round(d.wt*d.cost/bs()):0;
+    if(!(d.katte>0&&d.wt>0&&d.rate>0&&d.amt>0)){toast('Katte, wazan, rate aur raqam darj karein');return false}
+    const st=stk().r+(id?b.katte:0);
+    if(d.katte>st&&!cfm('Stock mein sirf '+st+' katte hain. Phir bhi bill banayein?'))return false;
+    let n=b;if(id)Object.assign(b,d);else{n=Object.assign({id:uid(),no:++S.seq},d);S.bills.unshift(n)}save();go(cur);if(!id&&cfm('Bill print karein?'))printB(n.id);
+  });
+  const mf=$('mb').querySelector('form');
+  if(mf){
+    const calc=()=>{const w=+mf.wt.value||0,r=+mf.rate.value||0;if(w>0&&r>0)mf.amt.value=Math.round(w*r/bs())};
+    mf.wt.addEventListener('input',calc);mf.rate.addEventListener('input',calc);
+  }
+}
+function delBill(id){if(cfm('Bill delete karein? Stock aur ledger wapas theek ho jayenge.')){S.bills=S.bills.filter(x=>x.id!==id);save();go(cur)}}
+function printB(id){
+  const b=S.bills.find(x=>x.id===id);if(!b)return;if(b.lines)return printT(b);
+  const p=S.parties.find(x=>x.id===b.pid);
+  const s=S.settings,r=(led(p).find(x=>x.k===id)||{}).r||0;
+  $('pst').textContent='@page{size:A5 landscape;margin:8mm}';
+  $('pa').innerHTML=`<div style="font:16px/1.7 'Noto Naskh Arabic',Tahoma,sans-serif;color:#000;border:2px solid #000;padding:12px"><div style="text-align:center"><b style="font-size:24px">${esc(s.shop)}</b><br>${esc(s.address)} ${esc(s.phone)}<br><b>CASH MEMO / کیش میمو</b></div><div style="display:flex;justify-content:space-between;margin:8px 0"><span>Bill #: ${b.no}</span><span>Party: <b>${esc(nm(b.pid))}</b></span></div><table style="width:100%;border-collapse:collapse;text-align:center" border="1" cellpadding="8"><tr><th>Date</th><th>Katte</th><th>Wazan KG</th><th>Rate</th><th>Amount</th></tr><tr><td>${b.date}</td><td>${b.katte}</td><td>${b.wt}</td><td>${b.rate}</td><td><b>${N(b.amt)}</b></td></tr></table><p style="margin:8px 0">Kul Baqaya: <b>${N(r)}</b></p><p style="text-align:center">${escA(s.footer)}</p></div>`;setTimeout(()=>window.print(),150);
+}
+
+// ROZNAMCHA
+function entForm(kind,pid,id){
+  const e=S.entries.find(x=>x.id===id)||{};
+  if(id&&e.bx){
+    const tx=BX().find(x=>x.id===e.bx);
+    if(tx)return btxForm('',tx.bid,tx.id);
+  }
+  const inn=kind==='pin'||kind==='oin',pk=kind==='pin'?'party':kind==='mout'?'mill':null;
+  if(!id&&pk==='party'&&!pty('party',true).length)return toast('Koi active party mojood nahi');
+  if(!id&&pk==='mill'&&!pty('mill',true).length)return toast('Koi active mill mojood nahi');
+  if(!id&&pid){const sp=S.parties.find(x=>x.id===pid);if(sp&&sp.blocked)return toast('Yeh account block hai — pehle unblock karein')}
+
+  const f=[{k:'date',l:'Tareekh',t:'date',v:e.date||D,r:1}];
+  if(pk)f.push({k:'pid',l:pk==='mill'?'Mill':'Party',t:'combo',o:ptyOpts(pk,e.pid||pid),v:e.pid||pid,r:1});
+  const bModes=BK().filter(b=>!b.blocked||(id&&e.mode===b.name)).map(b=>b.name);
+  f.push({k:'mode',l:'Mode',t:'select',o:['Cash',...bModes,'Other Bank'],v:e.mode||'Cash'},{k:'amt',l:'Raqam',t:'number',v:e.amt,r:1},{k:'note',l:'Tafseel / Note',v:e.note});
+  form(id?'Entry Edit Karein':(inn?'Aamdan / Jama (In)':'Kharch / Payment (Out)'),f,o=>{
+    const a=Math.round(+o.amt);if(!(a>0)){toast('Enter amount');return false}
+    const selPid=pk?+o.pid:0;
+    if(selPid){
+      const sp=S.parties.find(x=>x.id===selPid);
+      if(sp&&sp.blocked&&(!id||e.pid!==selPid)){toast('Yeh account block hai');return false}
+    }
+    const bank=BK().find(b=>b.name===o.mode);
+    if(bank&&bank.blocked&&(!id||e.mode!==bank.name)){toast('Yeh bank account block hai');return false}
+
+    const d={date:o.date,type:inn?'in':'out',mode:o.mode,pid:selPid,amt:a,note:o.note.trim()};
+    let curEnt=e;
+    if(id){
+      Object.assign(e,d);
+      if(e.bx){S.btx=BX().filter(x=>x.id!==e.bx);delete e.bx}
+    }else{
+      curEnt=Object.assign({id:uid()},d);
+      S.entries.unshift(curEnt);
+    }
+
+    if(bank){
+      const txId=uid();
+      const linked=selPid?S.parties.find(x=>x.id===selPid):null;
+      BX().push({
+        id:txId,date:d.date,bid:bank.id,type:inn?'dep':'wd',amt:d.amt,
+        mode:inn?'Online Received':'Online Transfer to Mill/Party',
+        lid:selPid,who:linked?linked.name:'',note:d.note
+      });
+      curEnt.bx=txId;
+    }
+
+    save();go(cur);toast(id?'Entry update ho gayi':'Entry save ho gayi',1);
+  });
+}
+
+function editEnt(eid){
+  const e=S.entries.find(x=>x.id===eid);if(!e)return;
+  if(e.bx){const tx=BX().find(x=>x.id===e.bx);if(tx)return btxForm('',tx.bid,tx.id)}
+  const kind=e.type==='in'?(e.pid?'pin':'oin'):(e.pid?'mout':'oout');
+  entForm(kind,e.pid,e.id);
+}
+
+function pgRoz(){
+  const o=cb(D,1),c=cb(D),day=S.entries.filter(e=>e.date===D),I=day.filter(e=>e.type==='in'),O=day.filter(e=>e.type==='out');
+  const tf=e=>(e.pid?(e.type==='in'?'Jama: ':'Mill: ')+'<b>'+esc(nm(e.pid))+'</b> ':'')+esc(e.note);
+  return `
+    ${bar('Roznamcha / روزنامچہ - '+D,bt('+ Party se Jama','entForm(\'pin\')','bg-emerald-600')+bt('+ Mill ko Payment','entForm(\'mout\')','bg-rose-600')+bt('+ Aur Aamdan','entForm(\'oin\')','bg-teal-600')+bt('+ Aur Kharch','entForm(\'oout\')','bg-orange-600'))}
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      ${card('Pichla Cash (Opening)',N(o.cash),'text-slate-700','Aaj Se Pehle')}
+      ${card('Aaj Aamdan (+ In)','+ '+N(sum(I,'amt')),'text-emerald-700',I.length+' entries')}
+      ${card('Aaj Kharch (- Out)','- '+N(sum(O,'amt')),'text-rose-700',O.length+' entries')}
+      ${card('Mojooda Cash (Closing)',N(c.cash),'text-blue-800','Tijori Cash')}
+    </div>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <h3 class="font-black mb-2 text-emerald-800">Tafseel Aamdan (In - Green)</h3>
+        ${tbl(['Tafseel','Khata/Mode','Raqam',''],I.map(e=>[tf(e),`<span class="font-bold text-xs bg-slate-100 px-1.5 py-0.5 rounded">${esc(e.mode)}</span>`,`<b class="text-emerald-700">+ ${N(e.amt)}</b>`,lk('Edit',`editEnt(${e.id})`,'text-blue-700')+lk('✕',`delEnt(${e.id})`,'text-rose-600')]))}
+        <p class="mt-1 font-black text-emerald-800">Total In: + ${N(sum(I,'amt'))}</p>
+      </div>
+      <div>
+        <h3 class="font-black mb-2 text-rose-800">Tafseel Kharch (Out - Red)</h3>
+        ${tbl(['Tafseel','Khata/Mode','Raqam',''],O.map(e=>[tf(e),`<span class="font-bold text-xs bg-slate-100 px-1.5 py-0.5 rounded">${esc(e.mode)}</span>`,`<b class="text-rose-700">- ${N(e.amt)}</b>`,lk('Edit',`editEnt(${e.id})`,'text-blue-700')+lk('✕',`delEnt(${e.id})`,'text-rose-600')]))}
+        <p class="mt-1 font-black text-rose-800">Total Out: - ${N(sum(O,'amt'))}</p>
+      </div>
+    </div>
+  `;
+}
+function delEnt(eid,pid){
+  const e=S.entries.find(x=>x.id===eid);
+  if(e&&e.bx){if(!cfm('Yeh entry bank khata se juri hai. Bank se bhi delete hogi. Continue?'))return;S.btx=BX().filter(x=>x.id!==e.bx)}
+  else if(!cfm('Entry delete karein?'))return;
+  S.entries=S.entries.filter(x=>x.id!==eid);save();go(cur);if(pid)stmt(pid);
+}
+
+// PARTIES & MILLS
+function setKhFilter(v){khFilter=v;go(cur)}
+
+function kh(t){
+  const m=t==='mill',allL=pty(t),tot=sum(allL,bal);
+  const L=khFilter==='active'?allL.filter(p=>!p.blocked):khFilter==='blocked'?allL.filter(p=>p.blocked):allL;
+  return `
+    ${bar(m?'Mill Khata / مل کھاتہ':'Party Khata / پارٹی کھاتہ',bt(m?'+ Naya Mill':'+ Nayi Party',`partyForm('${t}')`)+(m?bt('+ Maal Khareeda','purForm()','bg-indigo-700')+bt('Mill ko Payment',"entForm('mout')",'bg-rose-600'):bt('+ Party se Jama',"entForm('pin')",'bg-emerald-600')))}
+    <div class="grid grid-cols-2 gap-3 mb-3">${card(m?'Mill ko Dena':'Parties se Lena',N(tot),m?'text-rose-700':'text-amber-700')}</div>
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      ${ksBox()}
+      ${filterBar(khFilter,'setKhFilter',allL.length,allL.filter(p=>!p.blocked).length,allL.filter(p=>p.blocked).length)}
+    </div>
+    ${tbl(['#',m?'Mill':'Party',m?'Maal (Khareeda)':'Naam (Bill)',m?'Adaigi':'Wasooli','Baqaya','Actions'],L.map((p,i)=>{
+      const l=led(p),b=l.length?l[l.length-1].r:0;
+      return [
+        i+1,
+        `<div class="${p.blocked?'opacity-70':''}"><b>${esc(p.name)}</b>${p.blocked?blkBadge:''}${p.phone?`<div class="text-xs text-slate-400">${esc(p.phone)}</div>`:''}</div>`,
+        N(sum(l,'a')),
+        N(sum(l,'b')),
+        `<b class="${b>0?(m?'text-rose-700':'text-amber-700'):'text-emerald-700'}">${N(b)}</b>`,
+        lk('Statement',`stmt(${p.id})`)+
+        (!p.blocked?(m?lk('+ Maal',`purForm(0,${p.id})`,'text-indigo-700')+lk('Payment',`entForm('mout',${p.id})`,'text-rose-600'):lk('+ Jama',`entForm('pin',${p.id})`,'text-emerald-700')):'')+
+        lk('Edit',`partyForm('${t}',${p.id})`,'text-blue-700')+
+        lk(p.blocked?'Unblock':'Block',`toggleBlockParty(${p.id})`,p.blocked?'text-emerald-700':'text-amber-700')+
+        lk('Del',`delParty(${p.id})`,'text-rose-600')
+      ];
+    }),khFilter==='blocked'?'Koi account block nahi hai.':undefined)}
+  `;
+}
+const pgParty=()=>kh('party'),pgMill=()=>kh('mill');
+
+function partyForm(t,id){
+  const f=S.parties.find(x=>x.id===id)||{};
+  const fields=[{k:'name',l:'Naam',v:f.name,r:1},{k:'phone',l:'Phone',v:f.phone},{k:'ob',l:'Pichla Baqaya',t:'number',v:f.ob||0}];
+  if(id)fields.push({k:'blocked',l:'Account Status',t:'select',o:[['0','Active / فعال'],['1','Blocked / بلاک']],v:f.blocked?'1':'0'});
+  form((id?'Edit ':'Naya ')+(t==='mill'?'Mill':'Party'),fields,o=>{
+    const n=o.name.trim();if(S.parties.some(x=>x.id!==id&&x.type===t&&x.name.toLowerCase()===n.toLowerCase())){toast('Yeh naam pehle se mojood hai');return false}
+    const oldName=f.name;
+    const d={name:n,phone:o.phone.trim(),ob:+o.ob||0,blocked:id?(o.blocked==='1'):!!f.blocked};
+    if(id){
+      Object.assign(f,d);
+      if(oldName&&oldName!==n)BX().forEach(x=>{if(x.lid===id)x.who=n});
+    }else S.parties.push(Object.assign({id:uid(),type:t},d));
+    save();go(cur);toast(id?'Record update ho gaya':'Record save ho gaya',1);
+  });
+}
+
+function toggleBlockParty(id){
+  const p=S.parties.find(x=>x.id===id);if(!p)return;
+  const msg=p.blocked?`"${p.name}" ko Unblock karein?`:`"${p.name}" ko Block karein? Block karne ke baad naya bill ya entry nahi ban sakegi, lekin purana hisaab mehfooz rahega.`;
+  if(!cfm(msg))return;
+  p.blocked=!p.blocked;save();go(cur);
+  toast(p.blocked?'Account block ho gaya':'Account unblock ho gaya',1);
+}
+
+function delParty(id){const p=S.parties.find(x=>x.id===id);if(!p)return;if(led(p).some(x=>x.d!=='0000'))return toast('Is khata mein entries mojood hain - isay Block kar sakte hain');if(cfm('Delete karein?')){S.parties=S.parties.filter(x=>x.id!==id);save();go(cur)}}
+
+function stmt(id){
+  const p=S.parties.find(x=>x.id===id);if(!p)return;
+  const b=bal(p),m=p.type==='mill';
+  $('mt').textContent='Statement: '+mk(p.name)+(p.blocked?' [BLOCKED]':'');
+  $('mb').innerHTML=`
+    ${tbl(['Tareekh','Tafseel',m?'Maal':'Naam',m?'Payment':'Jama','Baqaya',''],led(p).map(x=>[x.d==='0000'?'-':x.d,escA(x.t),x.a?`<b class="text-slate-800">${N(x.a)}</b>`:'',x.b?`<b class="text-emerald-700">${N(x.b)}</b>`:'',`<b>${N(x.r)}</b>`,x.e?lk('Edit',`editEnt(${x.e})`,'text-blue-700')+lk('✕',`delEnt(${x.e},${p.id})`,'text-rose-600'):'']))}
+    <p class="mt-3 font-black text-lg">Total Baqaya: ${N(b)}</p>
+    <div class="flex gap-2 mt-3"><button onclick="closeM()" class="btn bg-slate-200 flex-1">Wapas</button><button onclick="printS(${id})" class="btn bg-green-700 text-white flex-1"><i class="fa-solid fa-print"></i> Print</button></div>
+  `;
+  openM();
+}
+function printS(id){
+  const p=S.parties.find(x=>x.id===id);if(!p)return;$('pst').textContent='@page{size:A4;margin:10mm}';
+  $('pa').innerHTML=`<div style="font:14px 'Noto Naskh Arabic',Tahoma,sans-serif;color:#000;padding:10px"><h2 style="text-align:center"><b>${esc(S.settings.shop)}</b></h2><h3 style="text-align:center">Khata Statement: ${esc(p.name)}</h3>${$('mb').querySelector('table').outerHTML.replace(/<button[^>]*>.*?<\/button>/g,'')}<h3>Total Baqaya: ${N(bal(p))}</h3></div>`;setTimeout(()=>window.print(),150);
+}
+
+// PURCHASES
+function purForm(id,mid){
+  const b=S.purchases.find(x=>x.id===id)||{};
+  if(!id&&!pty('mill',true).length)return toast('Pehle koi active mill add ya unblock karein');
+  if(id&&!pty('mill').length)return toast('Pehle mill add karein');
+  if(!id&&mid){const sm=S.parties.find(x=>x.id===mid);if(sm&&sm.blocked)return toast('Yeh mill block hai — pehle unblock karein')}
+  form(id?'Maal Edit':'Maal Khareeda',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Mill',t:'combo',o:ptyOpts('mill',b.pid||mid),v:b.pid||mid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Mill Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'note',l:'Note',v:b.note}],o=>{
+    const pid=+o.pid,mObj=S.parties.find(x=>x.id===pid);
+    if(mObj&&mObj.blocked&&(!id||b.pid!==pid)){toast('Yeh mill block hai — active mill select karein');return false}
+    const d={date:o.date,pid,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),note:o.note.trim()};
+    if(!(d.katte>0&&d.wt>0&&d.rate>0&&d.amt>0)){toast('Tamam fields darj karein');return false}
+    if(id)Object.assign(b,d);else S.purchases.unshift(Object.assign({id:uid()},d));save();go(cur);
+  });
+  const mf=$('mb').querySelector('form');
+  if(mf){
+    const calc=()=>{const w=+mf.wt.value||0,r=+mf.rate.value||0;if(w>0&&r>0)mf.amt.value=Math.round(w*r/bs())};
+    mf.wt.addEventListener('input',calc);mf.rate.addEventListener('input',calc);
+  }
+}
+
+// STOCK
+function pgStock(){
+  const s=stk();let r=s.o;
+  const L=[...S.purchases.map(x=>({d:x.date,t:'Maal Aya - '+mk(nm(x.pid)),i:x.katte,o:0,w:x.wt})),...S.bills.map(x=>({d:x.date,t:'Bill #'+x.no+' - '+mk(nm(x.pid)),i:0,o:x.katte,w:x.wt}))].sort((a,b)=>a.d<b.d?-1:a.d>b.d?1:0).map(x=>{r+=x.i-x.o;return[x.d,escA(x.t),x.i?`<b class="text-emerald-700">+${x.i}</b>`:'',x.o?`<b class="text-rose-700">-${x.o}</b>`:'',x.w,`<b>${r}</b>`]}).reverse();
+  return bar('Stock Register')+`<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">${card('Shuru Ka Stock',s.o,'text-slate-700','katte')}${card('Kharida Stock',s.b,'text-emerald-700','+ Katte')}${card('Becha Stock',s.s,'text-rose-700','- Katte')}${card('Mojooda Stock',s.r,'text-blue-800','Baqi Katte')}</div>`+tbl(['Tareekh','Tafseel','Aya (+)','Gaya (-)','Wazan KG','Baqi Stock'],L);
+}
+
+// SETTINGS
+function pgSet(){
+  const s=S.settings,f=(k,l,t)=>`<label class="block text-sm font-bold text-slate-600">${l}<input name="${k}" type="${t||'text'}" ${t==='number'?'step="any"':''} value="${escA(s[k])}" class="inp"></label>`;
+  return `
+    ${bar('Settings')}
+    <form onsubmit="saveSet(event)" class="bg-white p-4 rounded-xl border grid md:grid-cols-2 gap-3 mb-4">
+      ${f('shop','Karobar Ka Naam')}${f('owner','Malik Ka Naam')}${f('phone','Phone')}${f('address','Address')}${f('footer','Bill Footer')}
+      <label class="block text-sm font-bold text-slate-600">Rate Basis<select name="basis" class="inp"><option value="maund" ${s.basis==='maund'?'selected':''}>Per 40 KG (Man)</option><option value="kg" ${s.basis==='kg'?'selected':''}>Per KG</option></select></label>
+      ${f('openCash','Shuru Ka Cash (Opening Cash)','number')}
+      ${f('openStock','Shuru Ka Stock Katte (Opening Stock)','number')}
+      <div class="md:col-span-2"><button class="btn bg-green-700 text-white px-8 py-2.5">Save Settings</button></div>
+    </form>
+    <div class="bg-white p-4 rounded-xl border space-y-3">
+      <h3 class="font-black text-slate-800">Data Backup & Folder</h3>
+      <p class="text-xs text-slate-500">Apne computer ka koi bhi folder select karein jahan khata-data.json mehfooz rahe.</p>
+      <div class="flex gap-2 flex-wrap">
+        ${bt('Select Folder','pickFolder(1)')}
+        ${bt('Download Backup','backup()','bg-slate-700')}
+        <label class="btn bg-slate-700 text-white cursor-pointer">Restore File<input type="file" accept=".json" class="hidden" onchange="restore(this)"></label>
+      </div>
+    </div>
+  `;
+}
+function saveSet(e){e.preventDefault();new FormData(e.target).forEach((v,k)=>S.settings[k]=(k==='openCash'||k==='openStock')?(+v||0):v);save();go('set');toast('Settings saved',1)}
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(S)],{type:'application/json'}));a.download='khata-backup-'+today()+'.json';a.click()}
+function restore(i){const f=i.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{S=fix(JSON.parse(r.result));save();go('home');toast('Data restore ho gaya',1)}catch(e){toast('Invalid file')}};r.readAsText(f)}
+
+const PG={home:pgHome,truck:pgTruck,bill:pgBill,bank:pgBank,party:pgParty,mill:pgMill,roz:pgRoz,stock:pgStock,set:pgSet};
+boot();
+</script>
+</body>
+</html>
