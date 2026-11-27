@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dairy Central Admin ERP</title>
+  <link rel="icon" type="image/svg+xml" href="">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style type="text/tailwindcss">
+    @layer components {
+      .inp { @apply w-full bg-sky-50/60 border border-sky-200 rounded-xl px-3 py-2.5 text-xs font-semibold text-slate-800 placeholder:text-slate-400 focus:bg-white focus:ring-2 focus:ring-[#00b4ff] focus:border-[#124ec9] focus:outline-none transition; }
+      .lbl { @apply block text-[11px] font-extrabold text-[#0b2a6f] uppercase tracking-wide mb-1; }
+      .card { @apply bg-white rounded-3xl border border-sky-200/80 shadow-sm shadow-blue-900/5; }
+      .th { @apply py-3 px-3 whitespace-nowrap; }
+      .thead { @apply bg-gradient-to-r from-sky-50 to-blue-50/80 text-[#0b2a6f] uppercase font-extrabold text-[11px] border-y border-sky-200/80; }
+      .btn { @apply inline-flex items-center justify-center gap-1.5 font-bold rounded-xl transition text-xs px-3.5 py-2 cursor-pointer disabled:opacity-50; }
+      .btn-ssg { @apply btn text-white bg-gradient-to-r from-[#0b2a6f] via-[#124ec9] to-[#0099e6] hover:brightness-110 shadow-md shadow-blue-900/20; }
+      .btn-cyan { @apply btn text-[#071e54] bg-gradient-to-r from-[#22d3ee] to-[#38bdf8] hover:brightness-105 shadow-sm; }
+    }
+  </style>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    [dir="rtl"] body, [dir="rtl"] * { font-family: 'Noto Nastaliq Urdu', 'Plus Jakarta Sans', sans-serif; }
+    .brand-side { background: linear-gradient(180deg, #071e54 0%, #0b2a6f 48%, #124ec9 82%, #0099e6 100%) !important; }
+    .brand-login { background: radial-gradient(circle at 20% 20%, rgba(0,180,255,0.28), transparent 45%), radial-gradient(circle at 80% 80%, rgba(34,211,238,0.25), transparent 45%), linear-gradient(135deg, #071e54 0%, #0b2a6f 50%, #124ec9 100%) !important; }
+    .nav-btn.active { background: linear-gradient(90deg, rgba(0,180,255,0.26) 0%, rgba(34,211,238,0.10) 100%) !important; color: #fff !important; border-left: 4px solid #22d3ee; font-weight: 800; box-shadow: inset 0 0 0 1px rgba(34,211,238,0.35); }
+    .nav-btn.active i { color: #22d3ee !important; }
+    [dir="rtl"] .nav-btn.active { border-left: none; border-right: 4px solid #22d3ee; }
+    img[data-logo] { background: #fff; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 99px; }
+    @media print {
+      body.pm > *:not(.print-target) { display: none !important; }
+      body.pm .print-target { position: static !important; display: block !important; background: #fff !important; padding: 10px; max-height: none !important; }
+      body.pm .print-target * { max-height: none !important; overflow: visible !important; }
+      body.pm .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-sky-50/70 text-slate-800 flex h-screen overflow-hidden antialiased">
+
+  <!-- LOGIN -->
+  <div id="loginScreen" class="brand-login fixed inset-0 z-[80] flex items-center justify-center p-4">
+    <form onsubmit="doLogin(event)" class="bg-white rounded-3xl max-w-sm w-full p-7 shadow-2xl border border-sky-200/70 space-y-4">
+      <div class="text-center">
+        <div class="w-20 h-20 rounded-full bg-white p-0.5 shadow-lg shadow-blue-900/20 mx-auto mb-3"><img data-logo alt="Dairy Logo" class="w-full h-full object-cover rounded-full"></div>
+        <h2 class="font-black text-xl text-[#071e54]">Admin Login</h2>
+        <p class="text-xs font-semibold text-[#124ec9]">Dairy Central ERP</p>
+      </div>
+      <div><label class="lbl">Email</label><input id="loginEmail" type="email" required class="inp" autocomplete="username" placeholder="admin@example.com"></div>
+      <div><label class="lbl">Password</label><input id="loginPass" type="password" required class="inp" autocomplete="current-password" placeholder="••••••••"></div>
+      <p id="loginErr" class="text-xs text-rose-600 font-bold hidden bg-rose-50 border border-rose-200 rounded-xl px-3 py-2"></p>
+      <button id="loginBtn" class="btn-ssg w-full py-3 text-sm"><i class="fa-solid fa-shield-halved"></i> Login to Admin</button>
+      <p id="loginWait" class="text-[11px] text-slate-400 text-center">Connecting to server…</p>
+    </form>
+  </div>
+
+  <div id="sideBackdrop" onclick="toggleSidebar(false)" class="fixed inset-0 bg-slate-900/50 z-30 hidden lg:hidden"></div>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="brand-side fixed lg:static inset-y-0 left-0 -translate-x-full lg:translate-x-0 transition-transform duration-200 w-72 text-blue-50 flex flex-col justify-between shadow-2xl z-40 flex-shrink-0 select-none overflow-y-auto">
+    <div>
+      <div class="p-5 border-b border-sky-400/25 bg-[#071e54]/45">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-full bg-white p-0.5 shadow-md flex-shrink-0"><img data-logo alt="Dairy Logo" class="w-full h-full object-cover rounded-full"></div>
+          <div class="overflow-hidden flex-1">
+            <h1 id="brandBizName" class="font-extrabold text-base text-white truncate">Dairy ERP System</h1>
+            <p class="text-[11px] text-cyan-200 font-medium truncate" data-i18n="mgmt_portal">Central Management Portal</p>
+          </div>
+          <button onclick="toggleSidebar(false)" class="lg:hidden text-cyan-200 hover:text-white text-lg px-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+      </div>
+
+      <div class="mx-4 my-3 p-3.5 bg-[#071e54]/60 rounded-2xl border border-cyan-400/30 text-xs shadow-inner">
+        <div class="flex justify-between text-sky-100 items-center"><span data-i18n="cash_in_hand">Cash In Hand:</span><strong class="text-[#22d3ee] font-black text-sm" id="sideCashInHand">-</strong></div>
+      </div>
+
+      <nav class="px-3 space-y-1 text-xs font-semibold" id="navList">
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-btn active w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-chart-pie w-5 text-sky-300"></i><span data-i18n="nav_dashboard">Dashboard Overview</span></button>
+        <button onclick="switchView('ledger')" id="nav-ledger" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-scale-balanced w-5 text-sky-300"></i><span data-i18n="nav_ledger">Business Balance Sheet</span></button>
+        <button onclick="switchView('agents')" id="nav-agents" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-users-gear w-5 text-sky-300"></i><span data-i18n="nav_agents">Agents & Login IDs</span></button>
+        <button onclick="switchView('inward')" id="nav-inward" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-hand-holding-droplet w-5 text-sky-300"></i><span data-i18n="nav_inward">Milk Inward & Rates</span></button>
+        <button onclick="switchView('sales')" id="nav-sales" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-truck-moving w-5 text-sky-300"></i><span data-i18n="nav_sales">Milk Sales (13TS / KG)</span></button>
+        <button onclick="switchView('pos')" id="nav-pos" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-cash-register w-5 text-sky-300"></i><span data-i18n="nav_pos">POS / Shop Billing</span></button>
+        <button onclick="switchView('parties')" id="nav-parties" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-book-bookmark w-5 text-sky-300"></i><span data-i18n="nav_parties">Farmers & Buyers Ledgers</span></button>
+        <button onclick="switchView('expenses')" id="nav-expenses" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-wallet w-5 text-sky-300"></i><span data-i18n="nav_expenses">Expenses, Staff & Vehicles</span></button>
+        <button onclick="switchView('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sky-100 hover:bg-white/10 transition text-left"><i class="fa-solid fa-sliders w-5 text-sky-300"></i><span data-i18n="nav_settings">Settings & Reset</span></button>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-cyan-400/25 bg-[#071e54]/55 text-[11px] text-sky-200 space-y-2">
+      <div class="flex justify-between items-center">
+        <div>
+          <span class="font-bold text-white flex items-center gap-1.5"><span id="syncDot" class="w-2.5 h-2.5 rounded-full bg-rose-400 ring-2 ring-white/20"></span><span id="syncText">Connecting…</span></span>
+          <span class="text-[10px] text-cyan-200 block truncate max-w-[155px]" id="adminWho">-</span>
+        </div>
+        <button onclick="toggleAdminLang()" class="bg-[#00b4ff]/25 hover:bg-[#00b4ff]/40 text-white font-bold px-2.5 py-1 rounded-xl border border-cyan-300/50 transition"><span id="adminLangLabel">اردو</span></button>
+      </div>
+      <button onclick="doLogout()" class="w-full bg-white/10 hover:bg-rose-500/80 text-white font-bold py-2 rounded-xl border border-white/15 transition"><i class="fa-solid fa-right-from-bracket"></i> <span data-i18n="logout">Logout</span></button>
+      <p class="text-center text-[10px] text-cyan-200/80 font-semibold">SSG Digital Marketing • 0316 2967150</p>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="flex-1 flex flex-col h-screen overflow-hidden">
+    <header class="h-16 bg-white border-b-2 border-sky-100 px-4 sm:px-6 flex items-center justify-between shadow-sm flex-shrink-0">
+      <div class="flex items-center gap-3 min-w-0">
+        <button onclick="toggleSidebar(true)" class="lg:hidden btn bg-sky-50 text-[#0b2a6f] border border-sky-200 px-2.5"><i class="fa-solid fa-bars"></i></button>
+        <div class="min-w-0">
+          <h2 id="viewHeading" class="font-black text-base sm:text-lg text-[#071e54] truncate">Dashboard Overview</h2>
+          <p class="text-[11px] text-[#124ec9] font-medium truncate" data-i18n="top_subtitle">Milk Trading, Agents, Staff & Vehicle Khaate, Balance Sheet & ERP</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+        <button onclick="switchView('ledger')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200 hidden md:inline-flex"><i class="fa-solid fa-scale-balanced text-[#124ec9]"></i> <span data-i18n="balance_sheet_btn">Balance Sheet</span></button>
+        <button onclick="openDailyRatesModal('Farmer')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200 hidden lg:inline-flex"><i class="fa-solid fa-tags text-[#124ec9]"></i> <span data-i18n="daily_rates_btn">Daily Rates</span></button>
+        <button onclick="switchView('pos')" class="btn-cyan hidden sm:inline-flex"><i class="fa-solid fa-cash-register"></i> <span data-i18n="quick_pos">POS</span></button>
+        <button onclick="exportCSV()" class="btn-ssg"><i class="fa-solid fa-file-excel"></i> <span class="hidden sm:inline" data-i18n="export_csv">Export CSV</span></button>
+      </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-4 sm:p-6 bg-gradient-to-br from-sky-50 via-white to-blue-50/70 space-y-6">
+
+      <!-- DASHBOARD -->
+      <section id="panel-dashboard" class="admin-panel space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div class="flex items-center gap-2"><label class="text-xs font-extrabold text-[#0b2a6f] uppercase">Period:</label><select id="dashPeriod" onchange="renderDashboard()" class="inp !w-auto"><option value="today">Today</option><option value="month">This Month</option><option value="all">All Time</option></select></div>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="switchView('ledger')" class="btn bg-white border border-sky-200 text-[#0b2a6f] hover:bg-sky-50"><i class="fa-solid fa-scale-balanced text-[#124ec9]"></i> Full Balance Sheet</button>
+            <button onclick="openDailyRatesModal('Farmer')" class="btn bg-white border border-sky-200 text-[#0b2a6f] hover:bg-sky-50"><i class="fa-solid fa-tags text-[#124ec9]"></i> Set Today's Rates</button>
+            <button onclick="switchView('expenses');setExpTab('staff')" class="btn bg-white border border-sky-200 text-[#0b2a6f] hover:bg-sky-50"><i class="fa-solid fa-user-tie text-[#0099e6]"></i> Staff & Vehicle Khaate</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-4">
+          <div class="card p-5 border-t-4 border-t-[#0b2a6f]"><div class="flex justify-between items-start mb-1"><span class="text-[11px] font-extrabold uppercase text-slate-500" data-i18n="total_milk_in">Total Milk Collected</span><span class="w-8 h-8 rounded-xl bg-sky-100 text-[#0b2a6f] flex items-center justify-center"><i class="fa-solid fa-droplet"></i></span></div><h3 class="text-2xl font-black text-[#071e54]" id="dashTotalQty">0</h3><span class="text-[11px] text-[#124ec9] font-semibold mt-2 block" id="dashAvgFatLR">-</span></div>
+          <div class="card p-5 border-t-4 border-t-[#124ec9]"><div class="flex justify-between items-start mb-1"><span class="text-[11px] font-extrabold uppercase text-slate-500" data-i18n="total_purchase">Milk Purchases (Due)</span><span class="w-8 h-8 rounded-xl bg-blue-100 text-[#124ec9] flex items-center justify-center"><i class="fa-solid fa-hand-holding-dollar"></i></span></div><h3 class="text-2xl font-black text-[#124ec9]" id="dashTotalPurchase">Rs. 0</h3><span class="text-[11px] text-slate-400 mt-2 block" data-i18n="farmers_payable">Farmers Payable</span></div>
+          <div class="card p-5 border-t-4 border-t-[#00b4ff]"><div class="flex justify-between items-start mb-1"><span class="text-[11px] font-extrabold uppercase text-slate-500" data-i18n="total_sales">Milk + POS Sales</span><span class="w-8 h-8 rounded-xl bg-cyan-100 text-[#0099e6] flex items-center justify-center"><i class="fa-solid fa-truck-fast"></i></span></div><h3 class="text-2xl font-black text-[#0088cc]" id="dashTotalSales">Rs. 0</h3><span class="text-[11px] text-slate-500 mt-2 block" id="dashSalesBreak">Milk + POS Shop</span></div>
+          <div onclick="switchView('expenses')" class="card p-5 border-t-4 border-t-rose-500 cursor-pointer hover:border-rose-300 transition"><div class="flex justify-between items-start mb-1"><span class="text-[11px] font-extrabold uppercase text-slate-500" data-i18n="total_expenses">Expenses (Click Detail)</span><span class="w-8 h-8 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></span></div><h3 class="text-2xl font-black text-rose-600" id="dashTotalExpenses">Rs. 0</h3><span class="text-[11px] text-slate-400 mt-2 block" id="dashExpBreak">Staff, Vehicles & Bills</span></div>
+          <div onclick="switchView('ledger')" class="card p-5 border-t-4 border-t-[#22d3ee] bg-gradient-to-br from-white to-sky-50/80 cursor-pointer hover:border-[#00b4ff] transition"><div class="flex justify-between items-start mb-1"><span class="text-[11px] font-extrabold uppercase text-slate-500">Net (Sales + POS − Pur − Exp)</span><span class="w-8 h-8 rounded-xl bg-[#0b2a6f] text-[#22d3ee] flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></span></div><h3 class="text-2xl font-black" id="dashNet">Rs. 0</h3><span class="text-[11px] text-slate-500 mt-2 block" id="dashStock">-</span></div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 card p-5">
+            <div class="flex justify-between items-center mb-4"><div><h3 class="font-extrabold text-base text-[#071e54]" data-i18n="recent_collections">Live Inward Milk Stream</h3><p class="text-xs text-slate-400" data-i18n="entries_realtime">Real-time submissions from agents</p></div><button onclick="switchView('inward')" class="text-[#124ec9] text-xs font-extrabold hover:underline" data-i18n="view_all">View All →</button></div>
+            <div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Date/Time</th><th class="th">Agent</th><th class="th">Farmer</th><th class="th">Qty</th><th class="th">Fat/LR</th><th class="th">13 TS</th><th class="th">Rate</th><th class="th">Total</th></tr></thead><tbody id="dashStream" class="divide-y divide-sky-100"></tbody></table></div>
+          </div>
+          <div class="card p-5 flex flex-col justify-between">
+            <div><div class="flex justify-between items-center mb-3"><h3 class="font-extrabold text-base text-[#071e54]" data-i18n="agent_ranking">Top Active Agents</h3><span class="text-[11px] bg-sky-100 text-[#0b2a6f] px-2.5 py-0.5 rounded-full font-extrabold" id="dashAgentCount">0</span></div><div id="dashLeaders" class="space-y-2.5"></div></div>
+            <button onclick="switchView('agents')" class="btn mt-4 w-full bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200" data-i18n="view_all_agents">Open Agent Manager</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUSINESS BALANCE SHEET & GENERAL LEDGER -->
+      <section id="panel-ledger" class="admin-panel hidden space-y-5">
+        <div class="card p-5 flex flex-wrap items-end gap-3">
+          <div><label class="lbl">From Date</label><input type="date" id="bsFrom" onchange="renderBalanceSheet()" class="inp"></div>
+          <div><label class="lbl">To Date</label><input type="date" id="bsTo" onchange="renderBalanceSheet()" class="inp"></div>
+          <div><label class="lbl">Entry Type</label><select id="bsType" onchange="renderBalanceSheet()" class="inp"><option value="ALL">All Transactions</option><option value="Purchase">Milk Purchases</option><option value="Sale">Milk Sales</option><option value="POS">POS Shop Bills</option><option value="Voucher">Party Cash Vouchers</option><option value="Expense">Expenses (Staff / Vehicles / Bills)</option></select></div>
+          <div class="flex gap-1.5"><button onclick="setBsPreset('today')" class="btn bg-sky-50 text-[#0b2a6f] border border-sky-200">Today</button><button onclick="setBsPreset('month')" class="btn bg-sky-50 text-[#0b2a6f] border border-sky-200">This Month</button><button onclick="setBsPreset('all')" class="btn bg-sky-50 text-[#0b2a6f] border border-sky-200">All Time</button></div>
+          <div class="ml-auto flex gap-2"><button onclick="printBalanceSheet()" class="btn-ssg"><i class="fa-solid fa-print"></i> Print Balance Sheet</button><button onclick="exportLedgerCSV()" class="btn-cyan"><i class="fa-solid fa-file-excel"></i> CSV</button></div>
+        </div>
+
+        <div id="balanceSheetPrintArea" class="space-y-5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="card p-4 border-t-4 border-t-emerald-500"><span class="text-[10px] font-extrabold uppercase text-slate-400">Cash Received (Inflow)</span><h4 class="text-2xl font-black text-emerald-600 mt-1" id="bsKpiIn">Rs. 0</h4><span class="text-[11px] text-slate-400" id="bsKpiInSub">-</span></div>
+            <div class="card p-4 border-t-4 border-t-rose-500"><span class="text-[10px] font-extrabold uppercase text-slate-400">Cash Paid Out (Outflow)</span><h4 class="text-2xl font-black text-rose-600 mt-1" id="bsKpiOut">Rs. 0</h4><span class="text-[11px] text-slate-400" id="bsKpiOutSub">-</span></div>
+            <div class="card p-4 border-t-4 border-t-[#124ec9]"><span class="text-[10px] font-extrabold uppercase text-slate-400">Trading Net (Sales − Pur − Exp)</span><h4 class="text-2xl font-black mt-1" id="bsKpiNet">Rs. 0</h4><span class="text-[11px] text-slate-400">Period Profit / Loss</span></div>
+            <div class="card p-4 border-t-4 border-t-[#0b2a6f] bg-gradient-to-br from-white to-sky-50"><span class="text-[10px] font-extrabold uppercase text-slate-400">Current Cash In Hand</span><h4 class="text-2xl font-black text-[#071e54] mt-1" id="bsKpiCash">Rs. 0</h4><span class="text-[11px] text-[#124ec9] font-semibold" id="bsKpiNetWorth">-</span></div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+            <div class="card p-5 space-y-2 border-l-4 border-l-emerald-500"><h4 class="font-extrabold text-sm text-[#071e54] border-b border-sky-100 pb-2"><i class="fa-solid fa-arrow-trend-up text-emerald-600"></i> Income & Receivables (Assets)</h4><div id="bsSummaryIn" class="space-y-1.5 text-xs"></div></div>
+            <div class="card p-5 space-y-2 border-l-4 border-l-rose-500"><h4 class="font-extrabold text-sm text-[#071e54] border-b border-sky-100 pb-2"><i class="fa-solid fa-arrow-trend-down text-rose-600"></i> Purchases, Expenses & Payables</h4><div id="bsSummaryOut" class="space-y-1.5 text-xs"></div></div>
+            <div class="card p-5 space-y-2 border-l-4 border-l-[#00b4ff]"><h4 class="font-extrabold text-sm text-[#071e54] border-b border-sky-100 pb-2"><i class="fa-solid fa-layer-group text-[#124ec9]"></i> Expense Breakdown by Head</h4><div id="bsExpHeads" class="space-y-1.5 text-xs max-h-48 overflow-y-auto"></div></div>
+          </div>
+
+          <div class="card p-5 space-y-3">
+            <div class="flex justify-between items-center"><div><h3 class="font-extrabold text-base text-[#071e54]">Complete Business Daybook / General Ledger</h3><p class="text-xs text-slate-400">All milk purchases, sales, POS bills, party payments, staff advances & vehicle expenses</p></div><span class="text-xs font-extrabold text-[#124ec9]" id="bsRowCount">0 entries</span></div>
+            <div class="overflow-x-auto border border-sky-100 rounded-2xl max-h-[55vh] overflow-y-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Date</th><th class="th">Type / Head</th><th class="th">Party / Staff / Vehicle</th><th class="th">Details</th><th class="th text-right">Cash In / Sale</th><th class="th text-right">Cash Out / Pur</th><th class="th text-right">Cash Flow</th></tr></thead><tbody id="bsDaybook" class="divide-y divide-sky-100"></tbody></table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AGENTS -->
+      <section id="panel-agents" class="admin-panel hidden space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="card p-5 border-l-4 border-l-[#0b2a6f]"><span class="text-xs font-bold text-slate-400 uppercase" data-i18n="total_agents">Registered Agents</span><h4 class="text-3xl font-black text-[#071e54] mt-1" id="agentCardTotal">0</h4></div>
+          <div class="card p-5 border-l-4 border-l-[#124ec9]"><span class="text-xs font-bold text-slate-400 uppercase" data-i18n="agent_total_liters">Milk Collected by Agents</span><h4 class="text-3xl font-black text-[#124ec9] mt-1" id="agentCardLiters">0</h4></div>
+          <div class="card p-5 border-l-4 border-l-[#00b4ff]"><span class="text-xs font-bold text-slate-400 uppercase" data-i18n="agent_total_entries">Total Entries</span><h4 class="text-3xl font-black text-[#0088cc] mt-1" id="agentCardEntries">0</h4></div>
+        </div>
+        <div class="card p-6 space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-sky-100 pb-4">
+            <div><h3 class="text-lg font-extrabold text-[#071e54]" data-i18n="agent_list_title">Agents Directory & Login Credentials</h3><p class="text-xs text-slate-400" data-i18n="agent_list_desc">Create Agent IDs & Passwords here. Only authorized agents can log in on agent.html.</p></div>
+            <div class="flex flex-wrap gap-2 w-full sm:w-auto"><input type="text" id="agentSearchInput" oninput="renderAgentsTable()" placeholder="Search agent or ID…" class="inp !w-full sm:!w-48"><button onclick="openAgentModal('')" class="btn-ssg flex-shrink-0"><i class="fa-solid fa-user-plus"></i> <span data-i18n="create_agent">Create Agent</span></button></div>
+          </div>
+          <div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Agent</th><th class="th">Login ID & Password</th><th class="th">Phone / Route</th><th class="th text-center">Entries</th><th class="th text-right">Milk</th><th class="th text-right">13 TS Vol</th><th class="th text-center">Actions</th></tr></thead><tbody id="agentsTableBody" class="divide-y divide-sky-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- INWARD -->
+      <section id="panel-inward" class="admin-panel hidden space-y-6">
+        <div class="card p-5 space-y-3">
+          <div class="flex flex-wrap justify-between items-center gap-3">
+            <div><h3 class="font-extrabold text-base text-[#071e54]" data-i18n="inward_management">Milk Inward & Rate Manager</h3><p class="text-xs text-slate-400" data-i18n="inward_desc">Entries lock using each Farmer's rate. Click Edit (pencil) to fix Qty, Fat, LR, Farmer, or Rate anytime.</p></div>
+            <button onclick="openDailyRatesModal('Farmer')" class="btn-cyan"><i class="fa-solid fa-tags"></i> <span data-i18n="update_farmer_rates">Update Farmer Daily Rates</span></button>
+          </div>
+          <div class="flex flex-wrap items-end gap-3">
+            <div><label class="lbl">Agent</label><select id="inwardAgentFilter" onchange="renderInward()" class="inp"><option value="ALL">All Agents</option></select></div>
+            <div><label class="lbl">Farmer</label><select id="inwardFarmerFilter" onchange="renderInward()" class="inp"><option value="ALL">All Farmers</option></select></div>
+            <div><label class="lbl">From</label><input type="date" id="inwFrom" onchange="renderInward()" class="inp"></div>
+            <div><label class="lbl">To</label><input type="date" id="inwTo" onchange="renderInward()" class="inp"></div>
+            <button onclick="clearInwardFilter()" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Clear</button>
+            <div class="ml-auto text-xs text-right bg-sky-50 px-3.5 py-2 rounded-xl border border-sky-200"><span class="text-slate-400 block text-[10px] uppercase font-bold">Filtered totals</span><strong id="inwTotals" class="text-[#071e54]">-</strong></div>
+          </div>
+        </div>
+        <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Date/Time</th><th class="th">Agent</th><th class="th">Farmer</th><th class="th">Shift</th><th class="th">Mode</th><th class="th text-[#124ec9]">Qty</th><th class="th">Fat %</th><th class="th">LR</th><th class="th">13 TS Vol</th><th class="th text-[#124ec9]">Rate</th><th class="th text-[#0088cc]">Total</th><th class="th text-center">Actions</th></tr></thead><tbody id="inwardTableBody" class="divide-y divide-sky-100"></tbody></table></div></div>
+      </section>
+
+      <!-- SALES -->
+      <section id="panel-sales" class="admin-panel hidden max-w-4xl mx-auto space-y-6">
+        <div class="card p-6">
+          <div class="border-b border-sky-100 pb-4 mb-5 flex flex-wrap justify-between items-center gap-3">
+            <div><h3 class="text-xl font-extrabold text-[#071e54]" data-i18n="sale_entry_title">Milk Sale / Tanker Dispatch</h3><p class="text-xs text-slate-400" data-i18n="sale_entry_subtitle">Picks the selected Buyer's daily rate automatically (editable per dispatch)</p></div>
+            <button onclick="openDailyRatesModal('Buyer')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-tags text-[#124ec9]"></i> Buyer Daily Rates</button>
+          </div>
+          <form id="adminSaleForm" onsubmit="handleSaveSale(event)" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div><label class="lbl" data-i18n="select_buyer">Buyer Party / Plant</label><select id="saleBuyerSelect" required onchange="onSaleBuyerChange()" class="inp"></select></div>
+              <div><label class="lbl" data-i18n="sale_mode">Calculation Method</label><select id="adminSaleMode" onchange="toggleSaleMode()" class="inp"><option value="13TS">13 TS Formula (Fat + LR)</option><option value="FixedKG">Fixed Price per KG</option></select></div>
+              <div id="saleBase13Col"><label class="lbl">Buyer 13 TS Rate (Rs)</label><input type="number" step="0.5" min="1" id="saleBase13" oninput="calcSale()" class="inp !bg-white !font-extrabold !text-[#124ec9]" placeholder="Enter rate"></div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div><label class="lbl" data-i18n="dispatch_qty">Quantity (Ltr / KG)</label><input type="number" step="0.1" min="0.1" id="saleQty" required oninput="calcSale()" class="inp" placeholder="1000"></div>
+              <div id="saleFatCol"><label class="lbl" data-i18n="avg_fat">Average Fat (%)</label><input type="number" step="0.1" id="saleFat" oninput="calcSale()" class="inp" placeholder="6.2"></div>
+              <div id="saleLrCol"><label class="lbl" data-i18n="avg_lr">Average LR</label><input type="number" step="0.5" id="saleLR" oninput="calcSale()" class="inp" placeholder="28.5"></div>
+              <div id="saleFixedCol" class="hidden sm:col-span-2"><label class="lbl" data-i18n="fixed_kg_rate">Price per KG (Rs)</label><input type="number" step="0.5" id="saleKgPrice" oninput="calcSale()" class="inp" placeholder="195"></div>
+            </div>
+            <div class="bg-gradient-to-r from-sky-50 to-cyan-50 border border-sky-200 rounded-2xl p-4 flex flex-wrap justify-between items-center gap-3 text-xs">
+              <div><span class="text-slate-500 block">13 TS Equivalent:</span><strong class="text-base font-extrabold text-[#071e54]" id="saleTsVol">0.0 Ltr</strong></div>
+              <div><span class="text-slate-500 block" data-i18n="effective_rate">Effective Rate / Ltr:</span><strong class="text-xl font-extrabold text-[#124ec9]" id="saleEffRate">Rs. 0</strong></div>
+              <div class="text-right"><span class="text-slate-500 block" data-i18n="total_sale_bill">Total Invoice:</span><strong class="text-2xl font-black text-[#071e54]" id="saleTotalBill">Rs. 0</strong></div>
+            </div>
+            <button id="saleSaveBtn" class="btn-ssg w-full py-3.5 text-sm"><i class="fa-solid fa-truck-ramp-box"></i> <span data-i18n="save_sale_dispatch">Save Sale & Update Buyer Ledger</span></button>
+          </form>
+        </div>
+        <div class="card p-5"><h4 class="font-extrabold text-xs uppercase text-[#0b2a6f] mb-3">Recent Milk Sales</h4><div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Date</th><th class="th">Buyer</th><th class="th">Mode</th><th class="th">Qty</th><th class="th">Rate</th><th class="th">Total</th><th class="th"></th></tr></thead><tbody id="salesTbody" class="divide-y divide-sky-100"></tbody></table></div></div>
+      </section>
+
+      <!-- POS -->
+      <section id="panel-pos" class="admin-panel hidden space-y-5">
+        <div class="card p-3 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex gap-2 flex-wrap">
+            <button data-t="sell" onclick="setPosTab('sell')" class="pos-tab btn"><i class="fa-solid fa-cash-register"></i> <span data-i18n="pos_tab_sell">POS Billing</span></button>
+            <button data-t="items" onclick="setPosTab('items')" class="pos-tab btn"><i class="fa-solid fa-boxes-stacked"></i> <span data-i18n="pos_tab_items">Add Items & Categories</span></button>
+            <button data-t="bills" onclick="setPosTab('bills')" class="pos-tab btn"><i class="fa-solid fa-receipt"></i> <span data-i18n="pos_tab_bills">Saved Bills & Profit</span></button>
+          </div>
+          <button onclick="openItemModal('')" class="btn-cyan"><i class="fa-solid fa-plus"></i> <span data-i18n="pos_add_item">Add Item</span></button>
+        </div>
+        <div id="pos-sell" class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+          <div class="xl:col-span-2 card p-5 space-y-3">
+            <div class="flex flex-col sm:flex-row gap-2"><div class="relative flex-1"><i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-[#124ec9] text-xs"></i><input id="posSearch" oninput="renderPOS()" placeholder="Search item name or category…" class="inp !pl-8"></div><button onclick="setPosTab('items')" class="btn bg-sky-50 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-tags"></i> Manage Categories</button></div>
+            <div id="posCats" class="flex gap-2 flex-wrap"></div>
+            <div id="posGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 max-h-[60vh] overflow-y-auto pr-1"></div>
+          </div>
+          <div class="card p-5 space-y-3 flex flex-col justify-between border-t-4 border-t-[#00b4ff]">
+            <div class="space-y-3"><div class="flex justify-between items-center border-b border-sky-100 pb-2.5"><h3 class="font-extrabold text-base text-[#071e54]"><i class="fa-solid fa-basket-shopping text-[#0099e6]"></i> <span data-i18n="pos_current_bill">Current Bill</span></h3><span class="text-[11px] font-bold bg-sky-100 text-[#0b2a6f] px-2.5 py-0.5 rounded-full" id="cartCount">0 items</span></div><div id="cartList" class="divide-y divide-sky-100 text-xs max-h-60 overflow-y-auto"></div></div>
+            <div class="space-y-3 pt-2 border-t border-sky-100">
+              <div class="grid grid-cols-2 gap-2"><div><label class="lbl">Customer</label><select id="posCustomer" class="inp"></select></div><div><label class="lbl">Payment</label><select id="posPay" onchange="renderCart()" class="inp"><option value="Cash">Cash</option><option value="Credit">Credit (Khata)</option></select></div></div>
+              <div class="grid grid-cols-2 gap-2"><div><label class="lbl">Discount (Rs)</label><input id="posDisc" type="number" min="0" value="0" oninput="renderCart()" class="inp"></div><div id="posCashRecWrap"><label class="lbl">Cash Received</label><input id="posCashRec" type="number" min="0" placeholder="Optional" oninput="renderCart()" class="inp"></div></div>
+              <div class="bg-gradient-to-br from-[#071e54] to-[#124ec9] text-white rounded-2xl p-3.5 text-xs space-y-1 shadow-md"><div class="flex justify-between text-sky-200"><span>Subtotal</span><strong id="posSub">Rs. 0</strong></div><div class="flex justify-between items-center"><span class="font-bold text-cyan-200">NET TOTAL</span><strong id="posTotal" class="text-[#22d3ee] font-black text-xl">Rs. 0</strong></div><div id="posChangeRow" class="hidden flex justify-between text-emerald-300 pt-1 border-t border-white/15"><span>Change / Balance</span><strong id="posChange">Rs. 0</strong></div></div>
+              <div class="flex gap-2"><button onclick="clearCart()" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Clear</button><button id="posPayBtn" onclick="completeSale()" class="btn-ssg flex-1 py-3"><i class="fa-solid fa-print"></i> Complete Sale & Print Bill</button></div>
+            </div>
+          </div>
+        </div>
+        <div id="pos-items" class="hidden space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4"><div class="card p-4 border-l-4 border-l-[#0b2a6f]"><span class="text-[11px] font-bold text-slate-400 uppercase">Total Items</span><h4 class="text-2xl font-black text-[#071e54]" id="itemStatCount">0</h4></div><div class="card p-4 border-l-4 border-l-[#00b4ff]"><span class="text-[11px] font-bold text-slate-400 uppercase">Categories</span><h4 class="text-2xl font-black text-[#124ec9]" id="itemStatCats">0</h4></div><div class="card p-4 border-l-4 border-l-rose-500"><span class="text-[11px] font-bold text-slate-400 uppercase">Low / Out of Stock (≤5)</span><h4 class="text-2xl font-black text-rose-600" id="itemStatLow">0</h4></div></div>
+          <div class="card p-5 space-y-3"><div class="flex flex-wrap justify-between items-center gap-3"><div><h3 class="font-extrabold text-base text-[#071e54]">Items, Categories & Stock</h3></div><div class="flex gap-2 items-center"><select id="itemFilterCat" onchange="renderItemsTable()" class="inp !w-auto"><option value="ALL">All Categories</option></select><button onclick="openItemModal('')" class="btn-ssg"><i class="fa-solid fa-plus"></i> Add Item</button></div></div><div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Item</th><th class="th">Category</th><th class="th">Unit</th><th class="th">Cost</th><th class="th">Sale Price</th><th class="th">Stock</th><th class="th text-right">Actions</th></tr></thead><tbody id="itemsTbody" class="divide-y divide-sky-100"></tbody></table></div></div>
+        </div>
+        <div id="pos-bills" class="hidden space-y-4">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3"><div class="card p-4 border-t-4 border-t-[#0b2a6f]"><span class="text-[10px] font-bold uppercase text-slate-400">Bills Count</span><h4 class="text-xl font-black text-[#071e54]" id="billKpiCount">0</h4></div><div class="card p-4 border-t-4 border-t-[#124ec9]"><span class="text-[10px] font-bold uppercase text-slate-400">Total Sales</span><h4 class="text-xl font-black text-[#124ec9]" id="billKpiSales">Rs. 0</h4></div><div class="card p-4 border-t-4 border-t-[#00b4ff]"><span class="text-[10px] font-bold uppercase text-slate-400">Cash / Credit</span><h4 class="text-sm font-black text-[#0088cc] mt-1" id="billKpiSplit">Rs. 0 / Rs. 0</h4></div><div class="card p-4 border-t-4 border-t-emerald-500"><span class="text-[10px] font-bold uppercase text-slate-400">Net Profit</span><h4 class="text-xl font-black text-emerald-600" id="billKpiProfit">Rs. 0</h4></div></div>
+          <div class="card p-4 flex flex-wrap items-end gap-3"><div><label class="lbl">From</label><input type="date" id="billFrom" onchange="renderBills()" class="inp"></div><div><label class="lbl">To</label><input type="date" id="billTo" onchange="renderBills()" class="inp"></div><div><label class="lbl">Payment</label><select id="billPayFilter" onchange="renderBills()" class="inp"><option value="ALL">All</option><option value="Cash">Cash</option><option value="Credit">Credit</option></select></div><div class="flex-1 min-w-[160px]"><label class="lbl">Search Bill # / Customer</label><input id="billSearch" oninput="renderBills()" placeholder="e.g. 12 or Walk-in" class="inp"></div></div>
+          <div class="card overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Bill #</th><th class="th">Date</th><th class="th">Customer</th><th class="th">Payment</th><th class="th text-right">Total</th><th class="th text-right">Profit</th><th class="th text-right">Actions</th></tr></thead><tbody id="billsTbody" class="divide-y divide-sky-100"></tbody></table></div></div>
+        </div>
+      </section>
+
+      <!-- PARTIES (SEPARATE FARMERS & BUYERS) -->
+      <section id="panel-parties" class="admin-panel hidden space-y-5">
+        <div class="card p-3 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex gap-2 flex-wrap"><button data-pt="Farmer" onclick="setPartyTab('Farmer')" class="party-tab btn"><i class="fa-solid fa-tractor"></i> <span data-i18n="farmers_ledger_tab">Farmers Ledger (Suppliers)</span></button><button data-pt="Buyer" onclick="setPartyTab('Buyer')" class="party-tab btn"><i class="fa-solid fa-building"></i> <span data-i18n="buyers_ledger_tab">Buyers Ledger (Sales / Plants)</span></button></div>
+          <div class="flex flex-wrap gap-2 items-center"><button onclick="openDailyRatesModal(partyTab)" class="btn-cyan"><i class="fa-solid fa-tags"></i> <span id="partyRateBtnLabel">Update Farmer Daily Rates</span></button><button onclick="openPartyModal('', partyTab)" class="btn-ssg"><i class="fa-solid fa-user-plus"></i> <span id="partyAddBtnLabel">Add Farmer</span></button><button onclick="openReminderList()" class="btn bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-solid fa-bell"></i> Send Reminders</button></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4"><div class="card p-4 border-l-4 border-l-[#0b2a6f]"><span class="text-[11px] font-bold text-slate-400 uppercase" id="partyKpi1Label">Total Farmers</span><h4 class="text-2xl font-black text-[#071e54] mt-1" id="partyKpi1">0</h4></div><div class="card p-4 border-l-4 border-l-[#124ec9]"><span class="text-[11px] font-bold text-slate-400 uppercase" id="partyKpi2Label">Total Payable</span><h4 class="text-2xl font-black text-[#124ec9] mt-1" id="partyKpi2">Rs. 0</h4></div><div class="card p-4 border-l-4 border-l-[#00b4ff]"><span class="text-[11px] font-bold text-slate-400 uppercase" id="partyKpi3Label">Rates Set</span><h4 class="text-2xl font-black text-[#0088cc] mt-1" id="partyKpi3">0</h4></div></div>
+        <div class="card p-5 space-y-4">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3"><div><h3 class="text-base font-extrabold text-[#071e54]" id="partiesTabHeading">Farmers Ledger</h3><p class="text-xs text-slate-400" id="partiesTabSub">-</p></div><input id="partySearch" oninput="renderParties()" placeholder="Search name or phone…" class="inp !w-full sm:!w-56"></div>
+          <div class="overflow-x-auto border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Name</th><th class="th">Phone</th><th class="th text-right" id="partyCol13TS">13 TS Rate</th><th class="th text-right" id="partyColKG">Direct KG Rate</th><th class="th text-right">Opening</th><th class="th text-right">Current Balance</th><th class="th text-center">Actions</th></tr></thead><tbody id="partiesTbody" class="divide-y divide-sky-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- EXPENSES + STAFF LEDGERS + VEHICLE/HEAD LEDGERS -->
+      <section id="panel-expenses" class="admin-panel hidden max-w-6xl mx-auto space-y-5">
+        <div class="card p-3 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex gap-2 flex-wrap">
+            <button data-et="all" onclick="setExpTab('all')" class="exp-tab btn"><i class="fa-solid fa-receipt"></i> <span data-i18n="exp_tab_all">All Expenses & Entry</span></button>
+            <button data-et="staff" onclick="setExpTab('staff')" class="exp-tab btn"><i class="fa-solid fa-user-tie"></i> <span data-i18n="exp_tab_staff">Staff Ledgers (Waheed, Faheem…)</span></button>
+            <button data-et="vehicles" onclick="setExpTab('vehicles')" class="exp-tab btn"><i class="fa-solid fa-truck"></i> <span data-i18n="exp_tab_veh">Vehicles & Custom Khaate (Foton, Pickup…)</span></button>
+          </div>
+          <div class="flex gap-2"><button onclick="openExpAccountModal('','Staff')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-user-plus text-[#124ec9]"></i> Add Staff</button><button onclick="openExpAccountModal('','Vehicle')" class="btn-cyan"><i class="fa-solid fa-truck-fast"></i> Add Vehicle / Head</button></div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="card p-4 border-t-4 border-t-rose-500"><span class="text-[11px] font-extrabold uppercase text-slate-400 block">Filtered Total Expenses</span><h4 class="text-2xl font-black text-rose-600 mt-1" id="expKpiTotal">Rs. 0</h4><span class="text-[11px] text-slate-400" id="expKpiCount">0 entries</span></div>
+          <div onclick="setExpTab('staff')" class="card p-4 border-t-4 border-t-[#0b2a6f] cursor-pointer hover:border-[#124ec9]"><span class="text-[11px] font-extrabold uppercase text-slate-400 block">Staff Advances / Salaries</span><h4 class="text-2xl font-black text-[#071e54] mt-1" id="expKpiStaff">Rs. 0</h4><span class="text-[11px] text-[#124ec9] font-semibold">Click for Staff Khaate →</span></div>
+          <div onclick="setExpTab('vehicles')" class="card p-4 border-t-4 border-t-[#124ec9] cursor-pointer hover:border-[#00b4ff]"><span class="text-[11px] font-extrabold uppercase text-slate-400 block">Vehicles / Diesel</span><h4 class="text-2xl font-black text-[#124ec9] mt-1" id="expKpiFuel">Rs. 0</h4><span class="text-[11px] text-[#124ec9] font-semibold">Click for Vehicle Khaate →</span></div>
+          <div class="card p-4 border-t-4 border-t-[#00b4ff]"><span class="text-[11px] font-extrabold uppercase text-slate-400 block">Chiller / Bills & Other</span><h4 class="text-2xl font-black text-[#0088cc] mt-1" id="expKpiOther">Rs. 0</h4><span class="text-[11px] text-slate-400">Operations & Misc</span></div>
+        </div>
+
+        <div id="exp-all" class="space-y-5">
+          <div class="card p-6">
+            <h3 class="text-lg font-extrabold text-[#071e54] mb-1" data-i18n="expenses_heading">Record Business Expense / Staff Advance / Vehicle Fuel</h3>
+            <p class="text-xs text-slate-400 mb-4" data-i18n="expenses_subtitle">Link to a Staff or Vehicle Khata (or type a new name) so it posts into that Khata & deducts Cash In Hand.</p>
+            <form onsubmit="handleSaveExpense(event)" class="space-y-4">
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div><label class="lbl" data-i18n="category">Category</label><select id="expCategory" class="inp"></select></div>
+                <div><label class="lbl">Link to Staff / Vehicle Khata</label><select id="expAccountSelect" onchange="onExpAccountPick()" class="inp"><option value="">-- Type Name Manually --</option></select></div>
+                <div><label class="lbl">Staff / Vehicle / Head Name</label><input id="expPerson" list="staffList" class="inp" placeholder="e.g. Faheem / Foton"><datalist id="staffList"></datalist></div>
+                <div><label class="lbl">Date</label><input type="date" id="expDate" class="inp"></div>
+                <div><label class="lbl" data-i18n="amount_rs">Amount (Rs)</label><input type="number" min="1" id="expAmount" required class="inp !text-rose-600 !font-black" placeholder="2500"></div>
+                <div><label class="lbl" data-i18n="description">Remarks / Details</label><input type="text" id="expDesc" class="inp" placeholder="e.g. Advance / Diesel 20 Ltr"></div>
+              </div>
+              <button id="expSaveBtn" class="btn w-full bg-gradient-to-r from-rose-600 to-rose-500 hover:brightness-110 text-white py-3 text-sm shadow-md shadow-rose-500/20"><i class="fa-solid fa-plus-circle"></i> <span data-i18n="record_expense">Record Expense (Deduct Cash & Post to Khata)</span></button>
+            </form>
+          </div>
+          <div class="card p-6 space-y-4">
+            <div class="flex flex-wrap items-end gap-3">
+              <div><label class="lbl">From</label><input type="date" id="expFrom" onchange="renderExpenses()" class="inp"></div>
+              <div><label class="lbl">To</label><input type="date" id="expTo" onchange="renderExpenses()" class="inp"></div>
+              <div><label class="lbl">Category</label><select id="expFilterCat" onchange="renderExpenses()" class="inp"></select></div>
+              <div><label class="lbl">Staff / Vehicle</label><input id="expFilterPerson" oninput="renderExpenses()" list="staffList" class="inp" placeholder="Filter by name"></div>
+              <button type="button" onclick="clearExpFilters()" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Clear</button>
+              <div class="ml-auto flex gap-2"><button type="button" onclick="openExpStatement()" class="btn-ssg"><i class="fa-solid fa-file-lines"></i> Statement / Print</button><button type="button" onclick="exportExpCSV()" class="btn-cyan"><i class="fa-solid fa-file-excel"></i> CSV</button></div>
+            </div>
+            <div class="overflow-x-auto border border-sky-100 rounded-2xl max-h-96 overflow-y-auto"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Date</th><th class="th">Category</th><th class="th">Staff / Vehicle (Click for Khata)</th><th class="th">Details</th><th class="th text-right">Amount</th><th class="th text-center">Action</th></tr></thead><tbody id="expenseList" class="divide-y divide-sky-100"></tbody></table></div>
+          </div>
+        </div>
+
+        <div id="exp-staff" class="hidden card p-6 space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-3 border-b border-sky-100 pb-4">
+            <div><h3 class="text-base font-extrabold text-[#071e54]">Staff Ledgers (Advance & Salary Khaate)</h3><p class="text-xs text-slate-400">Click any staff member (e.g. Waheed, Faheem) to see every advance/salary date-wise.</p></div>
+            <div class="flex flex-wrap items-center gap-2"><input type="month" id="staffMonthFilter" onchange="renderExpAccounts()" class="inp !w-auto"><button onclick="openExpAccountModal('','Staff')" class="btn-ssg"><i class="fa-solid fa-user-plus"></i> Add Staff Member</button></div>
+          </div>
+          <div class="overflow-x-auto border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Staff Name</th><th class="th">Role / Phone</th><th class="th text-right">Monthly Salary</th><th class="th text-right">Taken (Month)</th><th class="th text-right">Remaining Salary</th><th class="th text-right">All-Time Paid</th><th class="th text-center">Actions</th></tr></thead><tbody id="staffAccountsTbody" class="divide-y divide-sky-100"></tbody></table></div>
+        </div>
+
+        <div id="exp-vehicles" class="hidden card p-6 space-y-4">
+          <div class="flex flex-wrap justify-between items-center gap-3 border-b border-sky-100 pb-4">
+            <div><h3 class="text-base font-extrabold text-[#071e54]">Vehicles & Custom Expense Khaate (Foton, Pickup, FMJ…)</h3><p class="text-xs text-slate-400">Click any vehicle or head to view its full diesel, repair & expense ledger.</p></div>
+            <div class="flex flex-wrap items-center gap-2"><input type="month" id="vehMonthFilter" onchange="renderExpAccounts()" class="inp !w-auto"><button onclick="openExpAccountModal('','Vehicle')" class="btn-ssg"><i class="fa-solid fa-plus"></i> Add Vehicle / Head</button></div>
+          </div>
+          <div class="overflow-x-auto border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead"><tr><th class="th">Account / Vehicle Name</th><th class="th">Type / Plate No</th><th class="th text-center">Entries</th><th class="th text-right">Month Total</th><th class="th text-right">All-Time Total</th><th class="th text-center">Actions</th></tr></thead><tbody id="vehAccountsTbody" class="divide-y divide-sky-100"></tbody></table></div>
+        </div>
+      </section>
+
+      <!-- SETTINGS & RESET -->
+      <section id="panel-settings" class="admin-panel hidden max-w-2xl mx-auto space-y-6">
+        <div class="card p-6">
+          <div class="border-b border-sky-100 pb-4 mb-5"><h3 class="text-lg font-extrabold text-[#071e54]" data-i18n="settings_title">Business Settings</h3><p class="text-xs text-slate-400" data-i18n="settings_subtitle">Business name, contact info and current cash in hand (Rates are managed per Farmer / Buyer)</p></div>
+          <form onsubmit="handleSaveSettings(event)" class="space-y-4">
+            <div><label class="lbl" data-i18n="biz_name">Dairy / Company Name</label><input id="setBizName" required class="inp !text-sm"></div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div><label class="lbl" data-i18n="contact_phone">Contact Phone</label><input id="setBizPhone" type="tel" class="inp" placeholder="0300-xxxxxxx"></div><div><label class="lbl" data-i18n="cash_in_hand_setting">Cash in Hand (Rs) – current</label><input type="number" id="setCashInHand" required class="inp !text-[#0088cc] !font-black"></div></div>
+            <div><label class="lbl" data-i18n="biz_address">Address</label><input id="setBizAddress" class="inp" placeholder="Shop / Dairy address"></div>
+            <button class="btn-ssg w-full py-3.5 text-sm"><i class="fa-solid fa-floppy-disk"></i> <span data-i18n="save_settings">Save Business Settings</span></button>
+          </form>
+        </div>
+        <div class="card p-6 border-t-4 border-t-rose-500 space-y-3">
+          <div class="flex items-start gap-3">
+            <span class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-triangle-exclamation"></i></span>
+            <div>
+              <h3 class="text-base font-extrabold text-rose-700" data-i18n="reset_title">Reset All Test Data (Zero-Zero)</h3>
+              <p class="text-xs text-slate-500" data-i18n="reset_desc">Clears all Farmer, Agent, Milk Inward, Milk Sales, Cash Vouchers, Expenses, and POS / Desi Ghee test entries, and resets Cash In Hand & party balances to 0. Requires security code.</p>
+            </div>
+          </div>
+          <button onclick="openResetModal()" id="resetZeroBtn" class="btn w-full bg-rose-600 hover:bg-rose-700 text-white py-3.5 text-sm shadow-md shadow-rose-500/20"><i class="fa-solid fa-broom"></i> <span data-i18n="reset_btn">Reset All Data (Zero-Zero)</span></button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- MODALS -->
+  <div id="resetModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-rose-200">
+      <div class="flex justify-between items-center mb-3 border-b border-rose-100 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></span>
+          <div><h3 class="text-base font-black text-rose-700">Confirm Full Reset (Zero-Zero)</h3><p class="text-[11px] text-slate-400">Enter security code <strong>7150</strong> to wipe test data</p></div>
+        </div>
+        <button onclick="closeModal('resetModal')" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form onsubmit="confirmResetData(event)" class="space-y-3.5">
+        <div class="bg-rose-50/70 border border-rose-200 rounded-2xl p-3.5 text-xs text-slate-700 space-y-1.5">
+          <p class="font-extrabold text-rose-700">Yeh sab zero-zero / clear ho jayega:</p>
+          <ul class="list-disc pl-4 space-y-0.5 text-[11px]">
+            <li>Tamam Farmers & Agents ki Milk Inward entries aur Rates</li>
+            <li>Tamam Milk Sales, Cash Vouchers, Staff & Vehicle Expenses</li>
+            <li>Tamam POS / Shop Bills (Desi Ghee waghera ki test entries)</li>
+            <li>Cash In Hand = <strong>Rs. 0</strong> aur sab Parties ka balance = <strong>Rs. 0</strong></li>
+          </ul>
+        </div>
+        <div class="space-y-2 text-xs">
+          <label class="flex items-center gap-2 p-2.5 rounded-xl bg-sky-50/70 border border-sky-200 cursor-pointer">
+            <input type="checkbox" id="resetClearItems" class="w-4 h-4 accent-rose-600">
+            <span class="font-semibold text-slate-700">Also delete POS Shop Items (e.g. test Desi Ghee items)</span>
+          </label>
+          <label class="flex items-center gap-2 p-2.5 rounded-xl bg-sky-50/70 border border-sky-200 cursor-pointer">
+            <input type="checkbox" id="resetClearParties" class="w-4 h-4 accent-rose-600">
+            <span class="font-semibold text-slate-700">Also delete Farmers, Buyers & Staff/Vehicle accounts</span>
+          </label>
+        </div>
+        <div>
+          <label class="lbl text-rose-700">Security Code</label>
+          <input type="password" inputmode="numeric" id="resetCodeInput" required class="inp text-center text-lg font-black tracking-[0.4em] !border-rose-300 focus:!ring-rose-500" placeholder="••••" autocomplete="off">
+          <p id="resetCodeErr" class="hidden text-xs text-rose-600 font-bold mt-1.5"></p>
+        </div>
+        <div class="flex gap-2 pt-1">
+          <button type="button" onclick="closeModal('resetModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button>
+          <button id="resetConfirmBtn" class="btn w-1/2 bg-rose-600 hover:bg-rose-700 text-white py-2.5"><i class="fa-solid fa-trash-can"></i> Clear All Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="agentModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200"><div class="flex justify-between items-center mb-3"><h3 class="text-base font-extrabold text-[#071e54]" id="agentModalTitle">Create New Agent</h3><button onclick="closeModal('agentModal')" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="saveAgent(event)" class="space-y-3"><input type="hidden" id="agEditId"><div><label class="lbl">Agent Full Name</label><input id="agName" required class="inp" placeholder="e.g. Ghulam Fareed"></div><div class="grid grid-cols-2 gap-3"><div><label class="lbl">Agent Login ID</label><input id="agLoginId" required class="inp" placeholder="fareed01"></div><div><label class="lbl">Password</label><input id="agPassword" required class="inp" placeholder="123456"></div></div><div><label class="lbl">Mobile Number</label><input id="agPhone" type="tel" class="inp" placeholder="0300-1234567"></div><div><label class="lbl">Vehicle No / Route</label><input id="agVehicle" class="inp" placeholder="Route 3"></div><div class="flex gap-2 pt-1"><button type="button" onclick="closeModal('agentModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button><button id="agSaveBtn" class="btn-ssg w-1/2">Save Agent</button></div></form></div></div>
+
+  <div id="editInwardModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sky-200"><div class="flex justify-between items-center mb-3 border-b border-sky-100 pb-3"><div><h3 class="text-base font-extrabold text-[#071e54]">Edit Milk Inward Entry</h3><p class="text-[11px] text-slate-400" id="eiMeta">-</p></div><button onclick="closeModal('editInwardModal')" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark"></i></button></div><form onsubmit="saveEditInward(event)" class="space-y-3"><input type="hidden" id="eiId"><div class="grid grid-cols-2 gap-3"><div class="col-span-2"><label class="lbl">Farmer / Supplier</label><select id="eiFarmer" required onchange="recalcEditInward(true)" class="inp"></select></div><div><label class="lbl">Date</label><input type="date" id="eiDate" required class="inp"></div><div><label class="lbl">Shift</label><select id="eiShift" class="inp"><option value="Morning">Morning</option><option value="Evening">Evening</option></select></div><div><label class="lbl">Mode</label><select id="eiMode" onchange="toggleEditInwardMode(true)" class="inp"><option value="13TS">13TS (Fat + LR)</option><option value="DirectKG">DirectKG</option></select></div><div><label class="lbl">Quantity (Ltr / Kg)</label><input type="number" step="0.1" min="0.1" id="eiQty" required oninput="recalcEditInward(false)" class="inp !font-black !text-[#124ec9]"></div></div><div id="eiQualityRow" class="grid grid-cols-2 gap-3"><div><label class="lbl">FAT (%)</label><input type="number" step="0.1" min="0.1" id="eiFat" oninput="recalcEditInward(true)" class="inp"></div><div><label class="lbl">LR Reading</label><input type="number" step="0.5" min="1" id="eiLR" oninput="recalcEditInward(true)" class="inp"></div></div><div class="grid grid-cols-2 gap-3 items-end"><div><label class="lbl">Rate (Rs / Ltr or Kg)</label><input type="number" step="0.1" min="0" id="eiRate" required oninput="recalcEditInward(false)" class="inp !bg-white !font-extrabold !text-[#0b2a6f]"></div><div><button type="button" onclick="recalcEditInward(true)" class="btn w-full bg-sky-50 hover:bg-sky-100 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-rotate"></i> Auto Farmer Rate</button></div></div><div class="bg-sky-50 border border-sky-200 rounded-2xl p-3 flex justify-between items-center text-xs"><div><span class="text-slate-500 block text-[10px]">TS% / 13 TS Vol</span><strong id="eiTsPreview" class="text-[#071e54]">-</strong></div><div class="text-right"><span class="text-slate-500 block text-[10px]">New Total Payable</span><strong id="eiTotalPreview" class="text-lg font-black text-[#0088cc]">Rs. 0</strong></div></div><div class="flex gap-2 pt-2"><button type="button" onclick="closeModal('editInwardModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button><button id="eiSaveBtn" class="btn-ssg w-1/2">Save & Update Ledger</button></div></form></div></div>
+
+  <div id="dailyRatesModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[90vh]"><div class="border-b border-sky-100 pb-3 mb-3 flex justify-between items-center"><div><h3 class="text-base font-black text-[#071e54]" id="drTitle">Update Daily Rates</h3><p class="text-xs text-slate-400">Set rate per Farmer or Buyer. Applies to new entries/sales.</p></div><button onclick="closeModal('dailyRatesModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div><div class="flex gap-2 mb-3"><button onclick="openDailyRatesModal('Farmer')" id="drTabFarmer" class="btn flex-1">Farmers (Purchase)</button><button onclick="openDailyRatesModal('Buyer')" id="drTabBuyer" class="btn flex-1">Buyers (Sale)</button></div><div class="overflow-y-auto flex-1 border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Party Name</th><th class="th">Phone</th><th class="th text-right">13 TS Rate (Rs)</th><th class="th text-right">Direct KG Rate (Rs)</th></tr></thead><tbody id="drTbody" class="divide-y divide-sky-100"></tbody></table></div><div class="flex gap-2 mt-4"><button onclick="closeModal('dailyRatesModal')" class="btn w-1/3 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button><button id="drSaveBtn" onclick="saveDailyRates()" class="btn-ssg w-2/3 py-3"><i class="fa-solid fa-floppy-disk"></i> Save All Daily Rates</button></div></div></div>
+
+  <div id="expAccountModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200"><h3 class="text-base font-extrabold text-[#071e54] mb-3" id="eaModalTitle">Add Staff / Vehicle Khata</h3><form onsubmit="saveExpAccount(event)" class="space-y-3"><input type="hidden" id="eaId"><div><label class="lbl">Account Type</label><select id="eaKind" onchange="toggleEaFields()" class="inp"><option value="Staff">Staff Member (Waheed, Faheem…)</option><option value="Vehicle">Vehicle (Foton, Pickup, FMJ…)</option><option value="Head">Other Expense Head (Chiller, Lab…)</option></select></div><div><label class="lbl">Name</label><input id="eaName" required class="inp" placeholder="e.g. Faheem / Foton"></div><div id="eaStaffCols" class="grid grid-cols-2 gap-3"><div><label class="lbl">Phone</label><input id="eaPhone" type="tel" class="inp" placeholder="0300-xxxxxxx"></div><div><label class="lbl">Monthly Salary (Rs)</label><input id="eaSalary" type="number" min="0" class="inp" placeholder="30000"></div></div><div><label class="lbl" id="eaNoteLbl">Role / Vehicle Plate No</label><input id="eaNote" class="inp" placeholder="Driver / LES-4520"></div><div class="flex gap-2 pt-2"><button type="button" onclick="closeModal('expAccountModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button><button id="eaSaveBtn" class="btn-ssg w-1/2">Save Khata</button></div></form></div></div>
+
+  <div id="expAccountLedgerModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[90vh]"><div class="border-b border-sky-100 pb-3 mb-3 flex justify-between items-center gap-2"><div><h3 class="text-base font-black text-[#071e54]" id="ealTitle">Account Khata</h3><p class="text-xs text-slate-400" id="ealMeta">-</p></div><div class="flex gap-2 no-print"><button onclick="shareExpAccountWA()" id="ealWaBtn" class="btn bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button><button onclick="printModal('expAccountLedgerModal')" class="btn-ssg"><i class="fa-solid fa-print"></i> Print</button><button onclick="closeModal('expAccountLedgerModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div></div><div id="ealSummary" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3 text-xs"></div><div class="overflow-y-auto flex-1 border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Date</th><th class="th">Category</th><th class="th">Details</th><th class="th text-right">Amount</th><th class="th text-right">Running Total</th></tr></thead><tbody id="ealBody" class="divide-y divide-sky-100"></tbody></table></div></div></div>
+
+  <div id="agentDetailModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[90vh]"><div class="border-b border-sky-100 pb-3 mb-4 flex justify-between items-center"><div><h3 class="text-base font-black text-[#071e54]" id="admModalAgentName">Agent</h3><p class="text-xs text-slate-400" id="admModalAgentMeta">-</p></div><div class="flex gap-2 no-print"><button onclick="printModal('agentDetailModal')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-print"></i> Print</button><button onclick="closeModal('agentDetailModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div></div><div class="grid grid-cols-3 gap-3 mb-4 text-center text-xs"><div class="bg-sky-50 p-3 rounded-2xl border border-sky-200"><span class="text-slate-400 block text-[11px]">Entries</span><strong class="text-base font-black text-[#071e54]" id="admModalTrips">0</strong></div><div class="bg-sky-50 p-3 rounded-2xl border border-sky-200"><span class="text-slate-400 block text-[11px]">Volume</span><strong class="text-base font-black text-[#124ec9]" id="admModalLiters">0</strong></div><div class="bg-cyan-50 p-3 rounded-2xl border border-cyan-200"><span class="text-slate-400 block text-[11px]">Average Fat</span><strong class="text-base font-black text-[#0088cc]" id="admModalAvgFat">0</strong></div></div><div class="overflow-y-auto flex-1 border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Date/Shift</th><th class="th">Farmer</th><th class="th">Qty</th><th class="th">Fat%</th><th class="th">LR</th><th class="th">13 TS</th></tr></thead><tbody id="admModalTableBody" class="divide-y divide-sky-100"></tbody></table></div></div></div>
+
+  <div id="statementModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[90vh]"><div class="border-b border-sky-100 pb-3 mb-3 flex justify-between items-center gap-2"><div><h3 class="text-base font-black text-[#071e54]" id="stmtTitle">Statement</h3><p class="text-xs text-slate-400" id="stmtSub">-</p></div><div class="flex gap-2 no-print"><button onclick="shareStatementWA()" class="btn bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button><button onclick="printModal('statementModal')" class="btn-ssg"><i class="fa-solid fa-print"></i> Print</button><button onclick="closeModal('statementModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div></div><div class="overflow-y-auto flex-1 border border-sky-100 rounded-2xl"><table class="w-full text-left text-xs text-slate-600"><thead class="thead sticky top-0"><tr><th class="th">Date</th><th class="th">Details</th><th class="th text-right">Amount</th><th class="th text-right">Balance</th></tr></thead><tbody id="stmtBody" class="divide-y divide-sky-100"></tbody></table></div><p class="text-xs mt-3 font-extrabold text-[#071e54]" id="stmtClosing"></p></div></div>
+
+  <div id="addPartyModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200"><h3 class="text-base font-extrabold text-[#071e54] mb-3" id="partyModalTitle" data-i18n="create_party">Create Party Account</h3><form onsubmit="handleSaveParty(event)" class="space-y-3"><input type="hidden" id="pId"><div><label class="lbl" data-i18n="party_name">Party Name</label><input id="pName" required class="inp"></div><div class="grid grid-cols-2 gap-3"><div><label class="lbl" data-i18n="party_type">Type</label><select id="pType" class="inp"><option value="Farmer">Farmer (Supplier)</option><option value="Buyer">Buyer (Sales)</option></select></div><div><label class="lbl" data-i18n="phone">Phone</label><input type="tel" id="pPhone" class="inp" placeholder="0300-xxxxxxx"></div></div><div class="grid grid-cols-2 gap-3"><div><label class="lbl">13 TS Rate (Rs)</label><input type="number" step="0.5" min="0" id="pRate13" class="inp" placeholder="e.g. 180"></div><div><label class="lbl">Direct KG Rate (Rs)</label><input type="number" step="0.5" min="0" id="pRateKG" class="inp" placeholder="e.g. 180"></div></div><div><label class="lbl" data-i18n="opening_balance">Opening Balance (Rs)</label><input type="number" id="pOpeningBal" value="0" class="inp"></div><div class="flex gap-2 pt-2"><button type="button" onclick="closeModal('addPartyModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200" data-i18n="cancel">Cancel</button><button id="pSaveBtn" class="btn-ssg w-1/2" data-i18n="save_party">Save Party</button></div></form></div></div>
+
+  <div id="cashVoucherModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200"><h3 class="text-base font-extrabold text-[#071e54] mb-1" data-i18n="cash_voucher_title">Cash Voucher</h3><p class="text-xs text-[#124ec9] font-semibold mb-3" id="voucherPartyName">-</p><form onsubmit="handleSaveVoucher(event)" class="space-y-3"><input type="hidden" id="vPartyId"><div><label class="lbl" data-i18n="transaction_type">Transaction Type</label><select id="vType" class="inp"><option value="Paid">Cash Paid to Party</option><option value="Received">Cash Received from Party</option></select></div><div><label class="lbl" data-i18n="voucher_amount">Amount (Rs)</label><input type="number" min="1" id="vAmount" required class="inp !text-[#0088cc] !font-black"></div><div><label class="lbl" data-i18n="remarks">Remarks</label><input id="vNote" class="inp" placeholder="Weekly settlement"></div><div class="flex gap-2 pt-2"><button type="button" onclick="closeModal('cashVoucherModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200" data-i18n="cancel">Cancel</button><button id="voucherSaveBtn" class="btn-ssg w-1/2" data-i18n="save_voucher">Save Voucher</button></div></form></div></div>
+
+  <div id="itemModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-sky-200"><h3 class="text-base font-extrabold text-[#071e54] mb-3" id="itemModalTitle">Add Item</h3><form onsubmit="saveItem(event)" class="space-y-3"><input type="hidden" id="iId"><div><label class="lbl">Item Name</label><input id="iName" required class="inp" placeholder="Desi Ghee 1KG"></div><div class="grid grid-cols-2 gap-3"><div><label class="lbl">Category</label><input id="iCat" list="catList" class="inp" placeholder="Dairy Products"><datalist id="catList"></datalist></div><div><label class="lbl">Unit</label><select id="iUnit" class="inp"><option>pcs</option><option>kg</option><option>ltr</option><option>bag</option><option>pack</option><option>crate</option></select></div><div><label class="lbl">Cost Price</label><input type="number" step="any" min="0" id="iCost" class="inp" placeholder="0"></div><div><label class="lbl">Sale Price</label><input type="number" step="any" min="0" id="iPrice" required class="inp" placeholder="0"></div></div><div><label class="lbl">Stock Quantity (empty = unlimited)</label><input type="number" step="any" id="iStock" class="inp" placeholder="Optional"></div><div class="flex gap-2 pt-2"><button type="button" onclick="closeModal('itemModal')" class="btn w-1/2 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Cancel</button><button class="btn-ssg w-1/2">Save Item</button></div></form></div></div>
+
+  <div id="billModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-sm w-full p-5 shadow-2xl border border-sky-200 max-h-[92vh] overflow-y-auto"><div id="billBody" class="text-xs text-slate-800"></div><div class="flex gap-2 mt-4 no-print"><button onclick="shareBillWA()" class="btn bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-brands fa-whatsapp"></i></button><button onclick="closeModal('billModal')" class="btn flex-1 bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200">Close</button><button onclick="printModal('billModal')" class="btn-ssg flex-1"><i class="fa-solid fa-print"></i> Print</button></div></div></div>
+
+  <div id="expStmtModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-3xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[92vh]"><div class="flex justify-end gap-2 mb-2 no-print"><button onclick="printModal('expStmtModal')" class="btn-ssg"><i class="fa-solid fa-print"></i> Print Statement</button><button onclick="closeModal('expStmtModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div><div id="expStmtBody" class="overflow-y-auto text-xs text-slate-800"></div></div></div>
+
+  <!-- REMINDER: single party -->
+  <div id="reminderModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sky-200">
+    <div class="flex justify-between items-center mb-3"><div><h3 class="text-base font-black text-[#071e54]" id="remTitle">Reminder</h3><p class="text-xs text-slate-400" id="remSub">-</p></div><button onclick="closeModal('reminderModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div>
+    <label class="text-[11px] font-bold text-slate-500">Message (edit kar sakte hain)</label>
+    <textarea id="remText" rows="7" class="inp !w-full mt-1 text-xs"></textarea>
+    <div class="flex gap-2 mt-4"><button onclick="sendReminder('wa')" class="btn bg-emerald-600 hover:bg-emerald-700 text-white flex-1 justify-center"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button><button onclick="sendReminder('sms')" class="btn-ssg flex-1 justify-center"><i class="fa-solid fa-message"></i> SMS</button></div>
+  </div></div>
+
+  <!-- REMINDER: list of parties -->
+  <div id="reminderListModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50"><div class="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-sky-200 flex flex-col max-h-[90vh]">
+    <div class="flex justify-between items-center mb-3"><div><h3 class="text-base font-black text-[#071e54]" id="remListTitle">Send Reminders</h3><p class="text-xs text-slate-400">Un parties ki list jin ka balance baqaya hai. Har ek ko WhatsApp ya SMS bhejein.</p></div><button onclick="closeModal('reminderListModal')" class="text-slate-400 hover:text-slate-700 text-lg px-2"><i class="fa-solid fa-xmark"></i></button></div>
+    <div id="remListBody" class="overflow-y-auto flex-1 border border-sky-100 rounded-2xl divide-y divide-sky-100"></div>
+  </div></div>
+
+  <div id="toast" class="hidden fixed bottom-5 right-5 z-[90] max-w-sm text-xs font-bold text-white px-4 py-3 rounded-2xl shadow-xl"></div>
+
+  <!-- FIREBASE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+    import { getFirestore, collection, addDoc, doc, setDoc, getDoc, getDocs, onSnapshot, query, orderBy, updateDoc, deleteDoc, increment, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    const app = initializeApp({
+      apiKey: "AIzaSyAgNQRFr-UWCjY0OYCbPYIPS71czHWMcxA",
+      authDomain: "dairy1-1c7f0.firebaseapp.com",
+      projectId: "dairy1-1c7f0",
+      storageBucket: "dairy1-1c7f0.firebasestorage.app",
+      messagingSenderId: "384398878301",
+      appId: "1:384398878301:web:7197d199b2bbafb337cfb4",
+      measurementId: "G-1EHNC26WXC"
+    });
+    isSupported().then(ok => { if (ok) getAnalytics(app); }).catch(() => {});
+    window.FB = { db: getFirestore(app), auth: getAuth(app), collection, addDoc, doc, setDoc, getDoc, getDocs, onSnapshot, query, orderBy, updateDoc, deleteDoc, increment, writeBatch, runTransaction, signInWithEmailAndPassword, signOut, onAuthStateChanged };
+    window.dispatchEvent(new Event('fb-ready'));
+  </script>
+
+  <script>
+    const LOGO = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cdefs%3E%3ClinearGradient id='g1' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%23071e54'/%3E%3Cstop offset='55%25' stop-color='%23124ec9'/%3E%3Cstop offset='100%25' stop-color='%2300b4ff'/%3E%3C/linearGradient%3E%3ClinearGradient id='g2' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%2322d3ee'/%3E%3Cstop offset='100%25' stop-color='%23124ec9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='60' cy='60' r='57' fill='%23ffffff' stroke='url(%23g1)' stroke-width='6'/%3E%3Cpath d='M60,18 C60,18 35,47 35,68 A25,25 0 0,0 85,68 C85,47 60,18 60,18 Z' fill='url(%23g1)'/%3E%3Cpath d='M60,26 C60,26 42,50 42,67 A18,18 0 0,0 78,67 C78,50 60,26 60,26 Z' fill='%23ffffff'/%3E%3Cpath d='M44,68 Q52,61 60,68 T76,68 A16,16 0 0,1 44,68 Z' fill='url(%23g2)'/%3E%3Ccircle cx='53' cy='52' r='3.5' fill='%2300b4ff' opacity='0.7'/%3E%3C/svg%3E";
+    document.querySelectorAll("img[data-logo]").forEach(i => i.src = LOGO);
+    const fav = document.querySelector('link[rel="icon"]'); if(fav) fav.href = LOGO;
+
+    const COL = {
+      parties: "dairy_milk_parties", collections: "dairy_milk_collections", sales: "dairy_milk_sales",
+      expenses: "dairy_milk_expenses", expAccounts: "dairy_expense_accounts", settings: "dairy_milk_settings",
+      agents: "dairy_milk_agents", rates: "dairy_milk_rates", vouchers: "dairy_milk_vouchers",
+      items: "dairy_pos_items", bills: "dairy_pos_bills"
+    };
+    const DEFAULT_CFG = { bizName: "My Dairy", bizPhone: "", bizAddress: "", cashInHand: 0 };
+    const S = { config: { ...DEFAULT_CFG }, parties: [], collections: [], sales: [], expenses: [], expAccounts: [], vouchers: [], items: [], bills: [], rates: {}, regAgents: {}, agents: [] };
+    const $ = id => document.getElementById(id);
+    const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    const fmt = n => 'Rs. ' + Math.round(n || 0).toLocaleString();
+    const num = v => parseFloat(v) || 0;
+    const calcTS = (f, l) => f + (l / 4) + (0.22 * f) + 0.72;
+    const localDate = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+    const waPhone = raw => { let p = String(raw || '').replace(/\D/g, ''); if(p.startsWith('0')) p = '92' + p.slice(1); return p; };
+    let started = false, unsubs = [], currentView = 'dashboard', partyTab = 'Farmer', drType = 'Farmer', expTab = 'all';
+    let activeStmt = null, activeBill = null, activeEal = null;
+
+    const toggleSidebar = open => { $('sidebar').classList.toggle('-translate-x-full', !open); $('sideBackdrop').classList.toggle('hidden', !open); };
+    function toast(msg, ok) {
+      const t = $('toast'); t.textContent = msg;
+      t.className = 'fixed bottom-5 right-5 z-[90] max-w-sm text-xs font-bold text-white px-4 py-3 rounded-2xl shadow-xl ' + (ok ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6]' : 'bg-rose-600');
+      clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.add('hidden'), 4500);
+    }
+    function setSync(ok, msg) {
+      $('syncDot').className = 'w-2.5 h-2.5 rounded-full ring-2 ring-white/25 ' + (ok ? 'bg-[#22d3ee]' : 'bg-rose-400');
+      $('syncText').textContent = ok ? 'Firebase Active' : (msg || 'Disconnected');
+    }
+    window.addEventListener('offline', () => setSync(false, 'No internet'));
+    window.addEventListener('online', () => setSync(true));
+    const openModal = id => { $(id).classList.remove('hidden'); $(id).classList.add('flex'); };
+    const closeModal = id => { $(id).classList.add('hidden'); $(id).classList.remove('flex'); };
+    function printModal(id) {
+      $(id).classList.add('print-target'); document.body.classList.add('pm');
+      window.print();
+      setTimeout(() => { $(id).classList.remove('print-target'); document.body.classList.remove('pm'); }, 500);
+    }
+    const needOnline = () => { if(!navigator.onLine) { toast('No internet. Action not saved.'); return false; } return true; };
+
+    // AUTH
+    window.addEventListener('fb-ready', () => {
+      const { auth, onAuthStateChanged } = window.FB;
+      $('loginWait').classList.add('hidden');
+      onAuthStateChanged(auth, user => {
+        if(user && !user.isAnonymous) { $('loginScreen').classList.add('hidden'); $('adminWho').textContent = user.email; startSync(); }
+        else { stopSync(); $('loginScreen').classList.remove('hidden'); }
+      });
+    });
+    async function doLogin(e) {
+      e.preventDefault();
+      const btn = $('loginBtn'); btn.disabled = true; $('loginErr').classList.add('hidden');
+      try { await window.FB.signInWithEmailAndPassword(window.FB.auth, $('loginEmail').value.trim(), $('loginPass').value); }
+      catch(err) { $('loginErr').textContent = 'Login failed: ' + (err.code || err.message); $('loginErr').classList.remove('hidden'); }
+      finally { btn.disabled = false; }
+    }
+    const doLogout = () => window.FB.signOut(window.FB.auth);
+
+    // SYNC
+    function stopSync() { unsubs.forEach(u => u()); unsubs = []; started = false; }
+    function startSync() {
+      if(started) return; started = true;
+      const { db, collection, doc, onSnapshot, query, orderBy, setDoc } = window.FB;
+      const onErr = e => { setSync(false, e.code === 'permission-denied' ? 'Permission denied' : 'Sync error'); console.warn(e); };
+      const listen = (q, fn) => unsubs.push(onSnapshot(q, snap => { setSync(!snap.metadata.fromCache || navigator.onLine); fn(snap); renderAll(); }, onErr));
+      const list = (snap, key) => { S[key] = []; snap.forEach(d => S[key].push({ id: d.id, ...d.data() })); };
+
+      listen(doc(db, COL.settings, 'general'), s => {
+        if(s.exists()) { S.config = { ...DEFAULT_CFG, ...s.data() }; S.cfgLoaded = true; }
+        else setDoc(doc(db, COL.settings, 'general'), DEFAULT_CFG).catch(onErr);
+        renderConfig();
+      });
+      listen(collection(db, COL.parties), s => { list(s, 'parties'); S.partiesLoaded = true; });
+      listen(query(collection(db, COL.collections), orderBy("timestamp", "desc")), s => list(s, 'collections'));
+      listen(collection(db, COL.rates), s => { S.rates = {}; s.forEach(d => S.rates[d.id] = d.data()); S.ratesLoaded = true; });
+      listen(query(collection(db, COL.sales), orderBy("timestamp", "desc")), s => list(s, 'sales'));
+      listen(query(collection(db, COL.expenses), orderBy("timestamp", "desc")), s => list(s, 'expenses'));
+      listen(collection(db, COL.expAccounts), s => list(s, 'expAccounts'));
+      listen(query(collection(db, COL.vouchers), orderBy("timestamp", "desc")), s => list(s, 'vouchers'));
+      listen(collection(db, COL.items), s => list(s, 'items'));
+      listen(query(collection(db, COL.bills), orderBy("timestamp", "desc")), s => list(s, 'bills'));
+      listen(collection(db, COL.agents), s => { S.regAgents = {}; s.forEach(d => S.regAgents[d.id] = { id: d.id, ...d.data() }); });
+    }
+
+    function renderAll() {
+      compileAgents(); populateBuyerDropdown(); populateInwardFilters();
+      renderDashboard(); renderBalanceSheet(); renderAgentsTable(); renderInward(); renderSales(); renderParties(); renderExpenses(); renderPOS();
+      stampRates();
+    }
+
+    // PARTY & ENTRY RATES (NO GLOBAL BASE RATE FALLBACK)
+    function partyPurchaseBase(farmerId) {
+      const f = S.parties.find(p => p.id === farmerId);
+      const r13 = (f && num(f.rate13TS) > 0) ? num(f.rate13TS) : 0;
+      const rKg = (f && num(f.rateDirectKG) > 0) ? num(f.rateDirectKG) : 0;
+      return { r13, rKg, isCustom13: r13 > 0, isCustomKg: rKg > 0 };
+    }
+    function partySaleBase(buyerId) {
+      const b = S.parties.find(p => p.id === buyerId);
+      const r13 = (b && num(b.rate13TS) > 0) ? num(b.rate13TS) : 0;
+      const rKg = (b && num(b.rateDirectKG) > 0) ? num(b.rateDirectKG) : 0;
+      return { r13, rKg, isCustom13: r13 > 0, isCustomKg: rKg > 0 };
+    }
+    function calcRate(c) {
+      const b = partyPurchaseBase(c.farmerId);
+      const rate = c.mode === '13TS' ? (b.r13 > 0 ? +((b.r13 / 13) * (c.ts || 13)).toFixed(1) : 0) : b.rKg;
+      return { rate, total: Math.round((c.qty || 0) * rate) };
+    }
+    const entryRT = c => S.rates[c.id] ? { rate: S.rates[c.id].rate, total: S.rates[c.id].total, pending: false } : { ...calcRate(c), pending: true };
+
+    const stamping = new Set();
+    async function stampRates() {
+      const { db, doc, runTransaction, increment } = window.FB;
+      if(!S.cfgLoaded || !S.ratesLoaded || !S.partiesLoaded) return;
+      for(const c of S.collections) {
+        if(S.rates[c.id] || stamping.has(c.id)) continue;
+        stamping.add(c.id);
+        const r = calcRate(c), rref = doc(db, COL.rates, c.id), fref = c.farmerId ? doc(db, COL.parties, c.farmerId) : null;
+        try {
+          await runTransaction(db, async tx => {
+            const rs = await tx.get(rref), fs = fref ? await tx.get(fref) : null;
+            if(rs.exists()) return;
+            tx.set(rref, { rate: r.rate, total: r.total, farmerId: c.farmerId || '', stampedAt: Date.now() });
+            if(fs && fs.exists() && r.total > 0) tx.update(fref, { currentBalance: increment(r.total) });
+          });
+        } catch(e) { stamping.delete(c.id); }
+      }
+    }
+
+    // EDIT & DELETE MILK INWARD
+    function openEditInward(id) {
+      const c = S.collections.find(x => x.id === id); if(!c) return;
+      const r = entryRT(c), fSel = $('eiFarmer');
+      const farmers = S.parties.filter(p => p.type === 'Farmer').sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      fSel.innerHTML = farmers.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('');
+      if(c.farmerId && !farmers.some(f => f.id === c.farmerId)) fSel.innerHTML += `<option value="${esc(c.farmerId)}">${esc(c.farmerName || c.farmerId)}</option>`;
+      $('eiId').value = c.id; $('eiMeta').textContent = `Agent: ${c.agentName || '-'} • Time: ${c.time || '-'}`;
+      fSel.value = c.farmerId || ''; $('eiDate').value = c.date || localDate(); $('eiShift').value = c.shift || 'Morning';
+      $('eiMode').value = c.mode || '13TS'; $('eiQty').value = c.qty || 0; $('eiFat').value = c.fat || 0; $('eiLR').value = c.lr || 0; $('eiRate').value = r.rate || 0;
+      toggleEditInwardMode(false); openModal('editInwardModal');
+    }
+    function toggleEditInwardMode(recalcRate) {
+      const direct = $('eiMode').value === 'DirectKG';
+      $('eiQualityRow').classList.toggle('hidden', direct); $('eiFat').required = !direct; $('eiLR').required = !direct;
+      recalcEditInward(recalcRate);
+    }
+    function recalcEditInward(recalcRate) {
+      const mode = $('eiMode').value, qty = num($('eiQty').value), fat = num($('eiFat').value), lr = num($('eiLR').value), fId = $('eiFarmer').value;
+      let ts = 0, tsVol = qty;
+      if(mode === '13TS' && fat > 0 && lr > 0) {
+        ts = +calcTS(fat, lr).toFixed(2); tsVol = +((qty * ts) / 13).toFixed(2);
+        $('eiTsPreview').textContent = `${ts.toFixed(2)}% • ${tsVol.toFixed(1)} Ltr`;
+      } else $('eiTsPreview').textContent = mode === 'DirectKG' ? 'Weight Basis' : 'Enter Fat & LR';
+      if(recalcRate) {
+        const b = partyPurchaseBase(fId);
+        $('eiRate').value = mode === '13TS' ? (b.r13 > 0 ? +((b.r13 / 13) * (ts || 13)).toFixed(1) : 0) : b.rKg;
+      }
+      $('eiTotalPreview').textContent = fmt(Math.round(qty * num($('eiRate').value)));
+    }
+    async function saveEditInward(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const id = $('eiId').value, c = S.collections.find(x => x.id === id); if(!c) return;
+      const newFarmerId = $('eiFarmer').value, farmer = S.parties.find(p => p.id === newFarmerId), newFarmerName = farmer ? farmer.name : (c.farmerName || 'Farmer');
+      const mode = $('eiMode').value, qty = num($('eiQty').value), rate = num($('eiRate').value);
+      const fat = mode === '13TS' ? num($('eiFat').value) : 0, lr = mode === '13TS' ? num($('eiLR').value) : 0;
+      if(!(qty > 0) || (mode === '13TS' && (!(fat > 0) || !(lr > 0)))) return toast('Enter valid Quantity, Fat & LR');
+      const ts = mode === '13TS' ? +calcTS(fat, lr).toFixed(2) : 0, ts13Vol = mode === '13TS' ? +((qty * ts) / 13).toFixed(2) : qty, newTotal = Math.round(qty * rate);
+      const { db, doc, runTransaction, increment } = window.FB, btn = $('eiSaveBtn'); btn.disabled = true;
+      try {
+        await runTransaction(db, async tx => {
+          const cref = doc(db, COL.collections, id), rref = doc(db, COL.rates, id), rs = await tx.get(rref);
+          const oldTotal = rs.exists() ? num(rs.data().total) : 0, oldFarmerId = rs.exists() ? (rs.data().farmerId || c.farmerId) : c.farmerId;
+          const oldFref = oldFarmerId ? doc(db, COL.parties, oldFarmerId) : null, newFref = newFarmerId ? doc(db, COL.parties, newFarmerId) : null;
+          const oldFs = oldFref ? await tx.get(oldFref) : null, newFs = (newFref && newFarmerId !== oldFarmerId) ? await tx.get(newFref) : oldFs;
+          tx.update(cref, { farmerId: newFarmerId, farmerName: newFarmerName, date: $('eiDate').value, shift: $('eiShift').value, mode, qty, fat, lr, ts, ts13Vol, editedAt: Date.now() });
+          tx.set(rref, { rate, total: newTotal, farmerId: newFarmerId, stampedAt: Date.now() });
+          if(oldFarmerId === newFarmerId) { if(oldFs && oldFs.exists() && newTotal !== oldTotal) tx.update(oldFref, { currentBalance: increment(newTotal - oldTotal) }); }
+          else { if(oldFs && oldFs.exists() && oldTotal) tx.update(oldFref, { currentBalance: increment(-oldTotal) }); if(newFs && newFs.exists() && newTotal) tx.update(newFref, { currentBalance: increment(newTotal) }); }
+        });
+        closeModal('editInwardModal'); toast('Entry updated & ledger adjusted ✓', true);
+      } catch(err) { toast('Update failed: ' + err.message); }
+      finally { btn.disabled = false; }
+    }
+    async function deleteInwardEntry(id) {
+      if(!needOnline() || !confirm("Delete this milk inward entry? Farmer balance will be reversed.")) return;
+      const { db, doc, runTransaction, increment } = window.FB, c = S.collections.find(x => x.id === id); if(!c) return;
+      const rref = doc(db, COL.rates, id), cref = doc(db, COL.collections, id), fref = c.farmerId ? doc(db, COL.parties, c.farmerId) : null;
+      try {
+        await runTransaction(db, async tx => {
+          const rs = await tx.get(rref), fs = fref ? await tx.get(fref) : null; tx.delete(cref);
+          if(rs.exists()) { tx.delete(rref); if(fs && fs.exists()) tx.update(fref, { currentBalance: increment(-(rs.data().total || 0)) }); }
+        });
+        toast('Entry deleted', true);
+      } catch(e) { toast('Delete failed: ' + e.message); }
+    }
+
+    // CONFIG & RESET ZERO (WITH 7150 SECURITY CODE)
+    function renderConfig() {
+      const c = S.config;
+      $('brandBizName').textContent = c.bizName;
+      $('sideCashInHand').textContent = fmt(c.cashInHand);
+      if(currentView !== 'settings') {
+        $('setBizName').value = c.bizName; $('setBizPhone').value = c.bizPhone || '';
+        $('setBizAddress').value = c.bizAddress || ''; $('setCashInHand').value = c.cashInHand;
+      }
+    }
+    async function handleSaveSettings(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const cfg = { bizName: $('setBizName').value.trim(), bizPhone: $('setBizPhone').value.trim(), bizAddress: $('setBizAddress').value.trim(), cashInHand: num($('setCashInHand').value) };
+      try { await window.FB.setDoc(window.FB.doc(window.FB.db, COL.settings, 'general'), cfg, { merge: true }); toast('Settings saved ✓', true); }
+      catch(err) { toast('Save failed: ' + err.message); }
+    }
+    function openResetModal() {
+      $('resetCodeInput').value = '';
+      $('resetCodeErr').classList.add('hidden');
+      $('resetClearItems').checked = false;
+      $('resetClearParties').checked = false;
+      openModal('resetModal');
+      setTimeout(() => $('resetCodeInput').focus(), 80);
+    }
+    async function confirmResetData(e) {
+      e.preventDefault();
+      if(!needOnline()) return;
+      const code = $('resetCodeInput').value.trim();
+      if(code !== '7150') {
+        $('resetCodeErr').textContent = 'Ghalat code! Reset karne ke liye 7150 likhein.';
+        $('resetCodeErr').classList.remove('hidden');
+        return;
+      }
+      $('resetCodeErr').classList.add('hidden');
+      const clearItems = $('resetClearItems').checked;
+      const clearParties = $('resetClearParties').checked;
+      const { db, doc, collection, getDocs, writeBatch } = window.FB;
+      const btn = $('resetConfirmBtn'); btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Clearing…';
+      try {
+        const ops = [];
+        const delAll = async colName => {
+          const snap = await getDocs(collection(db, colName));
+          snap.forEach(d => ops.push(b => b.delete(doc(db, colName, d.id))));
+        };
+        await Promise.all([
+          delAll(COL.collections),
+          delAll(COL.rates),
+          delAll(COL.sales),
+          delAll(COL.vouchers),
+          delAll(COL.expenses),
+          delAll(COL.bills)
+        ]);
+        if(clearItems) await delAll(COL.items);
+        if(clearParties) {
+          await delAll(COL.parties);
+          await delAll(COL.expAccounts);
+        } else {
+          const pSnap = await getDocs(collection(db, COL.parties));
+          pSnap.forEach(d => ops.push(b => b.update(doc(db, COL.parties, d.id), { openingBalance: 0, currentBalance: 0 })));
+        }
+        ops.push(b => b.set(doc(db, COL.settings, 'general'), { cashInHand: 0, billCounter: 0 }, { merge: true }));
+        for(let i = 0; i < ops.length; i += 400) {
+          const b = writeBatch(db);
+          ops.slice(i, i + 400).forEach(fn => fn(b));
+          await b.commit();
+        }
+        closeModal('resetModal');
+        toast('All entries cleared & balances reset to 0 ✓', true);
+      } catch(err) {
+        toast('Reset failed: ' + err.message);
+      } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-trash-can"></i> Clear All Data';
+      }
+    }
+
+    // NAV & I18N
+    const TITLES = { dashboard: "Dashboard Overview", ledger: "Business Balance Sheet & General Ledger", agents: "Agents & Login Credentials", inward: "Milk Inward & Rate Manager", sales: "Milk Sales (13 TS & Fixed KG)", pos: "POS / Shop Billing", parties: "Farmers & Buyers Ledgers", expenses: "Expenses, Staff & Vehicle Khaate", settings: "Settings & Reset" };
+    const TITLES_UR = { dashboard: "ڈیش بورڈ خلاصہ", ledger: "کاروباری بیلنس شیٹ اور مکمل کھاتہ", agents: "ایجنٹس اور لاگ ان آئی ڈی", inward: "دودھ آمد اور ریٹ", sales: "دودھ فروخت", pos: "پی او ایس / دکان بلنگ", parties: "کسان اور خریدار کھاتہ جات", expenses: "اخراجات، اسٹاف اور گاڑیوں کے کھاتے", settings: "سیٹنگز اور ری سیٹ" };
+    function switchView(v) {
+      currentView = v;
+      document.querySelectorAll('.admin-panel').forEach(p => p.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      $('panel-' + v).classList.remove('hidden');
+      $('nav-' + v) && $('nav-' + v).classList.add('active');
+      $('viewHeading').textContent = (adminLang === 'ur' ? TITLES_UR : TITLES)[v];
+      toggleSidebar(false);
+      if(v === 'settings') { currentView = 'x'; renderConfig(); currentView = 'settings'; }
+    }
+    const I18N = {
+      en: {}, ur: {
+        mgmt_portal: "مرکزی انتظامی پورٹل", cash_in_hand: "موجود کیش:",
+        nav_dashboard: "ڈیش بورڈ خلاصہ", nav_ledger: "کاروباری بیلنس شیٹ / مکمل کھاتہ", nav_agents: "ایجنٹس اور لاگ ان آئی ڈی", nav_inward: "دودھ آمد اور ریٹ", nav_sales: "دودھ فروخت", nav_pos: "پی او ایس / دکان بلنگ", nav_parties: "کسان اور خریدار کھاتہ", nav_expenses: "اخراجات، اسٹاف اور گاڑیاں", nav_settings: "سیٹنگز اور ری سیٹ",
+        logout: "لاگ آؤٹ", top_subtitle: "دودھ کی تجارت، ایجنٹس، اسٹاف و گاڑی کھاتے اور مکمل بیلنس شیٹ", balance_sheet_btn: "بیلنس شیٹ", daily_rates_btn: "روزانہ ریٹس", quick_pos: "پی او ایس", export_csv: "ایکسل ڈاؤنلوڈ",
+        total_milk_in: "کل وصول شدہ دودھ", total_purchase: "کسان خریداری (واجب الادا)", farmers_payable: "کسانوں کو ادائیگی", total_sales: "دودھ + پی او ایس فروخت", total_expenses: "کل اخراجات",
+        recent_collections: "ایجنٹس سے تازہ دودھ", entries_realtime: "لائیو اندراج", view_all: "تمام دیکھیں ←", agent_ranking: "سرگرم ایجنٹس", view_all_agents: "ایجنٹ لسٹ کھولیں",
+        total_agents: "رجسٹرڈ ایجنٹس", agent_total_liters: "ایجنٹس کا دودھ", agent_total_entries: "کل اندراج", agent_list_title: "ایجنٹس اور لاگ ان آئی ڈی", agent_list_desc: "یہاں سے ایجنٹ کی آئی ڈی اور پاسورڈ بنائیں۔", create_agent: "نیا ایجنٹ بنائیں",
+        inward_management: "دودھ وصولی اور ریٹ مینجر", inward_desc: "ہر اندراج کسان کے ریٹ پر لاک ہوتا ہے۔ ایڈٹ بٹن سے ریٹ یا مقدار تبدیل کریں۔", update_farmer_rates: "کسانوں کے روزانہ ریٹس",
+        sale_entry_title: "دودھ فروخت / گاڑی سپلائی", sale_entry_subtitle: "خریدار منتخب کرتے ہی اس کا روزانہ ریٹ خود آجائے گا", select_buyer: "خریدار", sale_mode: "طریقہ", dispatch_qty: "مقدار (لیٹر / کلو)", avg_fat: "اوسط فیٹ", avg_lr: "اوسط ایل آر", fixed_kg_rate: "ریٹ فی کلو",
+        effective_rate: "ریٹ فی لیٹر:", total_sale_bill: "کل انوائس:", save_sale_dispatch: "فروخت محفوظ کریں",
+        pos_tab_sell: "پی او ایس بلنگ", pos_tab_items: "آئٹمز اور کیٹیگری", pos_tab_bills: "محفوظ بل اور منافع", pos_add_item: "نیا آئٹم", pos_current_bill: "موجودہ بل",
+        farmers_ledger_tab: "کسان کھاتہ جات (سپلائر)", buyers_ledger_tab: "خریدار کھاتہ جات (فروخت)",
+        exp_tab_all: "تمام اخراجات اور اندراج", exp_tab_staff: "اسٹاف کھاتے (وحید، فہیم…)", exp_tab_veh: "گاڑیاں اور دیگر کھاتے",
+        expenses_heading: "کاروباری اخراجات / اسٹاف ایڈوانس / گاڑی ڈیزل", expenses_subtitle: "اسٹاف یا گاڑی کا کھاتہ منتخب کریں تاکہ ہر اندراج الگ کھاتے میں محفوظ ہو۔", category: "قسم", amount_rs: "رقم (روپے)", description: "تفصیل", record_expense: "خرچہ درج کریں (کیش سے منہا)",
+        settings_title: "کاروباری سیٹنگز", settings_subtitle: "کاروبار کا نام، رابطہ اور موجودہ کیش (ریٹس ہر پارٹی کے اپنے کھاتے میں سیٹ ہوں گے)", biz_name: "فرم کا نام", contact_phone: "رابطہ نمبر", biz_address: "پتہ", cash_in_hand_setting: "موجودہ کیش (روپے)",
+        save_settings: "سیٹنگز محفوظ کریں", reset_title: "تمام ٹیسٹ ڈیٹا زیرو زیرو کریں", reset_desc: "تمام کسان، ایجنٹ، دودھ، سیلز، اخراجات اور پی او ایس / دیسی گھی کی ٹیسٹ انٹریاں ختم کر کے بیلنس 0 کر دیں۔", reset_btn: "تمام ڈیٹا ری سیٹ کریں (زیرو-زیرو)",
+        create_party: "نیا کھاتہ", party_name: "نام", party_type: "کردار", phone: "موبائل", opening_balance: "افتتاحی بقایا",
+        cancel: "منسوخ", save_party: "محفوظ کریں", cash_voucher_title: "کیش واؤچر", transaction_type: "لین دین", voucher_amount: "رقم", remarks: "تفصیل", save_voucher: "واؤچر محفوظ کریں"
+      }
+    };
+    let adminLang = 'en'; const enCache = new Map();
+    function toggleAdminLang() {
+      adminLang = adminLang === 'en' ? 'ur' : 'en';
+      document.documentElement.dir = adminLang === 'ur' ? 'rtl' : 'ltr';
+      $('adminLangLabel').textContent = adminLang === 'en' ? 'اردو' : 'English';
+      document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if(!enCache.has(k)) enCache.set(k, el.textContent); el.textContent = adminLang === 'ur' ? (I18N.ur[k] || enCache.get(k)) : enCache.get(k); });
+      $('viewHeading').textContent = (adminLang === 'ur' ? TITLES_UR : TITLES)[currentView] || '';
+    }
+
+    // AGENTS
+    function compileAgents() {
+      const map = {}, reg = S.regAgents;
+      const blank = (id, d) => ({ id, loginId: d.loginId || id, password: d.password || '', name: d.name || 'Field Officer', phone: d.phone || '-', vehicle: d.vehicle || '-', status: d.status || 'active', totalQty: 0, totalTSVol: 0, entriesCount: 0, fatSum: 0, collections: [] });
+      Object.values(reg).forEach(r => { if(r.status !== 'deleted') map[r.id] = blank(r.id, r); });
+      S.collections.forEach(c => {
+        const id = c.agentId || c.agentEmail || c.agentName || 'Agent-1';
+        if(!map[id]) { const r = reg[id] || {}; map[id] = blank(id, { name: c.agentName || r.name, loginId: r.loginId || c.agentLoginId || id, phone: c.agentPhone || r.phone, vehicle: c.agentVehicle || r.vehicle, status: r.status === 'deleted' ? 'deleted_with_logs' : 'active' }); }
+        const a = map[id]; a.totalQty += num(c.qty); a.totalTSVol += num(c.ts13Vol) || num(c.qty); a.entriesCount++; a.fatSum += num(c.fat); a.collections.push(c);
+      });
+      S.agents = Object.values(map).sort((a, b) => b.totalQty - a.totalQty);
+    }
+    function populateInwardFilters() {
+      const aSel = $('inwardAgentFilter'), ak = aSel.value;
+      aSel.innerHTML = '<option value="ALL">All Agents</option>' + S.agents.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${esc(a.loginId)})</option>`).join('');
+      aSel.value = S.agents.some(a => a.id === ak) ? ak : 'ALL';
+      const fSel = $('inwardFarmerFilter'), fk = fSel.value, farmers = S.parties.filter(p => p.type === 'Farmer').sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      fSel.innerHTML = '<option value="ALL">All Farmers</option>' + farmers.map(f => `<option value="${esc(f.id)}">${esc(f.name)}</option>`).join('');
+      fSel.value = farmers.some(f => f.id === fk) ? fk : 'ALL';
+    }
+    function renderAgentsTable() {
+      const q = ($('agentSearchInput').value || '').toLowerCase();
+      const agents = S.agents.filter(a => a.name.toLowerCase().includes(q) || (a.loginId || '').toLowerCase().includes(q) || (a.phone || '').toLowerCase().includes(q));
+      $('agentCardTotal').textContent = agents.filter(a => a.status !== 'deleted_with_logs').length;
+      $('agentCardLiters').textContent = agents.reduce((s, a) => s + a.totalQty, 0).toLocaleString() + ' Ltr';
+      $('agentCardEntries').textContent = agents.reduce((s, a) => s + a.entriesCount, 0);
+      $('agentsTableBody').innerHTML = agents.length ? agents.map(a => {
+        const blocked = a.status === 'blocked', deleted = a.status === 'deleted_with_logs';
+        return `<tr class="hover:bg-sky-50/60 ${blocked || deleted ? 'opacity-65' : ''}">
+          <td class="py-3 px-3"><div class="flex items-center gap-2.5"><div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#0b2a6f] to-[#00b4ff] text-white font-bold flex items-center justify-center text-xs">${esc(a.name.slice(0, 2).toUpperCase())}</div>
+            <div><strong class="text-[#071e54] text-sm block">${esc(a.name)} ${blocked ? '<span class="text-[10px] bg-rose-100 text-rose-700 px-1.5 rounded-full">BLOCKED</span>' : ''} ${deleted ? '<span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 rounded-full">DELETED</span>' : ''}</strong><span class="text-[10px] text-slate-400">ID: ${esc(a.id)}</span></div></div></td>
+          <td class="py-3 px-3"><span class="font-extrabold text-[#124ec9] block">ID: ${esc(a.loginId || '-')}</span><span class="text-[11px] font-mono text-slate-500">Pass: ${a.password ? esc(a.password) : '<span class="text-amber-600">Set Password</span>'}</span></td>
+          <td class="py-3 px-3"><span class="font-semibold text-slate-700 block">${esc(a.phone)}</span><span class="text-[10px] text-slate-400">${esc(a.vehicle)}</span></td>
+          <td class="py-3 px-3 text-center font-bold">${a.entriesCount}</td>
+          <td class="py-3 px-3 text-right font-black text-[#124ec9]">${a.totalQty.toLocaleString()} Ltr</td>
+          <td class="py-3 px-3 text-right font-black text-[#0088cc]">${a.totalTSVol.toFixed(1)} Ltr</td>
+          <td class="py-3 px-3"><div class="flex justify-center gap-1.5 flex-wrap">
+            <button onclick="viewAgentHistory('${esc(a.id)}')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-eye"></i></button>
+            <button onclick="openAgentModal('${esc(a.id)}')" class="btn bg-sky-50 hover:bg-sky-100 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-pen"></i></button>
+            ${deleted ? '' : `<button onclick="toggleAgentBlock('${esc(a.id)}')" class="btn ${blocked ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${blocked ? 'Unblock' : 'Block'}</button>
+            <button onclick="toggleAgentBlock('${esc(a.id)}','deleted')" class="btn bg-[#071e54] text-white hover:bg-rose-700"><i class="fa-solid fa-trash"></i></button>`}
+          </div></td></tr>`;
+      }).join('') : `<tr><td colspan="7" class="text-center py-8 text-slate-400">No agents created yet. Click <strong>Create Agent</strong>.</td></tr>`;
+    }
+    function openAgentModal(id) {
+      const a = id ? S.agents.find(x => x.id === id) : null;
+      $('agentModalTitle').textContent = a ? 'Edit Agent / Reset Password' : 'Create New Agent';
+      $('agEditId').value = a ? a.id : ''; $('agName').value = a ? a.name : ''; $('agLoginId').value = a ? (a.loginId || '') : '';
+      $('agPassword').value = a ? (a.password || '') : ''; $('agPhone').value = a && a.phone !== '-' ? a.phone : ''; $('agVehicle').value = a && a.vehicle !== '-' ? a.vehicle : '';
+      openModal('agentModal');
+    }
+    async function saveAgent(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const editId = $('agEditId').value, name = $('agName').value.trim(), loginId = $('agLoginId').value.trim().toLowerCase().replace(/\s+/g, '');
+      const password = $('agPassword').value.trim(), phone = $('agPhone').value.trim(), vehicle = $('agVehicle').value.trim() || 'General';
+      if(!name || !loginId || !password) return toast('Name, Login ID and Password are required');
+      const dup = Object.values(S.regAgents).find(r => r.id !== editId && r.status !== 'deleted' && (r.loginId || '').toLowerCase() === loginId);
+      if(dup) return toast('Login ID already used by ' + dup.name);
+      const id = editId || ('AGT_' + loginId.replace(/[^a-z0-9_-]/g, '_')), btn = $('agSaveBtn'); btn.disabled = true;
+      try {
+        await window.FB.setDoc(window.FB.doc(window.FB.db, COL.agents, id), { id, loginId, password, name, phone, vehicle, status: 'active', updatedAt: Date.now(), createdAt: (S.regAgents[id] && S.regAgents[id].createdAt) || Date.now() }, { merge: true });
+        closeModal('agentModal'); toast(`Agent saved! ID: ${loginId} | Pass: ${password}`, true);
+      } catch(err) { toast('Failed: ' + err.message); }
+      finally { btn.disabled = false; }
+    }
+    async function toggleAgentBlock(id, mode) {
+      if(!needOnline()) return;
+      const a = S.agents.find(x => x.id === id); if(!a) return;
+      const to = mode || (a.status === 'blocked' ? 'active' : 'blocked');
+      if(!confirm(to === 'deleted' ? `DELETE agent "${a.name}"?` : `${to === 'blocked' ? 'Block' : 'Unblock'} agent "${a.name}"?`)) return;
+      const { db, doc, setDoc, deleteDoc } = window.FB;
+      try {
+        if(to === 'deleted' && a.entriesCount === 0) await deleteDoc(doc(db, COL.agents, id));
+        else await setDoc(doc(db, COL.agents, id), { id, loginId: a.loginId || id, name: a.name, phone: a.phone === '-' ? '' : a.phone, vehicle: a.vehicle === '-' ? '' : a.vehicle, status: to }, { merge: true });
+        toast(to === 'deleted' ? 'Agent deleted' : to === 'blocked' ? 'Agent blocked' : 'Agent unblocked', true);
+      } catch(e) { toast('Failed: ' + e.message); }
+    }
+    function viewAgentHistory(id) {
+      const a = S.agents.find(x => x.id === id); if(!a) return;
+      $('admModalAgentName').textContent = a.name + ' - Milk Collection Data'; $('admModalAgentMeta').textContent = `ID: ${a.loginId} • ${a.phone} • Route: ${a.vehicle}`;
+      $('admModalTrips').textContent = a.entriesCount; $('admModalLiters').textContent = a.totalQty.toLocaleString() + ' Ltr';
+      $('admModalAvgFat').textContent = (a.entriesCount ? a.fatSum / a.entriesCount : 0).toFixed(1) + '%';
+      $('admModalTableBody').innerHTML = a.collections.length ? a.collections.map(c => `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3">${esc(c.date)} (${esc(c.shift)})</td><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(c.farmerName)}</td><td class="py-2.5 px-3 font-extrabold text-[#124ec9]">${esc(c.qty)}</td><td class="py-2.5 px-3">${esc(c.fat || 0)}%</td><td class="py-2.5 px-3">${esc(c.lr || 0)}</td><td class="py-2.5 px-3 font-bold text-[#0b2a6f]">${esc(c.ts13Vol || c.qty)}</td></tr>`).join('') : `<tr><td colspan="6" class="text-center py-4 text-slate-400">No entries.</td></tr>`;
+      openModal('agentDetailModal');
+    }
+
+    // DASHBOARD
+    function inPeriod(date, p) { if(p === 'all') return true; const d = localDate(); return p === 'today' ? date === d : (date || '').slice(0, 7) === d.slice(0, 7); }
+    function renderDashboard() {
+      const p = $('dashPeriod').value, cols = S.collections.filter(c => inPeriod(c.date, p)), sales = S.sales.filter(s => inPeriod(s.date, p)), exps = S.expenses.filter(e => inPeriod(e.date, p));
+      const qty = cols.reduce((s, c) => s + num(c.qty), 0), purch = cols.reduce((s, c) => s + entryRT(c).total, 0);
+      const sold = sales.reduce((s, x) => s + num(x.total), 0), exp = exps.reduce((s, e) => s + num(e.amount), 0);
+      const posTot = S.bills.filter(b => inPeriod(b.date, p)).reduce((s, b) => s + num(b.total), 0);
+      const withFat = cols.filter(c => c.mode === '13TS');
+      const avgFat = withFat.length ? withFat.reduce((s, c) => s + num(c.fat), 0) / withFat.length : 0, avgLr = withFat.length ? withFat.reduce((s, c) => s + num(c.lr), 0) / withFat.length : 0;
+      const stExp = exps.filter(e => /Staff/i.test(e.category)).reduce((s, e) => s + num(e.amount), 0), vehExp = exps.filter(e => /Diesel|Vehicle/i.test(e.category)).reduce((s, e) => s + num(e.amount), 0);
+
+      $('dashTotalQty').textContent = qty.toLocaleString() + ' Ltr/Kg'; $('dashAvgFatLR').textContent = `Avg Fat: ${avgFat.toFixed(1)}% | LR: ${avgLr.toFixed(1)}`;
+      $('dashTotalPurchase').textContent = fmt(purch); $('dashTotalSales').textContent = fmt(sold + posTot); $('dashSalesBreak').textContent = `Milk: ${fmt(sold)} • POS: ${fmt(posTot)}`;
+      $('dashTotalExpenses').textContent = fmt(exp); $('dashExpBreak').textContent = `Staff: ${fmt(stExp)} • Veh: ${fmt(vehExp)}`;
+      const net = sold + posTot - purch - exp;
+      $('dashNet').textContent = fmt(net); $('dashNet').className = 'text-2xl font-black ' + (net >= 0 ? 'text-[#0088cc]' : 'text-rose-600');
+      const soldQty = sales.reduce((s, x) => s + num(x.qty), 0);
+      $('dashStock').textContent = `In ${qty.toLocaleString()} − Sold ${soldQty.toLocaleString()} = ${(qty - soldQty).toLocaleString()} Ltr`;
+
+      $('dashStream').innerHTML = cols.length ? cols.slice(0, 6).map(c => { const r = entryRT(c); return `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3 font-mono text-[10px] text-slate-400">${esc(c.date)} ${esc(c.time || '')}</td><td class="py-2.5 px-3 font-bold text-[#124ec9]">${esc(c.agentName || 'Agent')}</td><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(c.farmerName)}</td><td class="py-2.5 px-3 font-black text-[#124ec9]">${esc(c.qty)}</td><td class="py-2.5 px-3">${esc(c.fat || 0)}% / ${esc(c.lr || 0)}</td><td class="py-2.5 px-3 font-bold">${esc(c.ts13Vol || c.qty)}</td><td class="py-2.5 px-3 font-bold ${r.rate > 0 ? 'text-[#124ec9]' : 'text-rose-600'}">Rs ${r.rate}</td><td class="py-2.5 px-3 font-black text-[#0088cc]">${fmt(r.total)}</td></tr>`; }).join('') : `<tr><td colspan="8" class="text-center py-6 text-slate-400">No entries in this period.</td></tr>`;
+      const g = {}; cols.forEach(c => { const id = c.agentId || c.agentEmail || c.agentName; (g[id] = g[id] || { name: c.agentName || 'Agent', vehicle: c.agentVehicle || '-', q: 0, n: 0 }); g[id].q += num(c.qty); g[id].n++; });
+      const lead = Object.values(g).sort((a, b) => b.q - a.q);
+      $('dashAgentCount').textContent = `${lead.length} Agents`;
+      $('dashLeaders').innerHTML = lead.length ? lead.slice(0, 5).map(a => `<div class="flex justify-between items-center text-xs p-2.5 rounded-2xl bg-sky-50/70 border border-sky-200/60"><div><strong class="text-[#071e54] block">${esc(a.name)}</strong><span class="text-[10px] text-slate-400">${esc(a.vehicle)} &bull; ${a.n} entries</span></div><strong class="text-[#124ec9] font-black">${a.q.toLocaleString()} Ltr</strong></div>`).join('') : `<p class="py-4 text-center text-slate-400 text-xs">No activity.</p>`;
+    }
+
+    // BUSINESS BALANCE SHEET & GENERAL LEDGER
+    function setBsPreset(p) {
+      const d = localDate();
+      if(p === 'today') { $('bsFrom').value = d; $('bsTo').value = d; }
+      else if(p === 'month') { $('bsFrom').value = d.slice(0, 7) + '-01'; $('bsTo').value = d; }
+      else { $('bsFrom').value = ''; $('bsTo').value = ''; }
+      renderBalanceSheet();
+    }
+    function buildBusinessDaybook() {
+      const f = $('bsFrom').value, t = $('bsTo').value, tp = $('bsType').value || 'ALL';
+      const inRng = dt => (!f || (dt || '') >= f) && (!t || (dt || '') <= t);
+      const rows = [];
+      S.collections.filter(c => inRng(c.date)).forEach(c => { const r = entryRT(c); rows.push({ ts: c.timestamp || 0, date: c.date, cat: 'Purchase', typeLbl: 'Milk Purchase', party: c.farmerName || '-', desc: `${c.qty} ${c.mode} @ Rs ${r.rate} (${c.agentName || '-'})`, cashIn: 0, cashOut: 0, tradeIn: 0, tradeOut: r.total, cashDelta: 0 }); });
+      S.sales.filter(s => inRng(s.date)).forEach(s => { rows.push({ ts: s.timestamp || 0, date: s.date, cat: 'Sale', typeLbl: 'Milk Sale', party: s.buyerName || '-', desc: `${s.qty} ${s.mode} @ Rs ${s.rate}`, cashIn: 0, cashOut: 0, tradeIn: num(s.total), tradeOut: 0, cashDelta: 0 }); });
+      S.bills.filter(b => inRng(b.date)).forEach(b => { const isCash = b.payment === 'Cash'; rows.push({ ts: b.timestamp || 0, date: b.date, cat: 'POS', typeLbl: `POS (${b.payment})`, party: b.customerName || 'Walk-in', desc: `Bill #${b.no} (${(b.lines || []).length} items)`, cashIn: isCash ? num(b.total) : 0, cashOut: 0, tradeIn: num(b.total), tradeOut: 0, cashDelta: isCash ? num(b.total) : 0 }); });
+      S.vouchers.filter(v => inRng(v.date)).forEach(v => { const rec = v.type === 'Received'; rows.push({ ts: v.timestamp || 0, date: v.date, cat: 'Voucher', typeLbl: `Cash ${v.type}`, party: `${v.partyName} (${v.partyType})`, desc: v.note && v.note !== '-' ? v.note : 'Settlement', cashIn: rec ? num(v.amount) : 0, cashOut: rec ? 0 : num(v.amount), tradeIn: 0, tradeOut: 0, cashDelta: rec ? num(v.amount) : -num(v.amount) }); });
+      S.expenses.filter(e => inRng(e.date)).forEach(e => { const who = e.person || e.accountName || '-'; rows.push({ ts: e.timestamp || 0, date: e.date, cat: 'Expense', typeLbl: e.category || 'Expense', party: who, desc: e.desc || '-', cashIn: 0, cashOut: num(e.amount), tradeIn: 0, tradeOut: num(e.amount), cashDelta: -num(e.amount), expAmt: num(e.amount), expHead: who !== '-' ? who : e.category }); });
+      const filtered = tp === 'ALL' ? rows : rows.filter(r => r.cat === tp);
+      filtered.sort((a, b) => a.date === b.date ? a.ts - b.ts : (a.date < b.date ? -1 : 1));
+      return { all: rows, filtered };
+    }
+    function renderBalanceSheet() {
+      const { all, filtered } = buildBusinessDaybook(), sum = (arr, k) => arr.reduce((s, r) => s + (r[k] || 0), 0);
+      const milkPur = sum(all.filter(r => r.cat === 'Purchase'), 'tradeOut'), milkSale = sum(all.filter(r => r.cat === 'Sale'), 'tradeIn');
+      const posCash = sum(all.filter(r => r.cat === 'POS'), 'cashIn'), posTot = sum(all.filter(r => r.cat === 'POS'), 'tradeIn');
+      const vRec = sum(all.filter(r => r.cat === 'Voucher'), 'cashIn'), vPaid = sum(all.filter(r => r.cat === 'Voucher'), 'cashOut'), expTot = sum(all.filter(r => r.cat === 'Expense'), 'cashOut');
+      const cashIn = posCash + vRec, cashOut = vPaid + expTot, netProfit = (milkSale + posTot) - milkPur - expTot;
+      const farmersPayable = S.parties.filter(p => p.type === 'Farmer').reduce((s, p) => s + num(p.currentBalance ?? p.openingBalance), 0);
+      const buyersReceivable = S.parties.filter(p => p.type === 'Buyer').reduce((s, p) => s + num(p.currentBalance ?? p.openingBalance), 0);
+
+      $('bsKpiIn').textContent = fmt(cashIn); $('bsKpiInSub').textContent = `POS Cash ${fmt(posCash)} + Vouchers ${fmt(vRec)}`;
+      $('bsKpiOut').textContent = fmt(cashOut); $('bsKpiOutSub').textContent = `Paid Parties ${fmt(vPaid)} + Exp ${fmt(expTot)}`;
+      $('bsKpiNet').textContent = fmt(netProfit); $('bsKpiNet').className = 'text-2xl font-black mt-1 ' + (netProfit >= 0 ? 'text-[#0088cc]' : 'text-rose-600');
+      $('bsKpiCash').textContent = fmt(S.config.cashInHand); $('bsKpiNetWorth').textContent = `Net Party Position: ${fmt(buyersReceivable - farmersPayable)}`;
+
+      const row = (l, v, cls = '') => `<div class="flex justify-between py-1 border-b border-sky-50"><span class="text-slate-600">${l}</span><strong class="${cls}">${v}</strong></div>`;
+      $('bsSummaryIn').innerHTML = row('Milk Sales (Billed)', fmt(milkSale), 'text-[#124ec9]') + row('POS Shop Sales', fmt(posTot), 'text-[#0088cc]') + row('Cash Received (Vouchers)', fmt(vRec), 'text-emerald-600') + row('Buyers Receivable (Current)', fmt(buyersReceivable), 'text-[#071e54]') + row('Current Cash In Hand', fmt(S.config.cashInHand), 'text-emerald-700 font-black');
+      $('bsSummaryOut').innerHTML = row('Milk Purchases (Value)', fmt(milkPur), 'text-[#124ec9]') + row('Business Expenses (Total)', fmt(expTot), 'text-rose-600') + row('Cash Paid to Parties', fmt(vPaid), 'text-rose-600') + row('Farmers Payable (Current)', fmt(farmersPayable), 'text-[#071e54]') + row('Period Net Profit / Loss', fmt(netProfit), netProfit >= 0 ? 'text-emerald-600 font-black' : 'text-rose-600 font-black');
+
+      const byHead = {}; all.filter(r => r.cat === 'Expense').forEach(r => { const k = `${r.typeLbl} (${r.expHead})`; byHead[k] = (byHead[k] || 0) + r.expAmt; });
+      const headEntries = Object.entries(byHead).sort((a, b) => b[1] - a[1]);
+      $('bsExpHeads').innerHTML = headEntries.length ? headEntries.map(([k, v]) => row(esc(k), fmt(v), 'text-rose-600')).join('') : '<p class="text-slate-400 py-3">No expenses in this period.</p>';
+
+      $('bsRowCount').textContent = `${filtered.length} entries`;
+      let runCash = 0;
+      const html = filtered.map(r => {
+        runCash += r.cashDelta; const inAmt = r.cashIn || r.tradeIn, outAmt = r.cashOut || r.tradeOut;
+        const inTag = r.cashIn ? '' : (r.tradeIn ? ' (Acc)' : ''), outTag = r.cashOut ? '' : (r.tradeOut ? ' (Acc)' : '');
+        return `<tr class="hover:bg-sky-50/60"><td class="py-2 px-3 font-mono text-[11px] text-slate-500">${esc(r.date)}</td><td class="py-2 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.cat === 'Expense' ? 'bg-rose-100 text-rose-700' : r.cat === 'Sale' || r.cat === 'POS' ? 'bg-emerald-100 text-emerald-700' : 'bg-sky-100 text-[#0b2a6f]'}">${esc(r.typeLbl)}</span></td><td class="py-2 px-3 font-bold text-[#071e54]">${esc(r.party)}</td><td class="py-2 px-3 text-slate-500">${esc(r.desc)}</td><td class="py-2 px-3 text-right font-bold text-emerald-600">${inAmt ? fmt(inAmt) + inTag : '-'}</td><td class="py-2 px-3 text-right font-bold text-rose-600">${outAmt ? fmt(outAmt) + outTag : '-'}</td><td class="py-2 px-3 text-right font-black ${runCash < 0 ? 'text-rose-600' : 'text-[#0b2a6f]'}">${fmt(runCash)}</td></tr>`;
+      }).reverse().join('');
+      $('bsDaybook').innerHTML = html || `<tr><td colspan="7" class="text-center py-6 text-slate-400">No transactions in this period.</td></tr>`;
+    }
+    function printBalanceSheet() { $('balanceSheetPrintArea').classList.add('print-target'); document.body.classList.add('pm'); window.print(); setTimeout(() => { $('balanceSheetPrintArea').classList.remove('print-target'); document.body.classList.remove('pm'); }, 500); }
+    function exportLedgerCSV() {
+      const { filtered } = buildBusinessDaybook(); if(!filtered.length) return toast('No entries to export');
+      const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      let csv = "Date,Type,Party_Staff_Vehicle,Details,Cash_In,Cash_Out,Trade_Value\n" + filtered.map(r => [q(r.date), q(r.typeLbl), q(r.party), q(r.desc), r.cashIn, r.cashOut, r.tradeIn || r.tradeOut].join(',')).join('\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })); a.download = `Business_Ledger_${localDate()}.csv`; a.click();
+    }
+
+    // INWARD
+    function clearInwardFilter() { $('inwFrom').value = ''; $('inwTo').value = ''; $('inwardAgentFilter').value = 'ALL'; $('inwardFarmerFilter').value = 'ALL'; renderInward(); }
+    function renderInward() {
+      const ag = $('inwardAgentFilter').value, fm = $('inwardFarmerFilter').value, from = $('inwFrom').value, to = $('inwTo').value;
+      const cols = S.collections.filter(c => (ag === 'ALL' || c.agentId === ag || c.agentName === ag) && (fm === 'ALL' || c.farmerId === fm) && (!from || c.date >= from) && (!to || c.date <= to));
+      let tq = 0, tt = 0;
+      $('inwardTableBody').innerHTML = cols.length ? cols.map(c => {
+        const r = entryRT(c); tq += num(c.qty); tt += r.total;
+        return `<tr class="hover:bg-sky-50/60"><td class="py-3 px-3 font-mono text-[10px] text-slate-400">${esc(c.date)} ${esc(c.time || '')}</td><td class="py-3 px-3 font-bold text-[#124ec9]">${esc(c.agentName || 'Agent')}</td><td class="py-3 px-3 font-bold text-[#071e54]">${esc(c.farmerName)}</td><td class="py-3 px-3">${esc(c.shift)}</td><td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-[#0b2a6f]">${esc(c.mode)}</span></td><td class="py-3 px-3 font-black text-[#124ec9] text-sm">${esc(c.qty)}</td><td class="py-3 px-3">${esc(c.fat)}%</td><td class="py-3 px-3">${esc(c.lr)}</td><td class="py-3 px-3 font-extrabold text-slate-700">${esc(c.ts13Vol || c.qty)}</td><td class="py-3 px-3 font-extrabold ${r.rate > 0 ? 'text-[#124ec9]' : 'text-rose-600'}">Rs. ${r.rate}${r.rate === 0 ? ' <span class="text-[10px] font-semibold">(Set)</span>' : ''}${r.pending ? ' <i class="fa-solid fa-clock text-slate-300"></i>' : ''}</td><td class="py-3 px-3 font-black text-[#0088cc] text-sm">${fmt(r.total)}</td><td class="py-3 px-3 text-center whitespace-nowrap"><button onclick="openEditInward('${esc(c.id)}')" class="text-[#124ec9] hover:text-[#071e54] px-1.5 py-1"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteInwardEntry('${esc(c.id)}')" class="text-rose-500 hover:text-rose-700 px-1.5 py-1"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+      }).join('') : `<tr><td colspan="12" class="text-center py-8 text-slate-400">No records match.</td></tr>`;
+      $('inwTotals').textContent = `${cols.length} entries • ${tq.toLocaleString()} Ltr/Kg • ${fmt(tt)}`;
+    }
+
+    // SALES
+    function populateBuyerDropdown() {
+      const sel = $('saleBuyerSelect'), keep = sel.value, buyers = S.parties.filter(p => p.type === 'Buyer').sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      sel.innerHTML = '<option value="">-- Choose Buyer --</option>' + buyers.map(b => { const sr = partySaleBase(b.id); return `<option value="${esc(b.id)}">${esc(b.name)} (13TS: ${sr.r13 > 0 ? 'Rs ' + sr.r13 : 'Not set'} | KG: ${sr.rKg > 0 ? 'Rs ' + sr.rKg : 'Not set'})</option>`; }).join('');
+      if(buyers.some(b => b.id === keep)) sel.value = keep;
+    }
+    function onSaleBuyerChange() {
+      const sr = partySaleBase($('saleBuyerSelect').value);
+      $('saleBase13').value = sr.r13 > 0 ? sr.r13 : '';
+      $('saleKgPrice').value = sr.rKg > 0 ? sr.rKg : '';
+      calcSale();
+    }
+    function toggleSaleMode() { const fixed = $('adminSaleMode').value === 'FixedKG'; $('saleFatCol').classList.toggle('hidden', fixed); $('saleLrCol').classList.toggle('hidden', fixed); $('saleBase13Col').classList.toggle('hidden', fixed); $('saleFixedCol').classList.toggle('hidden', !fixed); calcSale(); }
+    function saleCalc() {
+      const qty = num($('saleQty').value), base13 = num($('saleBase13').value); let rate = 0, fat = 0, lr = 0, tsVol = qty;
+      if($('adminSaleMode').value === '13TS') {
+        fat = num($('saleFat').value); lr = num($('saleLR').value);
+        if(fat > 0 && lr > 0) { const ts = calcTS(fat, lr); tsVol = +((qty * ts) / 13).toFixed(1); if(base13 > 0) rate = +((base13 / 13) * ts).toFixed(1); }
+      } else rate = num($('saleKgPrice').value);
+      return { qty, rate, fat, lr, base13, tsVol, total: Math.round(qty * rate) };
+    }
+    function calcSale() { const r = saleCalc(); $('saleTsVol').textContent = r.tsVol + ' Ltr'; $('saleEffRate').textContent = 'Rs. ' + r.rate; $('saleTotalBill').textContent = fmt(r.total); }
+    async function handleSaveSale(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const buyer = S.parties.find(p => p.id === $('saleBuyerSelect').value), r = saleCalc();
+      if(!buyer) return toast('Choose a buyer'); if(!(r.qty > 0) || !(r.rate > 0)) return toast('Enter quantity and rate / Fat-LR');
+      const { db, doc, collection, writeBatch, increment } = window.FB, btn = $('saleSaveBtn'); btn.disabled = true;
+      try {
+        const b = writeBatch(db);
+        b.set(doc(collection(db, COL.sales)), { buyerId: buyer.id, buyerName: buyer.name, mode: $('adminSaleMode').value, qty: r.qty, fat: r.fat, lr: r.lr, base13: r.base13, rate: r.rate, total: r.total, timestamp: Date.now(), date: localDate() });
+        b.update(doc(db, COL.parties, buyer.id), { currentBalance: increment(r.total) });
+        await b.commit(); toast(`Sale saved: ${fmt(r.total)} added to ${buyer.name}`, true);
+        $('adminSaleForm').reset(); toggleSaleMode();
+      } catch(err) { toast('Sale NOT saved: ' + err.message); } finally { btn.disabled = false; }
+    }
+    function renderSales() {
+      $('salesTbody').innerHTML = S.sales.length ? S.sales.slice(0, 25).map(s => `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3">${esc(s.date)}</td><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(s.buyerName)}</td><td class="py-2.5 px-3">${esc(s.mode)}</td><td class="py-2.5 px-3">${esc(s.qty)}</td><td class="py-2.5 px-3">Rs. ${esc(s.rate)}</td><td class="py-2.5 px-3 font-black text-[#0088cc]">${fmt(s.total)}</td><td class="py-2.5 px-3"><button onclick="deleteSale('${esc(s.id)}')" class="text-rose-500 hover:text-rose-700"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('') : `<tr><td colspan="7" class="text-center py-5 text-slate-400">No sales yet.</td></tr>`;
+    }
+    async function deleteSale(id) {
+      if(!needOnline() || !confirm('Delete this sale? Buyer balance will be reversed.')) return;
+      const s = S.sales.find(x => x.id === id); if(!s) return;
+      const { db, doc, writeBatch, increment } = window.FB;
+      try { const b = writeBatch(db); b.delete(doc(db, COL.sales, id)); if(S.parties.some(p => p.id === s.buyerId)) b.update(doc(db, COL.parties, s.buyerId), { currentBalance: increment(-num(s.total)) }); await b.commit(); toast('Sale deleted', true); }
+      catch(e) { toast('Failed: ' + e.message); }
+    }
+
+    // SEPARATE PARTIES & LEDGERS + DAILY RATES
+    function setPartyTab(t) { partyTab = t; renderParties(); }
+    function renderParties() {
+      const isF = partyTab === 'Farmer';
+      document.querySelectorAll('.party-tab').forEach(b => b.className = 'party-tab btn ' + (b.dataset.pt === partyTab ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow' : 'bg-sky-50 text-[#0b2a6f] border border-sky-200 hover:bg-sky-100'));
+      $('partyRateBtnLabel').textContent = isF ? 'Update Farmer Daily Rates' : 'Update Buyer Daily Rates';
+      $('partyAddBtnLabel').textContent = isF ? 'Add Farmer' : 'Add Buyer';
+      $('partyKpi1Label').textContent = isF ? 'Total Farmers' : 'Total Buyers';
+      $('partyKpi2Label').textContent = isF ? 'Total Payable to Farmers' : 'Total Receivable from Buyers';
+      $('partiesTabHeading').textContent = isF ? 'Farmers (Milk Suppliers) Ledger' : 'Buyers (Milk Sales / Plants) Ledger';
+      $('partiesTabSub').textContent = isF ? 'Separate farmer accounts & daily purchase rates.' : 'Separate buyer accounts & daily sale rates.';
+      $('partyCol13TS').textContent = isF ? '13 TS Pur Rate' : '13 TS Sale Rate'; $('partyColKG').textContent = isF ? 'Direct KG Rate' : 'Fixed KG Rate';
+
+      const q = ($('partySearch').value || '').toLowerCase(), allOfType = S.parties.filter(p => p.type === partyTab);
+      const list = allOfType.filter(p => (p.name || '').toLowerCase().includes(q) || (p.phone || '').toLowerCase().includes(q)).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      $('partyKpi1').textContent = allOfType.length; $('partyKpi2').textContent = fmt(allOfType.reduce((s, p) => s + num(p.currentBalance ?? p.openingBalance), 0));
+      $('partyKpi3').textContent = allOfType.filter(p => num(p.rate13TS) > 0 || num(p.rateDirectKG) > 0).length;
+
+      $('partiesTbody').innerHTML = list.length ? list.map(p => {
+        const bal = p.currentBalance ?? p.openingBalance ?? 0, r = isF ? partyPurchaseBase(p.id) : partySaleBase(p.id);
+        return `<tr class="hover:bg-sky-50/60"><td class="py-3 px-3 font-bold text-[#071e54]">${esc(p.name)}</td><td class="py-3 px-3">${esc(p.phone || '-')}</td>
+          <td class="py-3 px-3 text-right font-bold text-[#124ec9]">${r.isCustom13 ? 'Rs. ' + r.r13 : '<span class="text-slate-400 font-normal">Not set</span>'}</td>
+          <td class="py-3 px-3 text-right font-bold text-[#0b2a6f]">${r.isCustomKg ? 'Rs. ' + r.rKg : '<span class="text-slate-400 font-normal">Not set</span>'}</td>
+          <td class="py-3 px-3 text-right font-mono">${fmt(p.openingBalance)}</td>
+          <td class="py-3 px-3 text-right font-black ${bal < 0 ? 'text-rose-600' : 'text-[#0088cc]'}">${fmt(bal)} <span class="text-[10px] font-semibold text-slate-400">${isF ? 'payable' : 'receivable'}</span></td>
+          <td class="py-3 px-3"><div class="flex justify-center gap-1.5"><button onclick="openPartyModal('${esc(p.id)}')" class="btn bg-sky-50 hover:bg-sky-100 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-pen"></i></button><button onclick="openCashVoucher('${esc(p.id)}')" class="btn bg-sky-50 hover:bg-sky-100 text-[#0b2a6f] border border-sky-200"><i class="fa-solid fa-money-bill-wave text-[#0099e6]"></i> Voucher</button><button onclick="openStatement('${esc(p.id)}')" class="btn-ssg"><i class="fa-solid fa-file-lines"></i> Statement</button><button onclick="openReminder('${esc(p.id)}')" class="btn bg-emerald-600 hover:bg-emerald-700 text-white" title="Send reminder"><i class="fa-solid fa-bell"></i> Remind</button></div></td></tr>`;
+      }).join('') : `<tr><td colspan="7" class="text-center py-8 text-slate-400">No ${isF ? 'farmers' : 'buyers'} found.</td></tr>`;
+    }
+    function openPartyModal(id, defaultType) {
+      const p = id ? S.parties.find(x => x.id === id) : null;
+      $('partyModalTitle').textContent = p ? `Edit ${p.type} & Rate` : `Create ${defaultType || partyTab} Account`;
+      $('pId').value = p ? p.id : ''; $('pName').value = p ? p.name : ''; $('pType').value = p ? p.type : (defaultType || partyTab); $('pType').disabled = !!p;
+      $('pPhone').value = p ? (p.phone || '') : ''; $('pRate13').value = p && num(p.rate13TS) > 0 ? p.rate13TS : '';
+      $('pRateKG').value = p && num(p.rateDirectKG) > 0 ? p.rateDirectKG : ''; $('pOpeningBal').value = p ? (p.openingBalance || 0) : 0; openModal('addPartyModal');
+    }
+    async function handleSaveParty(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const id = $('pId').value, name = $('pName').value.trim(), type = $('pType').value, phone = $('pPhone').value.trim();
+      const opening = num($('pOpeningBal').value), rate13TS = num($('pRate13').value), rateDirectKG = num($('pRateKG').value);
+      if(!id && S.parties.some(p => (p.name || '').toLowerCase() === name.toLowerCase() && p.type === type)) return toast('This party already exists');
+      const btn = $('pSaveBtn'); btn.disabled = true;
+      try {
+        if(id) {
+          const old = S.parties.find(x => x.id === id), diff = opening - num(old && old.openingBalance), upd = { name, phone, rate13TS, rateDirectKG, openingBalance: opening };
+          if(diff !== 0) upd.currentBalance = window.FB.increment(diff);
+          await window.FB.updateDoc(window.FB.doc(window.FB.db, COL.parties, id), upd); toast('Party & rate updated ✓', true);
+        } else {
+          await window.FB.addDoc(window.FB.collection(window.FB.db, COL.parties), { name, type, phone, rate13TS, rateDirectKG, openingBalance: opening, currentBalance: opening, createdAt: Date.now() }); toast(`${type} added ✓`, true);
+        }
+        closeModal('addPartyModal');
+      } catch(err) { toast('Failed: ' + err.message); } finally { btn.disabled = false; }
+    }
+    function openDailyRatesModal(type) {
+      drType = type || 'Farmer'; const isF = drType === 'Farmer';
+      $('drTitle').textContent = isF ? 'Farmers Daily Purchase Rates' : 'Buyers Daily Sale Rates';
+      $('drTabFarmer').className = 'btn flex-1 ' + (isF ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow' : 'bg-sky-50 text-[#0b2a6f] border border-sky-200');
+      $('drTabBuyer').className = 'btn flex-1 ' + (!isF ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow' : 'bg-sky-50 text-[#0b2a6f] border border-sky-200');
+      const list = S.parties.filter(p => p.type === drType).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+      $('drTbody').innerHTML = list.length ? list.map(p => `<tr class="hover:bg-sky-50/50" data-drid="${esc(p.id)}"><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(p.name)}</td><td class="py-2.5 px-3 text-slate-400">${esc(p.phone || '-')}</td><td class="py-2 px-3 text-right"><input type="number" step="0.5" min="0" class="dr-r13 inp !w-28 text-right !py-1.5" value="${num(p.rate13TS) > 0 ? p.rate13TS : ''}" placeholder="13 TS rate"></td><td class="py-2 px-3 text-right"><input type="number" step="0.5" min="0" class="dr-rkg inp !w-28 text-right !py-1.5" value="${num(p.rateDirectKG) > 0 ? p.rateDirectKG : ''}" placeholder="KG rate"></td></tr>`).join('') : `<tr><td colspan="4" class="text-center py-6 text-slate-400">No ${isF ? 'farmers' : 'buyers'} added yet.</td></tr>`;
+      openModal('dailyRatesModal');
+    }
+    async function saveDailyRates() {
+      if(!needOnline()) return;
+      const rows = [...document.querySelectorAll('#drTbody tr[data-drid]')]; if(!rows.length) return closeModal('dailyRatesModal');
+      const { db, doc, writeBatch } = window.FB, btn = $('drSaveBtn'); btn.disabled = true;
+      try {
+        for(let i = 0; i < rows.length; i += 400) {
+          const b = writeBatch(db);
+          rows.slice(i, i + 400).forEach(tr => b.update(doc(db, COL.parties, tr.dataset.drid), { rate13TS: num(tr.querySelector('.dr-r13').value), rateDirectKG: num(tr.querySelector('.dr-rkg').value) }));
+          await b.commit();
+        }
+        closeModal('dailyRatesModal'); toast(`Updated ${drType} daily rates ✓`, true);
+      } catch(e) { toast('Save failed: ' + e.message); } finally { btn.disabled = false; }
+    }
+    function openCashVoucher(id) {
+      const p = S.parties.find(x => x.id === id); if(!p) return;
+      $('vPartyId').value = id; $('voucherPartyName').textContent = `${p.name} (${p.type})`; $('vAmount').value = ''; $('vNote').value = ''; $('vType').value = p.type === 'Farmer' ? 'Paid' : 'Received'; openModal('cashVoucherModal');
+    }
+    async function handleSaveVoucher(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const p = S.parties.find(x => x.id === $('vPartyId').value); if(!p) return;
+      const type = $('vType').value, amt = num($('vAmount').value); if(!(amt > 0)) return;
+      const delta = p.type === 'Farmer' ? (type === 'Paid' ? -amt : amt) : (type === 'Received' ? -amt : amt), cashDelta = type === 'Paid' ? -amt : amt;
+      const { db, doc, collection, writeBatch, increment } = window.FB, btn = $('voucherSaveBtn'); btn.disabled = true;
+      try {
+        const b = writeBatch(db);
+        b.set(doc(collection(db, COL.vouchers)), { partyId: p.id, partyName: p.name, partyType: p.type, type, amount: amt, delta, cashDelta, note: $('vNote').value.trim() || '-', timestamp: Date.now(), date: localDate() });
+        b.update(doc(db, COL.parties, p.id), { currentBalance: increment(delta) });
+        b.set(doc(db, COL.settings, 'general'), { cashInHand: increment(cashDelta) }, { merge: true });
+        await b.commit(); closeModal('cashVoucherModal'); toast('Voucher saved, ledger and cash updated ✓', true);
+      } catch(err) { toast('Voucher NOT saved: ' + err.message); } finally { btn.disabled = false; }
+    }
+    function openStatement(id) {
+      const p = S.parties.find(x => x.id === id); if(!p) return;
+      const rows = [];
+      if(p.type === 'Farmer') S.collections.filter(c => c.farmerId === id).forEach(c => { const r = entryRT(c); rows.push({ ts: c.timestamp, date: c.date, desc: `Milk ${c.qty} ${c.mode === '13TS' ? `Ltr · Fat ${c.fat} · LR ${c.lr}` : 'Kg'} @ Rs ${r.rate}`, amt: r.pending ? 0 : r.total }); });
+      else S.sales.filter(s => s.buyerId === id).forEach(s => rows.push({ ts: s.timestamp, date: s.date, desc: `Sale ${s.qty} @ Rs ${s.rate} (${s.mode})`, amt: num(s.total) }));
+      S.vouchers.filter(v => v.partyId === id).forEach(v => rows.push({ ts: v.timestamp, date: v.date, desc: `Voucher: ${v.type}${v.note && v.note !== '-' ? ' – ' + v.note : ''}`, amt: v.delta }));
+      S.bills.filter(b => b.customerId === id && b.payment === 'Credit').forEach(b => rows.push({ ts: b.timestamp, date: b.date, desc: `POS Credit Bill #${b.no}`, amt: p.type === 'Farmer' ? -num(b.total) : num(b.total) }));
+      rows.sort((a, b) => a.ts - b.ts);
+      let run = num(p.openingBalance);
+      let html = `<tr class="bg-sky-50/70"><td class="py-2 px-3">-</td><td class="py-2 px-3 font-bold">Opening balance</td><td class="py-2 px-3"></td><td class="py-2 px-3 text-right font-bold">${fmt(run)}</td></tr>`;
+      rows.forEach(r => { run += r.amt; html += `<tr><td class="py-2 px-3">${esc(r.date)}</td><td class="py-2 px-3">${esc(r.desc)}</td><td class="py-2 px-3 text-right ${r.amt < 0 ? 'text-rose-600' : 'text-[#0088cc]'}">${fmt(r.amt)}</td><td class="py-2 px-3 text-right font-bold">${fmt(run)}</td></tr>`; });
+      $('stmtTitle').textContent = `${p.name} – ${p.type} Statement`; $('stmtSub').textContent = `${p.phone || ''} • ${S.config.bizName}`; $('stmtBody').innerHTML = html;
+      const stored = p.currentBalance ?? p.openingBalance ?? 0;
+      $('stmtClosing').textContent = `Closing balance: ${fmt(run)} ${p.type === 'Farmer' ? '(payable to farmer)' : '(receivable from buyer)'}` + (Math.round(run) !== Math.round(stored) ? ` • Ledger shows ${fmt(stored)}` : '');
+      activeStmt = { party: p, closing: run, count: rows.length }; openModal('statementModal');
+    }
+
+    // ============ PARTY REMINDERS (WhatsApp / SMS) ============
+    let activeRem = null;
+    const smsPhone = raw => { const p = waPhone(raw); return p ? '+' + p : ''; };
+    function reminderText(p) {
+      const bal = num(p.currentBalance ?? p.openingBalance), amt = fmt(Math.abs(bal)), biz = S.config.bizName || 'Dairy', ph = S.config.bizPhone ? `\nRabta: ${S.config.bizPhone}` : '';
+      let body;
+      if(p.type === 'Farmer') body = bal >= 0
+        ? `Aap ka ${amt} hisaab hamare paas baqaya hai. Hisaab dekhne ya raqam lene ke liye rabta karein.`
+        : `Aap ke zimme ${amt} baqaya hai (advance). Barae meharbani hisaab clear karwa dein.`;
+      else body = bal >= 0
+        ? `Aap ke zimme ${amt} baqaya hai. Barae meharbani jald ada kar dein.`
+        : `Aap ka ${amt} advance hamare paas jama hai.`;
+      return `*${biz}*\nAssalam o Alaikum ${p.name},\n${body}\nShukriya.${ph}`;
+    }
+    function openReminder(id) {
+      const p = S.parties.find(x => x.id === id); if(!p) return;
+      activeRem = p;
+      $('remTitle').textContent = `Reminder – ${p.name}`; $('remSub').textContent = `${p.phone || 'Phone number nahi hai'} • ${p.type}`;
+      $('remText').value = reminderText(p); openModal('reminderModal');
+    }
+    function sendReminder(kind) {
+      if(!activeRem) return;
+      const txt = $('remText').value.trim(); if(!txt) return toast('Message khali hai');
+      if(!waPhone(activeRem.phone)) return toast('Is party ka phone number save nahi hai — pehle Edit mein number likhein.');
+      if(kind === 'wa') window.open(`https://wa.me/${waPhone(activeRem.phone)}?text=${encodeURIComponent(txt)}`, '_blank');
+      else window.location.href = `sms:${smsPhone(activeRem.phone)}?body=${encodeURIComponent(txt.replace(/\*/g, ''))}`;
+    }
+    function openReminderList() {
+      const isF = partyTab === 'Farmer';
+      const list = S.parties.filter(p => p.type === partyTab && Math.round(num(p.currentBalance ?? p.openingBalance)) !== 0).sort((a, b) => Math.abs(num(b.currentBalance ?? b.openingBalance)) - Math.abs(num(a.currentBalance ?? a.openingBalance)));
+      $('remListTitle').textContent = isF ? 'Farmers ko Reminder' : 'Buyers ko Reminder';
+      $('remListBody').innerHTML = list.length ? list.map(p => {
+        const bal = num(p.currentBalance ?? p.openingBalance), has = !!waPhone(p.phone);
+        return `<div class="flex items-center justify-between gap-2 p-3 text-xs"><div class="min-w-0"><strong class="text-[#071e54] text-sm block truncate">${esc(p.name)}</strong><span class="text-slate-400">${esc(p.phone || 'Phone nahi hai')}</span></div><div class="font-black ${bal < 0 ? 'text-rose-600' : 'text-[#0088cc]'} whitespace-nowrap">${fmt(bal)}</div><div class="flex gap-1.5">${has ? `<button onclick="quickRemind('${esc(p.id)}','wa')" class="btn bg-emerald-600 hover:bg-emerald-700 text-white"><i class="fa-brands fa-whatsapp"></i></button><button onclick="quickRemind('${esc(p.id)}','sms')" class="btn-ssg"><i class="fa-solid fa-message"></i></button>` : `<button onclick="closeModal('reminderListModal');openPartyModal('${esc(p.id)}')" class="btn bg-amber-50 text-amber-700 border border-amber-200">Add number</button>`}</div></div>`;
+      }).join('') : '<p class="text-center text-slate-400 py-8 text-xs">Kisi party ka balance baqaya nahi hai.</p>';
+      openModal('reminderListModal');
+    }
+    function quickRemind(id, kind) {
+      const p = S.parties.find(x => x.id === id); if(!p) return;
+      const txt = reminderText(p);
+      if(kind === 'wa') window.open(`https://wa.me/${waPhone(p.phone)}?text=${encodeURIComponent(txt)}`, '_blank');
+      else window.location.href = `sms:${smsPhone(p.phone)}?body=${encodeURIComponent(txt.replace(/\*/g, ''))}`;
+    }
+
+    function shareStatementWA() {
+      if(!activeStmt) return;
+      const p = activeStmt.party, ph = waPhone(p.phone);
+      const txt = `*${S.config.bizName} - Ledger Statement*\nParty: ${p.name} (${p.type})\nEntries: ${activeStmt.count}\nClosing Balance: *${fmt(activeStmt.closing)}* (${p.type === 'Farmer' ? 'Payable' : 'Receivable'})`;
+      window.open(`https://wa.me/${ph}?text=${encodeURIComponent(txt)}`, '_blank');
+    }
+
+    // POS / SHOP
+    let posTab = 'sell', posCat = 'All', posCatList = ['All'], cart = [];
+    const POS_CATS = ['Dairy Products', 'Fresh Milk', 'Desi Ghee / Butter', 'Yogurt / Lassi', 'Feed / Wanda', 'Medicine', 'Equipment', 'Other'];
+    function setPosTab(t) { posTab = t; ['sell', 'items', 'bills'].forEach(x => $('pos-' + x).classList.toggle('hidden', x !== t)); document.querySelectorAll('.pos-tab').forEach(b => b.className = 'pos-tab btn ' + (b.dataset.t === t ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow' : 'bg-sky-50 text-[#0b2a6f] border border-sky-200 hover:bg-sky-100')); }
+    const setPosCat = i => { posCat = posCatList[i] || 'All'; renderPOS(); };
+    function renderPOS() {
+      const cs = $('posCustomer'), keep = cs.value, buyers = S.parties.filter(p => p.type === 'Buyer'), farmers = S.parties.filter(p => p.type === 'Farmer');
+      cs.innerHTML = '<option value="">Walk-in Customer</option>' + (buyers.length ? `<optgroup label="Buyers">${buyers.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</optgroup>` : '') + (farmers.length ? `<optgroup label="Farmers">${farmers.map(p => `<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('')}</optgroup>` : '');
+      cs.value = S.parties.some(p => p.id === keep) ? keep : '';
+      posCatList = ['All', ...[...new Set(S.items.map(i => i.category || 'Other'))].sort()];
+      if(!posCatList.includes(posCat)) posCat = 'All';
+      $('posCats').innerHTML = posCatList.map((c, i) => `<button onclick="setPosCat(${i})" class="btn ${c === posCat ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow-sm' : 'bg-sky-50 border border-sky-200 text-[#0b2a6f] hover:bg-sky-100'}">${esc(c)}</button>`).join('');
+      $('catList').innerHTML = [...new Set([...POS_CATS, ...S.items.map(i => i.category).filter(Boolean)])].map(c => `<option value="${esc(c)}">`).join('');
+      const q = ($('posSearch').value || '').toLowerCase(), list = S.items.filter(i => (posCat === 'All' || (i.category || 'Other') === posCat) && ((i.name || '').toLowerCase().includes(q) || (i.category || '').toLowerCase().includes(q)));
+      $('posGrid').innerHTML = list.length ? list.map(i => {
+        const out = i.stock != null && i.stock <= 0, low = i.stock != null && i.stock > 0 && i.stock <= 5;
+        return `<button ${out ? 'disabled' : ''} onclick="addToCart('${esc(i.id)}')" class="group text-left p-3.5 rounded-2xl border border-sky-200 bg-white hover:border-[#00b4ff] hover:shadow-md transition ${out ? 'opacity-50 cursor-not-allowed' : ''}"><span class="inline-block px-2 py-0.5 rounded-full text-[10px] bg-sky-100 text-[#124ec9] font-extrabold uppercase mb-1">${esc(i.category || 'Other')}</span><strong class="text-[#071e54] text-sm block truncate group-hover:text-[#124ec9]">${esc(i.name)}</strong><div class="mt-1.5 flex items-baseline gap-1"><span class="text-[#0088cc] font-black text-base">${fmt(i.price)}</span><span class="text-[10px] text-slate-400 font-semibold">/ ${esc(i.unit || 'pcs')}</span></div><span class="text-[10px] font-bold block mt-1 ${out ? 'text-rose-600' : low ? 'text-amber-600' : 'text-slate-400'}">${i.stock == null ? 'Unlimited stock' : (out ? 'Out of stock' : 'Stock: ' + i.stock + ' ' + (i.unit || ''))}</span></button>`;
+      }).join('') : `<div class="col-span-full text-center text-slate-400 py-10 text-xs">No items found. Click <strong>"Add Item"</strong>.</div>`;
+      renderCart(); renderItemsTable(); renderBills();
+    }
+    function addToCart(id) { const it = S.items.find(i => i.id === id); if(!it) return; const l = cart.find(x => x.id === id), nq = (l ? l.qty : 0) + 1; if(it.stock != null && nq > it.stock) return toast('Only ' + it.stock + ' in stock'); if(l) l.qty = nq; else cart.push({ id, name: it.name, unit: it.unit || 'pcs', price: num(it.price), cost: num(it.cost), qty: 1 }); renderCart(); }
+    const cartQty = (i, d) => setCartQty(i, cart[i].qty + d);
+    function setCartQty(i, v) { const q = num(v), it = S.items.find(x => x.id === cart[i].id); if(q <= 0) cart.splice(i, 1); else if(it && it.stock != null && q > it.stock) { toast('Only ' + it.stock + ' in stock'); cart[i].qty = it.stock; } else cart[i].qty = q; renderCart(); }
+    const setCartPrice = (i, v) => { cart[i].price = num(v); renderCart(); };
+    const clearCart = () => { cart = []; $('posDisc').value = 0; $('posCashRec').value = ''; renderCart(); };
+    const cartTotals = () => { const sub = cart.reduce((s, l) => s + l.price * l.qty, 0), disc = Math.min(num($('posDisc').value), sub); return { sub, disc, total: Math.round(sub - disc) }; };
+    function renderCart() {
+      $('cartCount').textContent = cart.reduce((s, l) => s + l.qty, 0) + ' qty';
+      $('cartList').innerHTML = cart.length ? cart.map((l, i) => `<div class="py-2.5 space-y-1.5"><div class="flex justify-between items-center"><strong class="text-[#071e54]">${esc(l.name)}</strong><button onclick="cart.splice(${i},1);renderCart()" class="text-rose-400 hover:text-rose-600 px-1"><i class="fa-solid fa-xmark"></i></button></div><div class="flex items-center gap-1.5"><button onclick="cartQty(${i},-1)" class="w-6 h-6 rounded-lg bg-sky-100 text-[#0b2a6f] font-bold">−</button><input type="number" step="any" value="${l.qty}" onchange="setCartQty(${i},this.value)" class="w-12 text-center bg-sky-50 border border-sky-200 rounded-lg py-1 font-bold"><button onclick="cartQty(${i},1)" class="w-6 h-6 rounded-lg bg-sky-100 text-[#0b2a6f] font-bold">+</button><span class="text-slate-400">×</span><input type="number" step="any" value="${l.price}" onchange="setCartPrice(${i},this.value)" class="w-16 bg-sky-50 border border-sky-200 rounded-lg py-1 px-1.5 font-bold"><strong class="ml-auto text-[#124ec9]">${fmt(l.price * l.qty)}</strong></div></div>`).join('') : `<p class="py-8 text-center text-slate-400">Tap items on the left to add them to the bill.</p>`;
+      const t = cartTotals(); $('posSub').textContent = fmt(t.sub); $('posTotal').textContent = fmt(t.total);
+      const isCash = $('posPay').value === 'Cash'; $('posCashRecWrap').classList.toggle('hidden', !isCash);
+      const rec = num($('posCashRec').value); if(isCash && rec > 0) { $('posChangeRow').classList.remove('hidden'); $('posChange').textContent = fmt(rec - t.total); } else $('posChangeRow').classList.add('hidden');
+    }
+    async function completeSale() {
+      if(!needOnline()) return; if(!cart.length) return toast('Add at least one item');
+      const t = cartTotals(), pay = $('posPay').value, party = S.parties.find(p => p.id === $('posCustomer').value) || null;
+      if(pay === 'Credit' && !party) return toast('Credit sale needs a customer selected');
+      const cashReceived = pay === 'Cash' ? num($('posCashRec').value) : 0, { db, doc, collection, runTransaction, increment } = window.FB;
+      const lines = cart.map(l => ({ id: l.id, name: l.name, unit: l.unit, price: l.price, cost: l.cost, qty: l.qty, total: Math.round(l.price * l.qty) }));
+      const profit = Math.round(lines.reduce((s, l) => s + (l.price - l.cost) * l.qty, 0) - t.disc);
+      const now = new Date(), billRef = doc(collection(db, COL.bills)), sref = doc(db, COL.settings, 'general'), btn = $('posPayBtn'); btn.disabled = true; let bill = null;
+      try {
+        await runTransaction(db, async tx => {
+          const ss = await tx.get(sref), isn = await Promise.all(lines.map(l => tx.get(doc(db, COL.items, l.id)))), pref = party ? doc(db, COL.parties, party.id) : null;
+          if(pref) await tx.get(pref);
+          isn.forEach((s, i) => { if(!s.exists()) throw new Error(lines[i].name + ' missing'); const st = s.data().stock; if(st != null && st < lines[i].qty) throw new Error('Low stock: ' + lines[i].name); });
+          const no = ((ss.exists() && ss.data().billCounter) || 0) + 1;
+          bill = { no, date: localDate(), time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), timestamp: Date.now(), customerId: party ? party.id : '', customerName: party ? party.name : 'Walk-in Customer', payment: pay, subtotal: Math.round(t.sub), discount: Math.round(t.disc), total: t.total, cashReceived, profit, lines };
+          tx.set(billRef, bill);
+          isn.forEach((s, i) => { if(s.data().stock != null) tx.update(s.ref, { stock: increment(-lines[i].qty) }); });
+          const upd = { billCounter: no }; if(pay === 'Cash') upd.cashInHand = increment(t.total); tx.set(sref, upd, { merge: true });
+          if(pref && pay === 'Credit') tx.update(pref, { currentBalance: increment(party.type === 'Farmer' ? -t.total : t.total) });
+        });
+        toast('Bill #' + bill.no + ' saved ✓', true); clearCart(); openBill({ ...bill, id: billRef.id });
+      } catch(err) { toast('Sale NOT saved: ' + err.message); } finally { btn.disabled = false; }
+    }
+    function openBill(b) {
+      activeBill = b; const chg = b.cashReceived > 0 ? b.cashReceived - b.total : null;
+      $('billBody').innerHTML = `<div class="text-center pb-2"><img src="${LOGO}" class="w-16 h-16 rounded-full mx-auto mb-1.5"><h4 class="font-black text-base text-[#071e54]">${esc(S.config.bizName)}</h4>${S.config.bizAddress ? `<p class="text-[11px] text-slate-500 font-semibold">${esc(S.config.bizAddress)}</p>` : ''}${S.config.bizPhone ? `<p class="text-[11px] text-[#124ec9] font-bold">${esc(S.config.bizPhone)}</p>` : ''}<span class="inline-block mt-1 px-2.5 py-0.5 rounded-full bg-sky-100 text-[#0b2a6f] text-[10px] font-extrabold uppercase">Sales Invoice / Bill</span></div><div class="border-t border-dashed border-sky-300 my-2.5"></div><div class="flex justify-between text-[11px]"><strong>Bill #${esc(b.no)}</strong><span>${esc(b.date)} • ${esc(b.time)}</span></div><div class="flex justify-between text-[11px] mb-2.5"><span>Customer: <strong class="text-[#071e54]">${esc(b.customerName)}</strong></span><span class="font-bold text-[#124ec9]">${esc(b.payment)}</span></div><table class="w-full text-[11px]"><thead><tr class="border-y border-sky-200 bg-sky-50 text-[#0b2a6f] text-left"><th class="py-1.5 px-1">Item</th><th class="py-1.5 px-1 text-right">Qty</th><th class="py-1.5 px-1 text-right">Rate</th><th class="py-1.5 px-1 text-right">Amount</th></tr></thead><tbody>${b.lines.map(l => `<tr class="border-b border-slate-100"><td class="py-1.5 px-1 font-semibold">${esc(l.name)}</td><td class="py-1.5 px-1 text-right">${esc(l.qty)} ${esc(l.unit)}</td><td class="py-1.5 px-1 text-right">${esc(l.price)}</td><td class="py-1.5 px-1 text-right font-bold">${esc(l.total)}</td></tr>`).join('')}</tbody></table><div class="border-t border-dashed border-sky-300 my-2.5"></div><div class="space-y-1 text-[11px]"><div class="flex justify-between"><span>Subtotal</span><span>${fmt(b.subtotal)}</span></div>${b.discount ? `<div class="flex justify-between text-rose-600"><span>Discount</span><span>- ${fmt(b.discount)}</span></div>` : ''}<div class="flex justify-between text-sm font-black text-[#071e54] pt-1 border-t border-sky-100"><span>NET TOTAL</span><span>${fmt(b.total)}</span></div>${chg !== null ? `<div class="flex justify-between text-slate-600"><span>Cash Received</span><span>${fmt(b.cashReceived)}</span></div><div class="flex justify-between font-bold text-[#0088cc]"><span>Change</span><span>${fmt(chg)}</span></div>` : ''}</div><p class="text-center text-[10px] text-slate-500 mt-4 pt-2 border-t border-sky-100">Thank you for your business!</p>`;
+      openModal('billModal');
+    }
+    function shareBillWA() {
+      const b = activeBill; if(!b) return;
+      const p = S.parties.find(x => x.id === b.customerId), ph = waPhone(p && p.phone);
+      const lines = b.lines.map(l => `• ${l.name}: ${l.qty} ${l.unit} × ${l.price} = ${fmt(l.total)}`).join('\n');
+      window.open(`https://wa.me/${ph}?text=${encodeURIComponent(`*${S.config.bizName} - Bill #${b.no}*\n${b.date} ${b.time} (${b.payment})\nCustomer: ${b.customerName}\n${lines}\n*NET TOTAL: ${fmt(b.total)}*`)}`, '_blank');
+    }
+    function renderItemsTable() {
+      const cats = [...new Set(S.items.map(i => i.category || 'Other'))].sort(), fc = $('itemFilterCat'), keep = fc.value || 'ALL';
+      fc.innerHTML = '<option value="ALL">All Categories</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      fc.value = cats.includes(keep) ? keep : 'ALL';
+      $('itemStatCount').textContent = S.items.length; $('itemStatCats').textContent = cats.length; $('itemStatLow').textContent = S.items.filter(i => i.stock != null && i.stock <= 5).length;
+      const list = S.items.filter(i => fc.value === 'ALL' || (i.category || 'Other') === fc.value).sort((a, b) => (a.category || '').localeCompare(b.category || '') || (a.name || '').localeCompare(b.name || ''));
+      $('itemsTbody').innerHTML = list.length ? list.map(i => `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(i.name)}</td><td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full bg-sky-100 text-[#124ec9] font-bold text-[10px]">${esc(i.category || 'Other')}</span></td><td class="py-2.5 px-3">${esc(i.unit || 'pcs')}</td><td class="py-2.5 px-3">${fmt(i.cost)}</td><td class="py-2.5 px-3 font-black text-[#124ec9]">${fmt(i.price)}</td><td class="py-2.5 px-3 font-bold ${i.stock != null && i.stock <= 5 ? 'text-rose-600' : ''}">${i.stock == null ? 'Unlimited' : i.stock}</td><td class="py-2.5 px-3"><div class="flex justify-end gap-2"><button onclick="openItemModal('${esc(i.id)}')" class="btn bg-sky-50 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-pen"></i></button><button onclick="deleteItem('${esc(i.id)}')" class="btn bg-rose-50 text-rose-600 border border-rose-200"><i class="fa-solid fa-trash"></i></button></div></td></tr>`).join('') : `<tr><td colspan="7" class="text-center py-6 text-slate-400">No items yet.</td></tr>`;
+    }
+    function openItemModal(id) { const i = S.items.find(x => x.id === id) || {}; $('itemModalTitle').textContent = id ? 'Edit Item' : 'Add Item'; $('iId').value = id || ''; $('iName').value = i.name || ''; $('iCat').value = i.category || ''; $('iUnit').value = i.unit || 'pcs'; $('iCost').value = i.cost ?? ''; $('iPrice').value = i.price ?? ''; $('iStock').value = i.stock ?? ''; openModal('itemModal'); }
+    async function saveItem(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const { db, doc, collection, addDoc, updateDoc } = window.FB, id = $('iId').value, sv = $('iStock').value.trim();
+      const data = { name: $('iName').value.trim(), category: $('iCat').value.trim() || 'Other', unit: $('iUnit').value, price: num($('iPrice').value), cost: num($('iCost').value), stock: sv === '' ? null : num(sv) };
+      if(!id && S.items.some(x => x.name.toLowerCase() === data.name.toLowerCase() && (x.category || 'Other') === data.category)) return toast('Item already exists');
+      try { if(id) await updateDoc(doc(db, COL.items, id), data); else await addDoc(collection(db, COL.items), { ...data, createdAt: Date.now() }); closeModal('itemModal'); toast('Item saved ✓', true); } catch(err) { toast('Failed: ' + err.message); }
+    }
+    async function deleteItem(id) { if(!needOnline() || !confirm('Delete this item?')) return; try { await window.FB.deleteDoc(window.FB.doc(window.FB.db, COL.items, id)); toast('Item deleted', true); } catch(e) { toast('Failed: ' + e.message); } }
+    function renderBills() {
+      const f = $('billFrom').value, t = $('billTo').value, pf = $('billPayFilter').value || 'ALL', q = ($('billSearch').value || '').toLowerCase();
+      const list = S.bills.filter(b => (!f || b.date >= f) && (!t || b.date <= t) && (pf === 'ALL' || b.payment === pf) && (!q || String(b.no).includes(q) || (b.customerName || '').toLowerCase().includes(q)));
+      $('billKpiCount').textContent = list.length; $('billKpiSales').textContent = fmt(list.reduce((s, b) => s + num(b.total), 0));
+      $('billKpiSplit').textContent = `${fmt(list.filter(b => b.payment === 'Cash').reduce((s, b) => s + num(b.total), 0))} / ${fmt(list.filter(b => b.payment === 'Credit').reduce((s, b) => s + num(b.total), 0))}`;
+      $('billKpiProfit').textContent = fmt(list.reduce((s, b) => s + num(b.profit), 0));
+      $('billsTbody').innerHTML = list.length ? list.slice(0, 200).map(b => `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3 font-black text-[#124ec9]">#${esc(b.no)}</td><td class="py-2.5 px-3">${esc(b.date)} ${esc(b.time)}</td><td class="py-2.5 px-3 font-bold text-[#071e54]">${esc(b.customerName)}</td><td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${b.payment === 'Cash' ? 'bg-sky-100 text-[#0b2a6f]' : 'bg-amber-100 text-amber-800'}">${esc(b.payment)}</span></td><td class="py-2.5 px-3 text-right font-black text-[#0088cc]">${fmt(b.total)}</td><td class="py-2.5 px-3 text-right font-bold text-emerald-600">${fmt(b.profit)}</td><td class="py-2.5 px-3"><div class="flex gap-2 justify-end"><button onclick="viewBill('${esc(b.id)}')" class="btn bg-sky-50 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-eye"></i></button><button onclick="voidBill('${esc(b.id)}')" class="btn bg-rose-50 text-rose-600 border border-rose-200"><i class="fa-solid fa-ban"></i></button></div></td></tr>`).join('') : `<tr><td colspan="7" class="text-center py-6 text-slate-400">No bills found.</td></tr>`;
+    }
+    const viewBill = id => { const b = S.bills.find(x => x.id === id); if(b) openBill(b); };
+    async function voidBill(id) {
+      const b = S.bills.find(x => x.id === id); if(!b || !needOnline() || !confirm(`Cancel bill #${b.no}? Stock, cash & balance will be reversed.`)) return;
+      const { db, doc, runTransaction, increment } = window.FB, sref = doc(db, COL.settings, 'general');
+      try {
+        await runTransaction(db, async tx => {
+          const isn = await Promise.all(b.lines.map(l => tx.get(doc(db, COL.items, l.id)))), pref = b.customerId && b.payment === 'Credit' ? doc(db, COL.parties, b.customerId) : null, ps = pref ? await tx.get(pref) : null;
+          isn.forEach((s, i) => { if(s.exists() && s.data().stock != null) tx.update(s.ref, { stock: increment(b.lines[i].qty) }); });
+          if(b.payment === 'Cash') tx.set(sref, { cashInHand: increment(-num(b.total)) }, { merge: true });
+          if(ps && ps.exists()) tx.update(pref, { currentBalance: increment(ps.data().type === 'Farmer' ? num(b.total) : -num(b.total)) });
+          tx.delete(doc(db, COL.bills, id));
+        });
+        toast('Bill cancelled and reversed', true);
+      } catch(e) { toast('Failed: ' + e.message); }
+    }
+
+    // EXPENSES + STAFF / VEHICLE KHAATE
+    const EXP_CATS = ['Staff Advance', 'Staff Salary', 'Vehicle Diesel / Rent', 'Vehicle Maintenance', 'Chiller Electricity / Generator', 'Lab Testing Chemicals', 'Refreshment / Tea', 'Maintenance / General', 'Other'];
+    function setExpTab(t) { expTab = t; ['all', 'staff', 'vehicles'].forEach(x => $('exp-' + x).classList.toggle('hidden', x !== t)); document.querySelectorAll('.exp-tab').forEach(b => b.className = 'exp-tab btn ' + (b.dataset.et === t ? 'bg-gradient-to-r from-[#0b2a6f] to-[#0099e6] text-white shadow' : 'bg-sky-50 text-[#0b2a6f] border border-sky-200 hover:bg-sky-100')); renderExpAccounts(); }
+    function populateExpAccountDropdown() {
+      const sel = $('expAccountSelect'), keep = sel.value, staff = S.expAccounts.filter(a => a.kind === 'Staff').sort((a, b) => a.name.localeCompare(b.name)), others = S.expAccounts.filter(a => a.kind !== 'Staff').sort((a, b) => a.name.localeCompare(b.name));
+      sel.innerHTML = '<option value="">-- Type Name Manually --</option>' + (staff.length ? `<optgroup label="Staff Members">${staff.map(a => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join('')}</optgroup>` : '') + (others.length ? `<optgroup label="Vehicles & Expense Heads">${others.map(a => `<option value="${esc(a.id)}">${esc(a.name)} (${esc(a.kind)})</option>`).join('')}</optgroup>` : '');
+      if(S.expAccounts.some(a => a.id === keep)) sel.value = keep;
+    }
+    function onExpAccountPick() {
+      const acc = S.expAccounts.find(a => a.id === $('expAccountSelect').value); if(!acc) return;
+      $('expPerson').value = acc.name;
+      if(acc.kind === 'Staff' && !/Staff/.test($('expCategory').value)) $('expCategory').value = 'Staff Advance';
+      if(acc.kind === 'Vehicle' && !/Vehicle/.test($('expCategory').value)) $('expCategory').value = 'Vehicle Diesel / Rent';
+    }
+    const clearExpFilters = () => { $('expFrom').value = ''; $('expTo').value = ''; $('expFilterCat').value = 'ALL'; $('expFilterPerson').value = ''; renderExpenses(); };
+    function expFiltered() {
+      const f = $('expFrom').value, t = $('expTo').value, c = $('expFilterCat').value || 'ALL', p = ($('expFilterPerson').value || '').toLowerCase();
+      return S.expenses.filter(e => (!f || e.date >= f) && (!t || e.date <= t) && (c === 'ALL' || e.category === c) && (!p || (e.person || '').toLowerCase().includes(p) || (e.accountName || '').toLowerCase().includes(p))).sort((a, b) => (a.date === b.date ? (a.timestamp || 0) - (b.timestamp || 0) : (a.date < b.date ? -1 : 1)));
+    }
+    async function handleSaveExpense(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const amt = num($('expAmount').value), cat = $('expCategory').value, acc = S.expAccounts.find(a => a.id === $('expAccountSelect').value);
+      const person = ($('expPerson').value.trim() || (acc ? acc.name : '')).trim();
+      if(!(amt > 0)) return;
+      if((/Staff/.test(cat) || /Vehicle/.test(cat)) && !person) return toast('Enter or select Staff / Vehicle name');
+      const { db, doc, collection, writeBatch, increment } = window.FB, form = e.target, btn = $('expSaveBtn'); btn.disabled = true;
+      try {
+        const b = writeBatch(db);
+        b.set(doc(collection(db, COL.expenses)), { category: cat, person, accountId: acc ? acc.id : '', accountName: acc ? acc.name : person, amount: amt, desc: $('expDesc').value.trim() || '-', timestamp: Date.now(), date: $('expDate').value || localDate() });
+        b.set(doc(db, COL.settings, 'general'), { cashInHand: increment(-amt) }, { merge: true });
+        await b.commit(); form.reset(); $('expDate').value = localDate(); toast('Expense saved, cash reduced & Khata updated ✓', true);
+      } catch(err) { toast('Expense NOT saved: ' + err.message); } finally { btn.disabled = false; }
+    }
+    async function deleteExpense(id) {
+      if(!needOnline() || !confirm('Delete this expense? Cash will be added back.')) return;
+      const x = S.expenses.find(v => v.id === id); if(!x) return;
+      const { db, doc, writeBatch, increment } = window.FB;
+      try { const b = writeBatch(db); b.delete(doc(db, COL.expenses, id)); b.set(doc(db, COL.settings, 'general'), { cashInHand: increment(num(x.amount)) }, { merge: true }); await b.commit(); toast('Expense deleted & cash restored', true); } catch(e) { toast('Failed: ' + e.message); }
+    }
+    function renderExpenses() {
+      const cs = $('expCategory'); if(!cs.options.length) { cs.innerHTML = EXP_CATS.map(c => `<option>${esc(c)}</option>`).join(''); if(!$('expDate').value) $('expDate').value = localDate(); }
+      const curM = localDate().slice(0, 7); if(!$('staffMonthFilter').value) $('staffMonthFilter').value = curM; if(!$('vehMonthFilter').value) $('vehMonthFilter').value = curM;
+      populateExpAccountDropdown();
+      const fc = $('expFilterCat'), keep = fc.value || 'ALL', cats = [...new Set([...EXP_CATS, ...S.expenses.map(e => e.category)])];
+      fc.innerHTML = '<option value="ALL">All categories</option>' + cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      fc.value = cats.includes(keep) ? keep : 'ALL';
+      $('staffList').innerHTML = [...new Set([...S.expAccounts.map(a => a.name), ...S.expenses.map(e => e.person).filter(Boolean)])].map(p => `<option value="${esc(p)}">`).join('');
+
+      const list = expFiltered(), tot = list.reduce((s, e) => s + num(e.amount), 0), staffTot = list.filter(e => /Staff/i.test(e.category)).reduce((s, e) => s + num(e.amount), 0), fuelTot = list.filter(e => /Diesel|Vehicle/i.test(e.category)).reduce((s, e) => s + num(e.amount), 0);
+      $('expKpiTotal').textContent = fmt(tot); $('expKpiCount').textContent = `${list.length} entries`; $('expKpiStaff').textContent = fmt(staffTot); $('expKpiFuel').textContent = fmt(fuelTot); $('expKpiOther').textContent = fmt(tot - staffTot - fuelTot);
+      $('expenseList').innerHTML = list.length ? [...list].reverse().map(i => {
+        const who = i.person || i.accountName || '';
+        return `<tr class="hover:bg-sky-50/60"><td class="py-2.5 px-3 font-mono text-[11px] text-slate-500">${esc(i.date)}</td><td class="py-2.5 px-3"><span class="px-2 py-0.5 rounded-full bg-sky-100 text-[#0b2a6f] font-bold text-[10px]">${esc(i.category)}</span></td><td class="py-2.5 px-3 font-bold text-[#071e54]">${who ? `<button onclick="openExpAccountLedger('${esc(i.accountId || '')}','${esc(who)}')" class="text-[#124ec9] hover:underline font-extrabold">${esc(who)} <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></button>` : '-'}</td><td class="py-2.5 px-3 text-slate-500">${esc(i.desc)}</td><td class="py-2.5 px-3 text-right font-black text-rose-600">${fmt(i.amount)}</td><td class="py-2.5 px-3 text-center"><button onclick="deleteExpense('${esc(i.id)}')" class="text-slate-400 hover:text-rose-600 px-2"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+      }).join('') : `<tr><td colspan="6" class="py-6 text-center text-slate-400">No expenses match this filter.</td></tr>`;
+      renderExpAccounts();
+    }
+    function matchAccountExpenses(acc, nameFallback) {
+      const nm = (acc ? acc.name : nameFallback || '').trim().toLowerCase();
+      return S.expenses.filter(e => (acc && e.accountId && e.accountId === acc.id) || (nm && ((e.person || '').trim().toLowerCase() === nm || (e.accountName || '').trim().toLowerCase() === nm)));
+    }
+    function compiledExpAccounts(kindFilter) {
+      const saved = S.expAccounts.filter(a => kindFilter === 'Staff' ? a.kind === 'Staff' : a.kind !== 'Staff'), seen = new Set(S.expAccounts.map(a => a.name.trim().toLowerCase())), auto = [];
+      S.expenses.forEach(e => { const nm = (e.person || '').trim(); if(!nm || seen.has(nm.toLowerCase())) return; const isStaff = /Staff/i.test(e.category); if((kindFilter === 'Staff') === isStaff) { seen.add(nm.toLowerCase()); auto.push({ id: '', name: nm, kind: isStaff ? 'Staff' : 'Vehicle', phone: '', monthlySalary: 0, note: 'Auto from expenses', virtual: true }); } });
+      return [...saved, ...auto].sort((a, b) => a.name.localeCompare(b.name));
+    }
+    function renderExpAccounts() {
+      const sm = $('staffMonthFilter').value || localDate().slice(0, 7), staffList = compiledExpAccounts('Staff');
+      $('staffAccountsTbody').innerHTML = staffList.length ? staffList.map(a => {
+        const logs = matchAccountExpenses(a.id ? a : null, a.name), mTot = logs.filter(l => (l.date || '').slice(0, 7) === sm).reduce((s, l) => s + num(l.amount), 0), allTot = logs.reduce((s, l) => s + num(l.amount), 0), sal = num(a.monthlySalary), rem = sal > 0 ? sal - mTot : null;
+        return `<tr class="hover:bg-sky-50/60"><td class="py-3 px-3"><button onclick="openExpAccountLedger('${esc(a.id)}','${esc(a.name)}','${esc(sm)}')" class="font-extrabold text-[#124ec9] hover:underline text-sm text-left">${esc(a.name)}</button></td><td class="py-3 px-3"><span class="block font-semibold">${esc(a.note || 'Staff')}</span><span class="text-[10px] text-slate-400">${esc(a.phone || '-')}</span></td><td class="py-3 px-3 text-right font-bold">${sal > 0 ? fmt(sal) : '-'}</td><td class="py-3 px-3 text-right font-black text-rose-600">${fmt(mTot)}</td><td class="py-3 px-3 text-right font-black ${rem !== null && rem < 0 ? 'text-rose-600' : 'text-emerald-600'}">${rem !== null ? fmt(rem) : '-'}</td><td class="py-3 px-3 text-right font-bold text-[#071e54]">${fmt(allTot)}</td><td class="py-3 px-3"><div class="flex justify-center gap-1.5"><button onclick="openExpAccountLedger('${esc(a.id)}','${esc(a.name)}','${esc(sm)}')" class="btn-ssg"><i class="fa-solid fa-book-open"></i> Khata</button><button onclick="quickPayExpAccount('${esc(a.id)}','${esc(a.name)}','Staff')" class="btn bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">+ Pay</button>${a.virtual ? '' : `<button onclick="openExpAccountModal('${esc(a.id)}')" class="btn bg-sky-50 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-pen"></i></button><button onclick="deleteExpAccount('${esc(a.id)}')" class="btn bg-rose-50 text-rose-600 border border-rose-200"><i class="fa-solid fa-trash"></i></button>`}</div></td></tr>`;
+      }).join('') : `<tr><td colspan="7" class="text-center py-6 text-slate-400">No staff accounts yet. Click <strong>Add Staff Member</strong>.</td></tr>`;
+
+      const vm = $('vehMonthFilter').value || localDate().slice(0, 7), vehList = compiledExpAccounts('Vehicle');
+      $('vehAccountsTbody').innerHTML = vehList.length ? vehList.map(a => {
+        const logs = matchAccountExpenses(a.id ? a : null, a.name), mTot = logs.filter(l => (l.date || '').slice(0, 7) === vm).reduce((s, l) => s + num(l.amount), 0), allTot = logs.reduce((s, l) => s + num(l.amount), 0);
+        return `<tr class="hover:bg-sky-50/60"><td class="py-3 px-3"><button onclick="openExpAccountLedger('${esc(a.id)}','${esc(a.name)}','${esc(vm)}')" class="font-extrabold text-[#124ec9] hover:underline text-sm text-left">${esc(a.name)}</button></td><td class="py-3 px-3"><span class="px-2 py-0.5 rounded-full bg-sky-100 text-[#0b2a6f] font-bold text-[10px]">${esc(a.kind)}</span> <span class="text-slate-400 ml-1">${esc(a.note || '')}</span></td><td class="py-3 px-3 text-center font-bold">${logs.length}</td><td class="py-3 px-3 text-right font-black text-[#124ec9]">${fmt(mTot)}</td><td class="py-3 px-3 text-right font-black text-rose-600">${fmt(allTot)}</td><td class="py-3 px-3"><div class="flex justify-center gap-1.5"><button onclick="openExpAccountLedger('${esc(a.id)}','${esc(a.name)}','${esc(vm)}')" class="btn-ssg"><i class="fa-solid fa-book-open"></i> Khata</button><button onclick="quickPayExpAccount('${esc(a.id)}','${esc(a.name)}','Vehicle')" class="btn bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200">+ Expense</button>${a.virtual ? '' : `<button onclick="openExpAccountModal('${esc(a.id)}')" class="btn bg-sky-50 text-[#124ec9] border border-sky-200"><i class="fa-solid fa-pen"></i></button><button onclick="deleteExpAccount('${esc(a.id)}')" class="btn bg-rose-50 text-rose-600 border border-rose-200"><i class="fa-solid fa-trash"></i></button>`}</div></td></tr>`;
+      }).join('') : `<tr><td colspan="6" class="text-center py-6 text-slate-400">No vehicles or custom heads yet. Click <strong>Add Vehicle / Head</strong>.</td></tr>`;
+    }
+    function toggleEaFields() { const k = $('eaKind').value; $('eaStaffCols').classList.toggle('hidden', k !== 'Staff'); $('eaNoteLbl').textContent = k === 'Staff' ? 'Designation / Role' : (k === 'Vehicle' ? 'Vehicle Plate No / Model' : 'Notes'); }
+    function openExpAccountModal(id, defaultKind) {
+      const a = id ? S.expAccounts.find(x => x.id === id) : null;
+      $('eaModalTitle').textContent = a ? 'Edit Khata Account' : 'Create Staff / Vehicle Khata'; $('eaId').value = a ? a.id : ''; $('eaKind').value = a ? a.kind : (defaultKind || 'Staff');
+      $('eaName').value = a ? a.name : ''; $('eaPhone').value = a ? (a.phone || '') : ''; $('eaSalary').value = a && num(a.monthlySalary) > 0 ? a.monthlySalary : ''; $('eaNote').value = a ? (a.note || '') : '';
+      toggleEaFields(); openModal('expAccountModal');
+    }
+    async function saveExpAccount(e) {
+      e.preventDefault(); if(!needOnline()) return;
+      const id = $('eaId').value, kind = $('eaKind').value, name = $('eaName').value.trim(); if(!name) return;
+      if(!id && S.expAccounts.some(a => a.name.toLowerCase() === name.toLowerCase())) return toast('This account already exists');
+      const data = { kind, name, phone: $('eaPhone').value.trim(), monthlySalary: kind === 'Staff' ? num($('eaSalary').value) : 0, note: $('eaNote').value.trim() }, btn = $('eaSaveBtn'); btn.disabled = true;
+      try { if(id) await window.FB.updateDoc(window.FB.doc(window.FB.db, COL.expAccounts, id), data); else await window.FB.addDoc(window.FB.collection(window.FB.db, COL.expAccounts), { ...data, createdAt: Date.now() }); closeModal('expAccountModal'); toast(`${name} Khata saved ✓`, true); }
+      catch(err) { toast('Failed: ' + err.message); } finally { btn.disabled = false; }
+    }
+    async function deleteExpAccount(id) { if(!needOnline() || !confirm('Delete this Khata account? Past expenses remain intact.')) return; try { await window.FB.deleteDoc(window.FB.doc(window.FB.db, COL.expAccounts, id)); toast('Account deleted', true); } catch(e) { toast('Failed: ' + e.message); } }
+    function quickPayExpAccount(id, name, kind) { setExpTab('all'); $('expAccountSelect').value = id || ''; $('expPerson').value = name; $('expCategory').value = kind === 'Staff' ? 'Staff Advance' : 'Vehicle Diesel / Rent'; $('expAmount').focus(); }
+    function openExpAccountLedger(id, name, monthFilter) {
+      const acc = id ? S.expAccounts.find(x => x.id === id) : S.expAccounts.find(x => x.name.toLowerCase() === (name || '').toLowerCase());
+      const dispName = acc ? acc.name : name, allLogs = matchAccountExpenses(acc, dispName).sort((a, b) => a.date === b.date ? (a.timestamp || 0) - (b.timestamp || 0) : (a.date < b.date ? -1 : 1));
+      const m = monthFilter || localDate().slice(0, 7), mTot = allLogs.filter(l => (l.date || '').slice(0, 7) === m).reduce((s, l) => s + num(l.amount), 0), allTot = allLogs.reduce((s, l) => s + num(l.amount), 0), sal = acc ? num(acc.monthlySalary) : 0;
+      $('ealTitle').textContent = `${dispName} – Complete Khata`; $('ealMeta').textContent = `${acc ? acc.kind : 'Account'}${acc && acc.phone ? ' • ' + acc.phone : ''}${acc && acc.note ? ' • ' + acc.note : ''} • ${S.config.bizName}`;
+      $('ealSummary').innerHTML = `<div class="bg-sky-50 p-3 rounded-2xl border border-sky-200"><span class="text-slate-400 block text-[10px] uppercase font-bold">${esc(m)} Total</span><strong class="text-base font-black text-rose-600">${fmt(mTot)}</strong></div><div class="bg-sky-50 p-3 rounded-2xl border border-sky-200"><span class="text-slate-400 block text-[10px] uppercase font-bold">All-Time Paid (${allLogs.length})</span><strong class="text-base font-black text-[#071e54]">${fmt(allTot)}</strong></div>` + (sal > 0 ? `<div class="bg-cyan-50 p-3 rounded-2xl border border-cyan-200"><span class="text-slate-400 block text-[10px] uppercase font-bold">Salary (${fmt(sal)}) − Taken</span><strong class="text-base font-black ${sal - mTot < 0 ? 'text-rose-600' : 'text-emerald-600'}">${fmt(sal - mTot)}</strong></div>` : '');
+      let run = 0;
+      $('ealBody').innerHTML = allLogs.length ? allLogs.map(l => { run += num(l.amount); return `<tr><td class="py-2 px-3 font-mono text-[11px]">${esc(l.date)}</td><td class="py-2 px-3 font-semibold">${esc(l.category)}</td><td class="py-2 px-3">${esc(l.desc)}</td><td class="py-2 px-3 text-right font-bold text-rose-600">${fmt(l.amount)}</td><td class="py-2 px-3 text-right font-black text-[#071e54]">${fmt(run)}</td></tr>`; }).join('') : `<tr><td colspan="5" class="text-center py-6 text-slate-400">No entries yet for ${esc(dispName)}.</td></tr>`;
+      activeEal = { name: dispName, phone: acc ? acc.phone : '', month: m, mTot, allTot, sal }; $('ealWaBtn').classList.toggle('hidden', !(acc && acc.phone)); openModal('expAccountLedgerModal');
+    }
+    function shareExpAccountWA() {
+      if(!activeEal) return;
+      const e = activeEal, ph = waPhone(e.phone);
+      let txt = `*${S.config.bizName} - Account Khata*\nName: ${e.name}\nMonth (${e.month}): ${fmt(e.mTot)}\nAll-Time Total: ${fmt(e.allTot)}`;
+      if(e.sal > 0) txt += `\nMonthly Salary: ${fmt(e.sal)}\nRemaining: *${fmt(e.sal - e.mTot)}*`;
+      window.open(`https://wa.me/${ph}?text=${encodeURIComponent(txt)}`, '_blank');
+    }
+    function openExpStatement() {
+      const list = expFiltered(); let run = 0; const byCat = {}, byPerson = {};
+      const rows = list.map(e => { run += num(e.amount); byCat[e.category] = (byCat[e.category] || 0) + num(e.amount); const w = e.person || e.accountName; if(w) byPerson[w] = (byPerson[w] || 0) + num(e.amount); return `<tr><td class="py-1.5 px-2">${esc(e.date)}</td><td class="py-1.5 px-2 font-semibold">${esc(e.category)}</td><td class="py-1.5 px-2">${esc(w || '-')}</td><td class="py-1.5 px-2">${esc(e.desc)}</td><td class="py-1.5 px-2 text-right text-rose-600 font-bold">${fmt(e.amount)}</td><td class="py-1.5 px-2 text-right font-black text-[#071e54]">${fmt(run)}</td></tr>`; }).join('');
+      const sum = o => Object.entries(o).sort((a, b) => b[1] - a[1]).map(([k, v]) => `<tr class="border-b border-sky-100"><td class="py-1.5 px-2">${esc(k)}</td><td class="py-1.5 px-2 text-right font-bold text-[#0b2a6f]">${fmt(v)}</td></tr>`).join('');
+      $('expStmtBody').innerHTML = `<div class="flex items-center gap-3 mb-4 pb-3 border-b-2 border-sky-200"><img src="${LOGO}" class="w-14 h-14 rounded-full"><div><h3 class="font-black text-lg text-[#071e54]">${esc(S.config.bizName)} – Expense Statement</h3><p class="text-[11px] text-[#124ec9] font-semibold">${$('expFrom').value || 'Start'} to ${$('expTo').value || 'Today'} • Category: ${esc($('expFilterCat').value === 'ALL' ? 'All' : $('expFilterCat').value)}</p></div></div><table class="w-full text-left border border-sky-200"><thead class="thead"><tr><th class="py-2 px-2">Date</th><th class="py-2 px-2">Category</th><th class="py-2 px-2">Person / Vehicle</th><th class="py-2 px-2">Details</th><th class="py-2 px-2 text-right">Amount</th><th class="py-2 px-2 text-right">Running</th></tr></thead><tbody class="divide-y divide-sky-100">${rows || '<tr><td colspan="6" class="text-center py-4 text-slate-400">No records.</td></tr>'}</tbody></table><p class="text-sm font-black mt-3 text-right text-[#071e54]">Grand Total: ${fmt(run)}</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-3 border-t border-sky-200"><div class="bg-sky-50/70 p-3 rounded-2xl border border-sky-200"><h4 class="font-extrabold text-[#071e54] mb-1">Summary by Category</h4><table class="w-full">${sum(byCat)}</table></div><div class="bg-sky-50/70 p-3 rounded-2xl border border-sky-200"><h4 class="font-extrabold text-[#071e54] mb-1">Summary by Staff / Vehicle</h4><table class="w-full">${sum(byPerson) || '<tr><td class="text-slate-400 py-1">No staff/vehicle recorded</td></tr>'}</table></div></div>`;
+      openModal('expStmtModal');
+    }
+    function exportExpCSV() {
+      const list = expFiltered(); if(!list.length) return toast('Nothing to export');
+      const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      let csv = "Date,Category,Staff_Vehicle,Details,Amount\n" + list.map(e => [q(e.date), q(e.category), q(e.person || e.accountName), q(e.desc), e.amount].join(',')).join('\n');
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })); a.download = `Expenses_${localDate()}.csv`; a.click();
+    }
+    function exportCSV() {
+      if(!S.collections.length) return toast('No entries to export.');
+      const q = v => `"${String(v ?? '').replace(/"/g, '""')}"`;
+      let csv = "Date,Time,Agent,Farmer,Shift,Mode,Qty,Fat,LR,TS,13TS_Vol,Rate,Total\n";
+      S.collections.forEach(c => { const r = entryRT(c); csv += [q(c.date), q(c.time), q(c.agentName), q(c.farmerName), q(c.shift), q(c.mode), c.qty, c.fat, c.lr, c.ts, c.ts13Vol, r.rate, r.total].join(',') + '\n'; });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })); a.download = `Milk_Collections_${localDate()}.csv`; a.click();
+    }
+
+    window.onload = () => { toggleSaleMode(); renderConfig(); setPosTab('sell'); setPartyTab('Farmer'); setExpTab('all'); renderExpenses(); renderBalanceSheet(); };
+  </script>
+</body>
+</html>
