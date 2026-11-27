@@ -589,6 +589,7 @@
                             <option value="Local Bakery Items">Local Bakery Items</option>
                             <option value="Savory Bakery Items">Savory Bakery Items</option>
                             <option value="Fast Food">Fast Food</option>
+                            <option value="Eggs">Eggs</option>
                             <option value="Drinks">Drinks</option>
                             <option value="Special Discount">Special Discount</option>
                             <option value="__other__">Other</option>
@@ -597,9 +598,22 @@
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1" data-translate="initial_cooked_lbl">Initial Stock</label>
-                        <input type="number" id="new-item-cooked" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
+                        <input type="number" id="new-item-cooked" value="0" step="any" class="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 focus:outline-none focus:border-blue-500 text-slate-800">
                     </div>
                     
+                    <div class="md:col-span-2 bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-2">
+                        <label class="flex items-center gap-2 font-bold text-slate-700 text-xs cursor-pointer">
+                            <input type="checkbox" id="new-item-weighted" onchange="toggleWeightedNewItem()" class="w-4 h-4">
+                            Sold by weight (1 KG / &frac12; KG / 1 Pao) &mdash; stock is counted in KG
+                        </label>
+                        <div id="new-item-weight-box" class="hidden">
+                            <div class="grid grid-cols-3 gap-2">
+                                <div><label class="text-[10px] text-slate-500 font-bold uppercase block mb-1">1 KG Price (Rs.)</label><input type="number" id="new-item-p1000" placeholder="1750" class="w-full bg-white border border-slate-200 rounded-lg p-2 focus:outline-none focus:border-blue-500 text-slate-800"></div>
+                                <div><label class="text-[10px] text-slate-500 font-bold uppercase block mb-1">&frac12; KG Price (Rs.)</label><input type="number" id="new-item-p500" placeholder="880" class="w-full bg-white border border-slate-200 rounded-lg p-2 focus:outline-none focus:border-blue-500 text-slate-800"></div>
+                                <div><label class="text-[10px] text-slate-500 font-bold uppercase block mb-1">1 Pao Price (Rs.)</label><input type="number" id="new-item-p250" placeholder="450" class="w-full bg-white border border-slate-200 rounded-lg p-2 focus:outline-none focus:border-blue-500 text-slate-800"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="md:col-span-2">
                         <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block mb-1">
                             <i class="fa-solid fa-image text-blue-600 mr-1"></i> Item Image (Upload or enter Path/URL)
@@ -888,7 +902,7 @@
             if (catSel) {
                 catSel.innerHTML = [
                     'Bread & Bakery', 'Cakes', 'Pastries & Sweet Items',
-                    'Biscuits & Cookies', 'Local Bakery Items', 'Savory Bakery Items', 'Fast Food',
+                    'Biscuits & Cookies', 'Local Bakery Items', 'Savory Bakery Items', 'Fast Food', 'Eggs',
                     'Drinks', 'Special Discount'
                 ].map(c => `<option value="${c}">${c}</option>`).join('') + '<option value="__other__">Other</option>';
             }
@@ -960,7 +974,7 @@
             }
         };
 
-        const CATALOG_VERSION = 'v6_fastfood_papay';
+        const CATALOG_VERSION = 'v7_weight_menu';
         const DEFAULT_MENU_ITEMS = [
             // Bread & Bakery
             [1, "Plain Bread", "Bread & Bakery", 120, "896001"],
@@ -970,7 +984,6 @@
             [5, "Burger Buns", "Bread & Bakery", 120, "896005"],
             [6, "Hot Dog Buns", "Bread & Bakery", 130, "896006"],
             [7, "Rusk", "Bread & Bakery", 300, "896007"],
-            [8, "Cake Rusk", "Bread & Bakery", 350, "896008"],
             [9, "Coconut Rusk", "Bread & Bakery", 360, "896009"],
             [10, "Khari", "Bread & Bakery", 240, "896010"],
             [11, "Puff Pastry", "Bread & Bakery", 90, "896011"],
@@ -988,6 +1001,13 @@
             [94, "Baguette", "Bread & Bakery", 220, "896094"],
             [95, "Pizza Base", "Bread & Bakery", 200, "896095"],
             [96, "Fruit Rusk", "Bread & Bakery", 330, "896096"],
+            [227, "Cheeni Paratha", "Bread & Bakery", 80, "896227", 100],
+            [228, "Sheermal", "Bread & Bakery", 60, "896228", 100],
+            [229, "Bun", "Bread & Bakery", 40, "896229", 100],
+            [230, "Maska Bun", "Bread & Bakery", 60, "896230", 100],
+            [231, "Large Bread", "Bread & Bakery", 150, "896231", 100],
+            [232, "Medium Bread", "Bread & Bakery", 120, "896232", 100],
+            [233, "Small Bread", "Bread & Bakery", 100, "896233", 100],
             // Cakes
             [16, "Plain Cake", "Cakes", 650, "896016"],
             [17, "Chocolate Cake", "Cakes", 1200, "896017"],
@@ -1045,78 +1065,53 @@
             [115, "Black Forest Pastry", "Pastries & Sweet Items", 170, "896115"],
             [116, "Red Velvet Pastry", "Pastries & Sweet Items", 180, "896116"],
             // Biscuits & Cookies
-            [47, "Plain Biscuits", "Biscuits & Cookies", 250, "896047"],
-            [48, "Butter Cookies", "Biscuits & Cookies", 320, "896048"],
-            [49, "Coconut Cookies", "Biscuits & Cookies", 300, "896049"],
-            [50, "Chocolate Cookies", "Biscuits & Cookies", 340, "896050"],
-            [51, "Almond Cookies", "Biscuits & Cookies", 380, "896051"],
-            [52, "Cashew Cookies", "Biscuits & Cookies", 420, "896052"],
-            [53, "Peanut Cookies", "Biscuits & Cookies", 320, "896053"],
-            [54, "Jeera Biscuits", "Biscuits & Cookies", 280, "896054"],
-            [55, "Nan Khatai", "Biscuits & Cookies", 280, "896055"],
-            [56, "Macarons", "Biscuits & Cookies", 450, "896056"],
-            [117, "Ajwain Biscuits", "Biscuits & Cookies", 280, "896117"],
-            [118, "Atta Biscuits", "Biscuits & Cookies", 260, "896118"],
-            [119, "Ghee Biscuits", "Biscuits & Cookies", 340, "896119"],
-            [120, "Cream Biscuits", "Biscuits & Cookies", 260, "896120"],
-            [121, "Choco Chip Cookies", "Biscuits & Cookies", 360, "896121"],
-            [122, "Oatmeal Cookies", "Biscuits & Cookies", 340, "896122"],
-            [123, "Dry Fruit Biscuits", "Biscuits & Cookies", 400, "896123"],
-            [124, "Salted Biscuits", "Biscuits & Cookies", 240, "896124"],
-            [125, "Shakar Para", "Biscuits & Cookies", 300, "896125"],
-                        [157, "Jam Full Biscuit", "Biscuits & Cookies", 300, "896157", 100],
-            [158, "Chocolate Fruit Biscuit", "Biscuits & Cookies", 320, "896158", 100],
-            [159, "Carella Biscuit", "Biscuits & Cookies", 300, "896159", 100],
-            [160, "Ringo Biscuit", "Biscuits & Cookies", 300, "896160", 100],
-            [161, "Marble Biscuit", "Biscuits & Cookies", 300, "896161", 100],
-            [162, "Check Biscuit", "Biscuits & Cookies", 300, "896162", 100],
-            [163, "Pista Biscuit", "Biscuits & Cookies", 340, "896163", 100],
-            [164, "Til Wale Biscuit", "Biscuits & Cookies", 300, "896164", 100],
-            [165, "Phali Wale Biscuit", "Biscuits & Cookies", 300, "896165", 100],
-            [166, "Walnut Cookies", "Biscuits & Cookies", 400, "896166", 100],
-            [167, "Fauji Corn Flakes Cookies", "Biscuits & Cookies", 320, "896167", 100],
-            [168, "Kalonji Biscuit", "Biscuits & Cookies", 280, "896168", 100],
             [169, "Slice Papay", "Biscuits & Cookies", 150, "896169", 37],
             [170, "Candy Packet Papay", "Biscuits & Cookies", 150, "896170", 6],
             [171, "Goal Papay", "Biscuits & Cookies", 150, "896171", 8],
             [172, "Budget Papay", "Biscuits & Cookies", 120, "896172", 9],
             [173, "Badam Papay", "Biscuits & Cookies", 200, "896173", 9],
-// Local Bakery Items
-            [57, "Gulab Jamun", "Local Bakery Items", 350, "896057"],
-            [58, "Jalebi", "Local Bakery Items", 300, "896058"],
-            [59, "Rasgulla", "Local Bakery Items", 350, "896059"],
-            [60, "Barfi", "Local Bakery Items", 400, "896060"],
-            [61, "Gajar Halwa", "Local Bakery Items", 450, "896061"],
-            [62, "Patisa", "Local Bakery Items", 380, "896062"],
-            [63, "Soan Papdi", "Local Bakery Items", 380, "896063"],
-            [64, "Coconut Barfi", "Local Bakery Items", 400, "896064"],
-            [65, "Besan Barfi", "Local Bakery Items", 380, "896065"],
-            [126, "Motichoor Laddu", "Local Bakery Items", 400, "896126"],
-            [127, "Besan Laddu", "Local Bakery Items", 380, "896127"],
-            [128, "Imarti", "Local Bakery Items", 350, "896128"],
-            [129, "Kalakand", "Local Bakery Items", 500, "896129"],
-            [130, "Milk Cake", "Local Bakery Items", 500, "896130"],
-            [131, "Cham Cham", "Local Bakery Items", 380, "896131"],
-            [132, "Sohan Halwa", "Local Bakery Items", 600, "896132"],
-            [133, "Khoya Barfi", "Local Bakery Items", 450, "896133"],
-            [134, "Pista Barfi", "Local Bakery Items", 600, "896134"],
-                        [141, "Akhrot Halwa", "Local Bakery Items", 600, "896141", 100],
-            [142, "Habshi Halwa", "Local Bakery Items", 550, "896142", 100],
-            [143, "Besan Patisa", "Local Bakery Items", 380, "896143", 100],
-            [144, "Milky Patisa", "Local Bakery Items", 400, "896144", 100],
-            [145, "Kalakand Sada", "Local Bakery Items", 500, "896145", 100],
-            [146, "Kesar Papri", "Local Bakery Items", 420, "896146", 100],
-            [147, "Pan Pera", "Local Bakery Items", 450, "896147", 100],
-            [148, "Gutki Pera", "Local Bakery Items", 450, "896148", 100],
-            [149, "Gol Pera", "Local Bakery Items", 420, "896149", 100],
-            [150, "Badami Pera", "Local Bakery Items", 500, "896150", 100],
-            [151, "Kala Jamun", "Local Bakery Items", 380, "896151", 100],
-            [152, "Choti Jamun", "Local Bakery Items", 330, "896152", 100],
-            [153, "Bengali Cham Cham", "Local Bakery Items", 400, "896153", 100],
-            [154, "Gulabi Kheer Mohan", "Local Bakery Items", 450, "896154", 100],
-            [155, "Malai Chop", "Local Bakery Items", 450, "896155", 100],
-            [156, "Choti Cham Cham", "Local Bakery Items", 350, "896156", 100],
-// Savory Bakery Items
+            [209, "Jam Biscuit", "Biscuits & Cookies", 1800, "896209", 100, 900, 450],
+            [210, "Chocolate Fruit", "Biscuits & Cookies", 1800, "896210", 100, 900, 450],
+            [211, "Carella", "Biscuits & Cookies", 1800, "896211", 100, 900, 450],
+            [212, "Ringo", "Biscuits & Cookies", 1800, "896212", 100, 900, 450],
+            [213, "Marble Biscuit", "Biscuits & Cookies", 1800, "896213", 100, 900, 450],
+            [214, "Check Biscuit", "Biscuits & Cookies", 1800, "896214", 100, 900, 450],
+            [215, "Pista Biscuit", "Biscuits & Cookies", 1800, "896215", 100, 900, 450],
+            [216, "Till Wale", "Biscuits & Cookies", 1800, "896216", 100, 900, 450],
+            [217, "Phali Wale", "Biscuits & Cookies", 1800, "896217", 100, 900, 450],
+            [218, "Zeera Biscuit", "Biscuits & Cookies", 1800, "896218", 100, 900, 450],
+            [219, "Kalonji Biscuit", "Biscuits & Cookies", 1800, "896219", 100, 900, 450],
+            [220, "Chocolate Cookies", "Biscuits & Cookies", 2000, "896220", 100, 1000, 500],
+            [221, "Almond Cookies", "Biscuits & Cookies", 2000, "896221", 100, 1000, 500],
+            [222, "Walnut Cookies", "Biscuits & Cookies", 2000, "896222", 100, 1000, 500],
+            [223, "Foji Corn Flakes Cookies", "Biscuits & Cookies", 2000, "896223", 100, 1000, 500],
+            [224, "Cake Rusk", "Biscuits & Cookies", 2000, "896224", 100, 1000, 500],
+            [225, "Pape (250 Gram)", "Biscuits & Cookies", 150, "896225", 100],
+            [226, "Peanut Pape (250 Gram)", "Biscuits & Cookies", 160, "896226", 100],
+            // Local Bakery Items
+            [187, "Akhrodi Halwa", "Local Bakery Items", 2000, "896187", 100, 1000, 500],
+            [188, "Habshi Halwa", "Local Bakery Items", 1800, "896188", 100, 900, 450],
+            [189, "Besan Laddu", "Local Bakery Items", 1750, "896189", 100, 880, 450],
+            [190, "Besan Patisa", "Local Bakery Items", 1750, "896190", 100, 880, 450],
+            [191, "Milky Patisa", "Local Bakery Items", 1750, "896191", 100, 880, 450],
+            [192, "Kalakand Sada", "Local Bakery Items", 1750, "896192", 100, 880, 450],
+            [193, "Burfi", "Local Bakery Items", 1750, "896193", 100, 880, 450],
+            [194, "Kesar Papri", "Local Bakery Items", 1750, "896194", 100, 880, 450],
+            [195, "Pan Pera", "Local Bakery Items", 1750, "896195", 100, 880, 450],
+            [196, "Gotki Pera", "Local Bakery Items", 1750, "896196", 100, 880, 450],
+            [197, "Gol Pera", "Local Bakery Items", 1750, "896197", 100, 880, 450],
+            [198, "Badami Pera", "Local Bakery Items", 1750, "896198", 100, 880, 450],
+            [199, "Gulab Jamun", "Local Bakery Items", 1750, "896199", 100, 880, 450],
+            [200, "Kala Jamun", "Local Bakery Items", 1750, "896200", 100, 880, 450],
+            [201, "Choti Jamun", "Local Bakery Items", 1750, "896201", 100, 880, 450],
+            [202, "Cham Cham", "Local Bakery Items", 1750, "896202", 100, 880, 450],
+            [203, "Rasgullah", "Local Bakery Items", 1750, "896203", 100, 880, 450],
+            [204, "Bangali Cham Cham", "Local Bakery Items", 1750, "896204", 100, 880, 450],
+            [205, "Gulabi Kheer Moon", "Local Bakery Items", 1750, "896205", 100, 880, 450],
+            [206, "Malai Chanp", "Local Bakery Items", 1750, "896206", 100, 880, 450],
+            [207, "Choti Cham Cham", "Local Bakery Items", 1750, "896207", 100, 880, 450],
+            [208, "Moti Choor Laddu", "Local Bakery Items", 1750, "896208", 100, 880, 450],
+            // Savory Bakery Items
             [66, "Chicken Sandwich", "Savory Bakery Items", 220, "896066"],
             [68, "Vegetable Sandwich", "Savory Bakery Items", 180, "896068"],
             [135, "Aloo Samosa", "Savory Bakery Items", 40, "896135"],
@@ -1136,6 +1131,8 @@
             [184, "Chicken Wings", "Fast Food", 400, "896184"],
             [185, "Club Sandwich", "Fast Food", 350, "896185"],
             [186, "Chicken Roll", "Fast Food", 250, "896186"],
+            // Eggs
+            [241, "Egg", "Eggs", 25, "896241", 100],
             // Drinks
             [78, "Tea", "Drinks", 70, "896078"],
             [79, "Green Tea", "Drinks", 80, "896079"],
@@ -1144,10 +1141,16 @@
             [82, "Milkshake", "Drinks", 280, "896082"],
             [83, "Chocolate Shake", "Drinks", 300, "896083"],
             [84, "Fresh Juice", "Drinks", 220, "896084"],
-            [85, "Soft Drink", "Drinks", 90, "896085"],
-            [86, "Mineral Water", "Drinks", 60, "896086"]
-        ].map(([id, name, category, price, barcode, cooked]) => ({
-            id, name, category, price, cooked: cooked || 0, sold: 0, barcode, image: ""
+            [234, "Cold Drink - 345 ML", "Drinks", 100, "896234", 100],
+            [235, "Cold Drink - 120 ML", "Drinks", 120, "896235", 100],
+            [236, "Cold Drink - 1 LTR", "Drinks", 160, "896236", 100],
+            [237, "Cold Drink - 1.5 LTR", "Drinks", 220, "896237", 100],
+            [238, "Cold Drink - Jumbo", "Drinks", 290, "896238", 100],
+            [239, "Water - 500 ML", "Drinks", 50, "896239", 100],
+            [240, "Water - 1.5 LTR", "Drinks", 100, "896240", 100]
+        ].map(([id, name, category, price, barcode, cooked, p500, p250]) => ({
+            id, name, category, price, cooked: cooked || 0, sold: 0, barcode, image: "",
+            ...(p500 != null ? { weightBased: true, p1000: price, p500, p250 } : {})
         }));
 
         let menuItems = DEFAULT_MENU_ITEMS.map(i => ({ ...i }));
@@ -1171,6 +1174,42 @@
         let ledgerClickTimer = null;
         let pendingCheckoutOrder = null;
 
+        /* ---------- Weight-based items (1 KG / 1/2 KG / 1 Pao) ---------- */
+        const WUNITS = {
+            '1kg':  { kg: 1,    key: 'p1000', short: '1 KG',  label: '1 KG' },
+            '500g': { kg: 0.5,  key: 'p500',  short: '\u00BD KG', label: '\u00BD KG' },
+            '250g': { kg: 0.25, key: 'p250',  short: '1 Pao', label: '1 Pao (\u00BC KG)' }
+        };
+        function fmtKg(n) { const v = Math.round((parseFloat(n) || 0) * 100) / 100; return String(v); }
+        function cartKgFor(itemId) {
+            return activeCart.filter(c => Number(c.id) === Number(itemId)).reduce((t, c) => t + c.qty * (c.unitKg || 1), 0);
+        }
+        function sameLine(c, id, unit) { return Number(c.id) === Number(id) && String(c.unit || '') === String(unit || ''); }
+        function weightChips(item) {
+            const mk = (k) => { const u = WUNITS[k]; return `<button type="button" onclick="event.stopPropagation();addFoodToCart(${item.id},'${k}')" class="py-1.5 px-1 rounded-lg border border-blue-200 bg-blue-50 hover:bg-blue-700 hover:text-white text-blue-800 text-[10px] font-extrabold leading-tight transition-all"><span class="block">${u.short}</span><span class="block text-[11px]">Rs.${item[u.key]}</span></button>`; };
+            return `<div class="grid grid-cols-3 gap-1.5 mt-3">${mk('1kg')}${mk('500g')}${mk('250g')}</div>`;
+        }
+        window.openWeightPicker = function (itemId) {
+            const it = menuItems.find(i => Number(i.id) === Number(itemId)); if (!it || !it.weightBased) return;
+            const old = document.getElementById('weight-picker'); if (old) old.remove();
+            const avail = (parseFloat(it.cooked) || 0) - (parseFloat(it.sold) || 0) - cartKgFor(it.id);
+            const safeName = String(it.name).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+            const m = document.createElement('div'); m.id = 'weight-picker';
+            m.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:100000;display:flex;align-items:center;justify-content:center;padding:16px';
+            m.onclick = (e) => { if (e.target === m) m.remove(); };
+            const btns = Object.keys(WUNITS).map(k => {
+                const u = WUNITS[k]; const off = u.kg > avail + 1e-9;
+                return `<button type="button" ${off ? 'disabled' : ''} onclick="addFoodToCart(${it.id},'${k}');document.getElementById('weight-picker').remove()" style="display:flex;justify-content:space-between;width:100%;padding:12px 14px;margin-bottom:8px;border-radius:12px;border:1px solid #bfdbfe;background:${off ? '#f1f5f9' : '#eff6ff'};color:${off ? '#94a3b8' : '#1e3a8a'};font-weight:800;font-size:14px;cursor:${off ? 'not-allowed' : 'pointer'}"><span>${u.label}</span><span>Rs. ${it[u.key]}</span></button>`;
+            }).join('');
+            m.innerHTML = `<div style="background:#fff;border-radius:16px;max-width:340px;width:100%;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.3)"><div style="font-weight:900;font-size:16px;color:#1e3a8a">${safeName}</div><div style="font-size:11px;color:#64748b;margin:2px 0 12px">Select weight &middot; ${fmtKg(Math.max(0, avail))} KG available</div>${btns}<button type="button" onclick="document.getElementById('weight-picker').remove()" style="width:100%;padding:9px;border-radius:12px;border:0;background:#f1f5f9;color:#475569;font-weight:800;font-size:12px;cursor:pointer">Cancel</button></div>`;
+            document.body.appendChild(m);
+        };
+        window.toggleWeightedNewItem = function () {
+            const on = !!(byId('new-item-weighted') && byId('new-item-weighted').checked);
+            const box = byId('new-item-weight-box'); if (box) box.classList.toggle('hidden', !on);
+            const pr = byId('new-item-price'); if (pr) { pr.disabled = on; pr.style.opacity = on ? '0.4' : '1'; }
+        };
+
         function buildUpgradedMenu(existingList) {
             const byName = new Map();
             (existingList || []).forEach(it => {
@@ -1182,8 +1221,8 @@
                 if (!prev) return { ...def };
                 return {
                     ...def,
-                    cooked: parseInt(prev.cooked) || 0,
-                    sold: parseInt(prev.sold) || 0,
+                    cooked: (def.weightBased && !prev.weightBased) ? def.cooked : (parseFloat(prev.cooked) || 0),
+                    sold: (def.weightBased && !prev.weightBased) ? 0 : (parseFloat(prev.sold) || 0),
                     image: prev.image || "",
                     description: prev.description || "",
                     barcode: (prev.barcode && String(prev.barcode).trim()) ? String(prev.barcode).trim() : def.barcode
@@ -1232,11 +1271,11 @@
 
         window.refreshDetailTotals = function () {
             let cooked = 0, sold = 0;
-            menuItems.forEach(i => { cooked += parseInt(i.cooked) || 0; sold += parseInt(i.sold) || 0; });
+            menuItems.forEach(i => { cooked += parseFloat(i.cooked) || 0; sold += parseFloat(i.sold) || 0; });
             const a = byId('detail-total-items'), b = byId('detail-total-cooked'), c = byId('detail-total-sold');
             if (a) a.textContent = menuItems.length;
-            if (b) b.textContent = `${cooked} Pcs`;
-            if (c) c.textContent = `${sold} Pcs`;
+            if (b) b.textContent = `${fmtKg(cooked)} Pcs`;
+            if (c) c.textContent = `${fmtKg(sold)} Pcs`;
         };
 
         /* ---------- Carousel ---------- */
@@ -1248,8 +1287,8 @@
             const n = byId('carousel-item-name'), c = byId('carousel-item-cat'), l = byId('carousel-plates-left'), s = byId('carousel-plates-sold');
             if (n) n.textContent = it.name;
             if (c) c.textContent = it.category;
-            if (l) l.textContent = (parseInt(it.cooked) || 0) - (parseInt(it.sold) || 0);
-            if (s) s.textContent = parseInt(it.sold) || 0;
+            if (l) l.textContent = fmtKg((parseFloat(it.cooked) || 0) - (parseFloat(it.sold) || 0));
+            if (s) s.textContent = fmtKg(it.sold);
         };
         window.scrollCarousel = function (dir) {
             if (!menuItems.length) return;
@@ -1388,10 +1427,10 @@
                     <b class="text-slate-800 leading-tight">${i.name}</b>
                     <button type="button" onclick="deleteMenuItem(${i.id})" class="text-red-500 hover:text-red-700" title="Delete item"><i class="fa-solid fa-trash-can"></i></button>
                 </div>
-                <div class="text-[9px] text-slate-400 uppercase font-bold">${i.category} &middot; Sold: ${i.sold || 0}</div>
+                <div class="text-[9px] text-slate-400 uppercase font-bold">${i.category} &middot; Sold: ${fmtKg(i.sold || 0)}${i.weightBased ? ' KG' : ''}</div>
                 <div class="grid grid-cols-2 gap-2">
-                    <div><label class="${lbl}">Ready</label><input type="number" min="0" class="prep-cooked ${inp}" value="${i.cooked || 0}"></div>
-                    <div><label class="${lbl}">Price</label><input type="number" class="prep-price ${inp}" value="${i.price}"></div>
+                    <div><label class="${lbl}">Ready${i.weightBased ? ' (KG)' : ''}</label><input type="number" min="0" step="${i.weightBased ? '0.25' : '1'}" class="prep-cooked ${inp}" value="${fmtKg(i.cooked || 0)}"></div>
+                    ${i.weightBased ? `<div class="col-span-2 grid grid-cols-3 gap-2"><div><label class="${lbl}">1 KG Rs.</label><input type="number" class="prep-p1000 ${inp}" value="${i.p1000}"></div><div><label class="${lbl}">&frac12; KG Rs.</label><input type="number" class="prep-p500 ${inp}" value="${i.p500}"></div><div><label class="${lbl}">1 Pao Rs.</label><input type="number" class="prep-p250 ${inp}" value="${i.p250}"></div></div>` : `<div><label class="${lbl}">Price</label><input type="number" class="prep-price ${inp}" value="${i.price}"></div>`}
                 </div>
                 <div><label class="${lbl}">Barcode</label><input type="text" data-barcode-field="1" value="${i.barcode || ''}" onchange="setItemBarcode(${i.id}, this.value)" placeholder="Barcode" class="${inp} font-mono"></div>
             </div>`).join('');
@@ -1407,9 +1446,16 @@
         window.saveKitchenPreparedStock = function () {
             document.querySelectorAll('#prep-panel-stocklist [data-prep-id]').forEach(card => {
                 const it = menuItems.find(i => Number(i.id) === Number(card.dataset.prepId)); if (!it) return;
-                it.cooked = Math.max(0, parseInt(card.querySelector('.prep-cooked').value) || 0);
-                const p = parseFloat(card.querySelector('.prep-price').value);
-                if (!isNaN(p)) it.price = p;
+                const cv = parseFloat(card.querySelector('.prep-cooked').value) || 0;
+                it.cooked = Math.max(0, it.weightBased ? Math.round(cv * 100) / 100 : Math.round(cv));
+                if (it.weightBased) {
+                    [['p1000', '.prep-p1000'], ['p500', '.prep-p500'], ['p250', '.prep-p250']].forEach(([k, sel]) => {
+                        const v = parseFloat(card.querySelector(sel).value); if (!isNaN(v)) it[k] = v;
+                    });
+                    it.price = it.p1000;
+                }
+                const pe = card.querySelector('.prep-price'); const p = pe ? parseFloat(pe.value) : NaN;
+                if (!isNaN(p) && !it.weightBased) it.price = p;
             });
             window.saveMenuToCloud();
             populateCategoriesTabs(); renderPOSMenu(); renderKitchenProductionGrid(); updateCarouselDisplay(); renderLedgerDashboard();
@@ -1433,8 +1479,14 @@
         };
         window.submitAddNewMenuItem = function () {
             const name = byId('new-item-name').value.trim();
-            const price = parseFloat(byId('new-item-price').value);
-            if (!name || isNaN(price)) { alert('Please enter item name and price.'); return; }
+            const weighted = !!(byId('new-item-weighted') && byId('new-item-weighted').checked);
+            let price = parseFloat(byId('new-item-price').value);
+            let wp = null;
+            if (weighted) {
+                wp = { p1000: parseFloat(byId('new-item-p1000').value), p500: parseFloat(byId('new-item-p500').value), p250: parseFloat(byId('new-item-p250').value) };
+                if (!name || isNaN(wp.p1000) || isNaN(wp.p500) || isNaN(wp.p250)) { alert('Please enter the item name and the 1 KG, 1/2 KG and 1 Pao prices.'); return; }
+                price = wp.p1000;
+            } else if (!name || isNaN(price)) { alert('Please enter item name and price.'); return; }
             let cat = byId('new-item-category').value;
             if (cat === '__other__') cat = byId('new-item-category-other').value.trim();
             if (!cat) { alert('Please enter a category name.'); return; }
@@ -1444,13 +1496,15 @@
             const maxId = menuItems.reduce((m, i) => Math.max(m, Number(i.id) || 0), 1000);
             menuItems.push({
                 id: maxId + 1, name, category: cat, price,
-                cooked: Math.max(0, parseInt(byId('new-item-cooked').value) || 0), sold: 0, barcode,
+                cooked: Math.max(0, weighted ? Math.round((parseFloat(byId('new-item-cooked').value) || 0) * 100) / 100 : (parseInt(byId('new-item-cooked').value) || 0)), sold: 0, barcode,
+                ...(weighted ? { weightBased: true, p1000: wp.p1000, p500: wp.p500, p250: wp.p250 } : {}),
                 image: newItemBase64Image || byId('new-item-image-url').value.trim(),
                 description: byId('new-item-desc').value.trim()
             });
             window.saveMenuToCloud();
             ['new-item-name', 'new-item-price', 'new-item-barcode', 'new-item-category-other', 'new-item-image-url', 'new-item-desc'].forEach(id => byId(id).value = '');
             byId('new-item-cooked').value = 0; byId('new-item-image-file').value = '';
+            if (byId('new-item-weighted')) { byId('new-item-weighted').checked = false; ['new-item-p1000', 'new-item-p500', 'new-item-p250'].forEach(id => byId(id).value = ''); toggleWeightedNewItem(); }
             byId('new-item-img-preview').classList.add('hidden'); newItemBase64Image = '';
             populateCategoriesTabs(); populatePrepCategoriesTabs(); renderPOSMenu(); renderKitchenProductionGrid(); updateCarouselDisplay(); refreshDetailTotals();
             switchPrepTab('stocklist');
@@ -1468,9 +1522,11 @@
         }
         function buildOrderFromCart() {
             if (!activeCart.length) { alert(activeLanguage === 'ur' ? 'ٹوکری خالی ہے۔' : 'Basket is empty.'); return null; }
-            for (const c of activeCart) {
-                const src = menuItems.find(i => Number(i.id) === Number(c.id));
-                if (!src || c.qty > (src.cooked - src.sold)) { alert(`Not enough stock for ${c.name}.`); return null; }
+            const need = {};
+            activeCart.forEach(c => { const o = need[c.id] || (need[c.id] = { kg: 0, name: c.baseName || c.name }); o.kg += c.qty * (c.unitKg || 1); });
+            for (const id in need) {
+                const src = menuItems.find(i => Number(i.id) === Number(id));
+                if (!src || need[id].kg > ((parseFloat(src.cooked) || 0) - (parseFloat(src.sold) || 0)) + 1e-9) { alert(`Not enough stock for ${need[id].name}.`); return null; }
             }
             const discount = parseFloat(byId('discount-input').value) || 0;
             const type = byId('bill-type-select').value;
@@ -1482,7 +1538,7 @@
                 customer: byId('cust-name-input').value.trim() || 'Walk-In Customer',
                 date: getShiftedBusinessDate(new Date()).dateStr,
                 orderType: type, paymentMethod: byId('payment-method-select').value,
-                items: activeCart.map(i => ({ id: i.id, name: i.name, price: parseFloat(i.price), qty: parseInt(i.qty), category: i.category })),
+                items: activeCart.map(i => ({ id: i.id, name: i.name, price: parseFloat(i.price), qty: parseInt(i.qty), category: i.category, ...(i.unitKg ? { unit: i.unit, unitKg: i.unitKg } : {}) })),
                 grossPrice: gross, discount, deliveryCharge: delivery,
                 netPayable: Math.max(0, gross - discount + delivery),
                 ownerPhone: getSettings().phone || byId('owner-phone-input').value,
@@ -1492,7 +1548,7 @@
         function finalizeOrder(order) {
             order.items.forEach(ci => {
                 const m = menuItems.find(i => Number(i.id) === Number(ci.id));
-                if (m) m.sold = (parseInt(m.sold) || 0) + ci.qty;
+                if (m) m.sold = Math.round(((parseFloat(m.sold) || 0) + ci.qty * (ci.unitKg || 1)) * 100) / 100;
             });
             if (!orders.some(o => String(o.id) === String(order.id))) orders.push(order);
             window.saveMenuToCloud();
@@ -1807,33 +1863,40 @@
             }
         };
         window.addEventListener('online', () => { window.syncPendingOfflineOrders(); });
-        window.addFoodToCart = function(itemId) {
+        window.addFoodToCart = function(itemId, unit) {
             const item = menuItems.find(i => Number(i.id) === Number(itemId));
             if (!item) return;
-            const remaining = item.cooked - item.sold;
-            const existingInCart = activeCart.find(c => Number(c.id) === Number(itemId));
-            const currentCartQty = existingInCart ? existingInCart.qty : 0;
-            if (currentCartQty + 1 > remaining) {
-                alert(`Cannot add more! Only ${item.cooked} pieces of ${item.name} are in stock today.`);
+            if (item.weightBased && !unit) { window.openWeightPicker(itemId); return; }
+            const u = item.weightBased ? WUNITS[unit] : null;
+            if (item.weightBased && !u) return;
+            const need = u ? u.kg : 1;
+            const remaining = (parseFloat(item.cooked) || 0) - (parseFloat(item.sold) || 0);
+            if (cartKgFor(itemId) + need > remaining + 1e-9) {
+                alert(item.weightBased
+                    ? `Cannot add more! Only ${fmtKg(Math.max(0, remaining - cartKgFor(itemId)))} KG of ${item.name} is available.`
+                    : `Cannot add more! Only ${item.cooked} pieces of ${item.name} are in stock today.`);
                 return;
             }
-            if (existingInCart) existingInCart.qty += 1;
+            const line = activeCart.find(c => sameLine(c, itemId, unit));
+            if (line) line.qty += 1;
+            else if (u) activeCart.push({ ...item, baseName: item.name, name: item.name + ' (' + u.short + ')', unit: unit, unitKg: u.kg, price: parseFloat(item[u.key]) || 0, qty: 1 });
             else activeCart.push({ ...item, qty: 1 });
             renderCartUI();
         };
 
-        window.changeCartQty = function(itemId, amount) {
-            const itemInCart = activeCart.find(c => Number(c.id) === Number(itemId));
+        window.changeCartQty = function(itemId, amount, unit) {
+            const itemInCart = activeCart.find(c => sameLine(c, itemId, unit));
             const sourceItem = menuItems.find(i => Number(i.id) === Number(itemId));
             if (!itemInCart || !sourceItem) return;
-            if (itemInCart.qty + amount > (sourceItem.cooked - sourceItem.sold)) { alert(`Not enough stock left!`); return; }
+            const remaining = (parseFloat(sourceItem.cooked) || 0) - (parseFloat(sourceItem.sold) || 0);
+            if (amount > 0 && cartKgFor(itemId) + amount * (itemInCart.unitKg || 1) > remaining + 1e-9) { alert(`Not enough stock left!`); return; }
             itemInCart.qty += amount;
-            if (itemInCart.qty <= 0) activeCart = activeCart.filter(c => Number(c.id) !== Number(itemId));
+            if (itemInCart.qty <= 0) activeCart = activeCart.filter(c => !sameLine(c, itemId, unit));
             renderCartUI();
         };
 
-        window.changeCartItemPrice = function(itemId, newPrice) {
-            const itemInCart = activeCart.find(c => Number(c.id) === Number(itemId));
+        window.changeCartItemPrice = function(itemId, newPrice, unit) {
+            const itemInCart = activeCart.find(c => sameLine(c, itemId, unit));
             if (itemInCart) itemInCart.price = parseFloat(newPrice) || 0;
             updateCartCalculations();
         };
@@ -1860,13 +1923,13 @@
                         ${item.description ? `<p class="text-[9px] text-slate-400 truncate leading-tight">${item.description}</p>` : ''}
                         <div class="flex items-center gap-1 mt-0.5">
                             <span class="text-[9px] ${labelTextClass}">${activeLanguage === 'ur' ? 'قیمت' : 'Price'}:</span>
-                            <input type="number" value="${item.price}" onchange="changeCartItemPrice(${item.id}, this.value)" class="w-14 ${inputBgClass} text-[10px] rounded px-1 py-0.5 focus:outline-none">
+                            <input type="number" value="${item.price}" onchange="changeCartItemPrice(${item.id}, this.value, '${item.unit || ''}')" class="w-14 ${inputBgClass} text-[10px] rounded px-1 py-0.5 focus:outline-none">
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <button onclick="changeCartQty(${item.id}, -1)" class="w-5 h-5 bg-slate-100 border border-slate-200 text-slate-600 rounded flex items-center justify-center font-bold text-xs">-</button>
+                        <button onclick="changeCartQty(${item.id}, -1, '${item.unit || ''}')" class="w-5 h-5 bg-slate-100 border border-slate-200 text-slate-600 rounded flex items-center justify-center font-bold text-xs">-</button>
                         <span class="${countClass} font-bold w-4 text-center">${item.qty}</span>
-                        <button onclick="changeCartQty(${item.id}, 1)" class="w-5 h-5 bg-slate-100 border border-slate-200 text-slate-600 rounded flex items-center justify-center font-bold text-xs">+</button>
+                        <button onclick="changeCartQty(${item.id}, 1, '${item.unit || ''}')" class="w-5 h-5 bg-slate-100 border border-slate-200 text-slate-600 rounded flex items-center justify-center font-bold text-xs">+</button>
                     </div>
                     <span class="${textStyle} w-16 text-right">${priceFormatted}</span>
                 </div>`;
@@ -1895,9 +1958,9 @@
                 const isLow = remaining <= 5;
                 const leftText = activeLanguage === 'ur' ? translations.ur.left : translations.en.left;
                 const isDiscountItem = item.price < 0;
-                const priceLabel = isDiscountItem ? `${item.price}` : `Rs.${item.price}`;
+                const priceLabel = isDiscountItem ? `${item.price}` : (item.weightBased ? `Rs.${item.p1000}/KG` : `Rs.${item.price}`);
                 const hasImage = item.image && item.image.length > 2;
-                return `<div onclick="addFoodToCart(${item.id})" class="p-4 rounded-xl border transition-all flex flex-col justify-between select-none relative overflow-hidden ${cardBgClass} hover:border-blue-700 cursor-pointer hover:scale-[1.01] active:scale-[0.98] premium-shadow">
+                return `<div onclick="${item.weightBased ? 'openWeightPicker(' + item.id + ')' : 'addFoodToCart(' + item.id + ')'}" class="p-4 rounded-xl border transition-all flex flex-col justify-between select-none relative overflow-hidden ${cardBgClass} hover:border-blue-700 cursor-pointer hover:scale-[1.01] active:scale-[0.98] premium-shadow">
                     ${hasImage ? `<img src="${item.image}" onerror="this.style.display='none'" class="h-28 w-full object-cover rounded-lg mb-2 border border-slate-100">` : ''}
                     <div>
                         <div class="flex justify-between items-start gap-2">
@@ -1906,9 +1969,10 @@
                         </div>
                         ${item.description ? `<p class="text-[10px] text-slate-400 mt-1 font-semibold leading-relaxed">${item.description}</p>` : ''}
                     </div>
+                    ${item.weightBased ? weightChips(item) : ''}
                     <div class="mt-4 flex items-center justify-between">
                         <span class="text-[9px] ${badgeBgClass} px-2 py-0.5 rounded border uppercase tracking-widest font-bold">${item.category}</span>
-                        <span class="text-[10px] font-extrabold ${isLow ? 'text-orange-500 animate-pulse' : 'text-emerald-600'}">${remaining} ${leftText}</span>
+                        <span class="text-[10px] font-extrabold ${isLow ? 'text-orange-500 animate-pulse' : 'text-emerald-600'}">${fmtKg(remaining)}${item.weightBased ? ' KG' : ''} ${leftText}</span>
                     </div>
                 </div>`;
             }).join('');
@@ -2019,8 +2083,10 @@
                     const targetOrder = orders[targetIdx];
                     if (targetOrder.items && Array.isArray(targetOrder.items)) {
                         targetOrder.items.forEach(cartItem => {
-                            const match = menuItems.find(m => m.name === cartItem.name);
-                            if (match) match.sold = Math.max(0, match.sold - cartItem.qty);
+                            let match = (cartItem.id != null) ? menuItems.find(m => Number(m.id) === Number(cartItem.id)) : null;
+                            if (!match) match = menuItems.find(m => m.name === cartItem.name);
+                            if (match && match.weightBased && !cartItem.unitKg) match = null;
+                            if (match) match.sold = Math.max(0, Math.round(((parseFloat(match.sold) || 0) - cartItem.qty * (cartItem.unitKg || 1)) * 100) / 100);
                         });
                     }
                     window.removeOrderFromCloud(targetOrder._fbKey);
@@ -2526,6 +2592,7 @@
                     lookupName(code).then(nm => { const d = $(id), bt = $(id + 'b'); if (d) d.textContent = nm ? ('Online name: ' + nm) : 'online name not found'; if (bt && nm) bt.dataset.name = nm; });
                     return;
                 }
+                if (item.weightBased) { beep(true); window.openWeightPicker(item.id); return; }
                 const remaining = item.cooked - item.sold;
                 const inCart = activeCart.find(c => Number(c.id) === Number(item.id));
                 const lowStock = ((inCart ? inCart.qty : 0) + 1 > remaining);
