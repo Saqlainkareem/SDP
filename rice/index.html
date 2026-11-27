@@ -10,32 +10,33 @@
 <style id="pst"></style>
 <style>
 html{font-size:16px}body{font-family:'Noto Naskh Arabic','Segoe UI',Tahoma,sans-serif}
-#side{width:72px;transition:width .3s cubic-bezier(.4,0,.2,1)}#side:hover,#side.open{width:270px}
-#side .lb{opacity:0;transform:translateX(-10px);transition:all .25s;white-space:nowrap}
-#side:hover .lb,#side.open .lb{opacity:1;transform:none}
-.nv{display:flex;align-items:center;gap:16px;padding:14px 22px;width:100%;font-size:16px;font-weight:700;border-left:4px solid transparent;transition:all .2s}
-.nv:hover{background:#1e293b;color:#fff;padding-left:26px}.nv.on{background:#15803d;color:#fff;border-left-color:#fbbf24}
-.nv i{font-size:18px;width:24px;text-align:center}
-#main{margin-left:72px}.pg{animation:fi .3s ease}@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.inp{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px;margin-top:4px;font-weight:500;background:#f8fafc;font-size:.95rem}
+#side{width:72px;transition:width .35s cubic-bezier(.4,0,.2,1),box-shadow .35s ease;box-shadow:2px 0 18px rgba(0,0,0,.15)}
+#side:not(.closing):hover,#side.open{width:270px;box-shadow:6px 0 30px rgba(0,0,0,.3)}
+#side .lb{opacity:0;transform:translateX(-12px);transition:opacity .22s ease,transform .28s cubic-bezier(.4,0,.2,1);white-space:nowrap}
+#side:not(.closing):hover .lb,#side.open .lb{opacity:1;transform:translateX(0)}
+.nv{display:flex;align-items:center;gap:16px;padding:14px 22px;width:100%;font-size:16px;font-weight:700;border-left:4px solid transparent;transition:all .24s cubic-bezier(.4,0,.2,1)}
+.nv:hover{background:#1e293b;color:#fff;padding-left:28px}.nv.on{background:linear-gradient(90deg,#15803d,#166534);color:#fff;border-left-color:#fbbf24}
+.nv i{font-size:18px;width:24px;text-align:center;transition:transform .25s ease}.nv:hover i{transform:scale(1.15)}
+#main{margin-left:72px;transition:filter .25s ease}.pg{animation:fi .32s cubic-bezier(.4,0,.2,1)}@keyframes fi{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.inp{width:100%;border:1px solid #cbd5e1;border-radius:8px;padding:9px;margin-top:4px;font-weight:500;background:#f8fafc;font-size:.95rem;transition:all .2s ease}
 .inp:focus{outline:2px solid #15803d;background:#fff}
-.btn{padding:9px 15px;border-radius:10px;font-weight:700;font-size:.9rem;transition:all .2s;cursor:pointer}
-.btn:hover{transform:translateY(-1px);box-shadow:0 4px 12px #0002}.btn:active{transform:scale(.97)}
-.card{transition:all .25s}.card:hover{transform:translateY(-3px);box-shadow:0 8px 20px #0001}
+.btn{padding:9px 15px;border-radius:10px;font-weight:700;font-size:.9rem;transition:all .22s cubic-bezier(.4,0,.2,1);cursor:pointer}
+.btn:hover{transform:translateY(-2px);box-shadow:0 6px 16px #0002}.btn:active{transform:scale(.96)}
+.card{transition:all .28s cubic-bezier(.4,0,.2,1)}.card:hover{transform:translateY(-3px);box-shadow:0 10px 24px #0001}
 .cbl span:hover{background:#dcfce7}
 .pop{animation:pop .3s both}@keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
-#md>div{animation:pop .25s}.toast{animation:fi .3s;transition:opacity .3s}
+#md>div{animation:pop .26s cubic-bezier(.34,1.56,.64,1)}.toast{animation:fi .3s;transition:opacity .3s}
 .reg td,.reg th{border:1px solid #e2e8f0;padding:8px 10px}.reg th{background:#f8fafc;font-weight:700}
-.reg tbody tr:hover{background:#f0fdf4}
+.reg tbody tr{transition:background-color .18s ease}.reg tbody tr:hover{background:#f0fdf4}
 #pa{display:none}@media print{body>*:not(#pa){display:none!important}#pa{display:block!important}}
 </style>
 </head>
 <body class="bg-slate-100 text-slate-800">
-<aside id="side" class="fixed inset-y-0 left-0 bg-slate-900 text-slate-300 z-40 overflow-hidden flex flex-col" onclick="this.classList.toggle('open')">
-  <div class="h-14 flex items-center px-5 gap-4 border-b border-slate-700 text-white shrink-0"><span class="text-2xl">🌾</span><b class="lb text-lg" id="sbName">Rice Khata</b></div>
+<aside id="side" class="fixed inset-y-0 left-0 bg-slate-900 text-slate-300 z-40 overflow-hidden flex flex-col" onclick="if(!event.target.closest('nav')){this.classList.remove('closing');this.classList.toggle('open')}" onmouseleave="this.classList.remove('closing')">
+  <div class="h-14 flex items-center px-5 gap-4 border-b border-slate-700 text-white shrink-0 cursor-pointer"><span class="text-2xl">🌾</span><b class="lb text-lg" id="sbName">Rice Khata</b></div>
   <nav id="nav" class="flex-1 py-2 overflow-y-auto"></nav>
 </aside>
-<div id="main" class="min-h-screen">
+<div id="main" class="min-h-screen" onclick="$('side').classList.remove('open')">
   <header class="bg-white border-b sticky top-0 z-30 px-4 py-2 flex flex-wrap items-center justify-between gap-2">
     <h1 id="title" class="font-black text-xl text-slate-800"></h1>
     <div class="flex items-center gap-2">
@@ -73,7 +74,6 @@ const N=n=>Math.round(+n||0).toLocaleString('en-US');
 
 let D=today(),cur='home',S=null;
 let selMonth=today().slice(0,7);
-let khFilter='all',bkFilter='all';
 
 function def(){
   return {
@@ -111,10 +111,10 @@ function setSync(st,msg){
     ok:['Folder: '+(FH?FH.name:'')+' \u2713','bg-emerald-50 text-emerald-700 border-emerald-300'],
     wait:['Saving...','bg-amber-50 text-amber-700 border-amber-300'],
     local:['Folder Select Karein','bg-blue-50 text-blue-700 border-blue-300'],
-    perm:['Folder Connect Karein','bg-amber-50 text-amber-700 border-amber-300'],
+    perm:['Folder Connect Karein','bg-amber-100 text-amber-800 border-amber-400 animate-pulse'],
     err:['Folder Error','bg-rose-50 text-rose-700 border-rose-300']
   }[st];
-  e.className='px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer '+m[1];e.textContent=m[0];
+  e.className='px-3 py-1.5 rounded-lg text-xs font-bold border cursor-pointer transition-all '+m[1];e.textContent=m[0];
 }
 
 const perm=async()=>!!FH&&(await FH.queryPermission({mode:'readwrite'}))==='granted';
@@ -141,8 +141,13 @@ async function pickFolder(change){
       const p=await FH.requestPermission({mode:'readwrite'});
       if(p==='granted'){
         const r=await readF(FH);
-        if(r){S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}toast('Folder connect ho gaya',1)}
-        else{await pushF();toast('Folder connect ho gaya',1)}
+        if(r&&((r.ts||0)>=(S.ts||0)||!(S.parties.length||S.bills.length||S.banks.length||S.entries.length))){
+          S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}
+          toast('Folder se data load ho gaya',1);
+        }else{
+          await pushF();
+          toast('Folder connect ho gaya',1);
+        }
         setSync('ok');go(cur);return;
       }
     }
@@ -162,7 +167,12 @@ async function boot(){
       if(FH){
         if(await perm()){
           const r=await readF();
-          if(r){S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}go(cur)}
+          if(r&&((r.ts||0)>=(S.ts||0)||!(S.parties.length||S.bills.length||S.banks.length||S.entries.length))){
+            S=fix(r);try{localStorage.setItem(LSK,JSON.stringify(S))}catch(e){}
+            go(cur);
+          }else if(S.ts>(r?r.ts||0:0)){
+            await pushF();
+          }
           setSync('ok');
         }else setSync('perm');
       }
@@ -199,9 +209,17 @@ const NAV=[
   ['set','سیٹنگز / Settings','fa-gear']
 ];
 
+function navGo(e,p){
+  if(e)e.stopPropagation();
+  const s=$('side');
+  s.classList.remove('open');
+  s.classList.add('closing');
+  go(p);
+}
+
 function go(p){
   cur=p;$('title').textContent=NAV.find(n=>n[0]===p)[1];$('sbName').textContent=S.settings.shop;
-  $('nav').innerHTML=NAV.map(n=>`<button onclick="go('${n[0]}');$('side').classList.remove('open')" class="nv ${n[0]===p?'on':''}"><i class="fa-solid ${n[2]}"></i><span class="lb">${n[1]}</span></button>`).join('');
+  $('nav').innerHTML=NAV.map(n=>`<button onclick="navGo(event,'${n[0]}')" class="nv ${n[0]===p?'on':''}"><i class="fa-solid ${n[2]}"></i><span class="lb">${n[1]}</span></button>`).join('');
   $('view').innerHTML='<div class="pg">'+PG[p]()+'</div>';
 }
 
@@ -211,7 +229,6 @@ const tbl=(h,r,e)=>`<div class="overflow-x-auto bg-white rounded-xl border shado
 const bt=(t,fn,c)=>`<button onclick="${fn}" class="btn ${c||'bg-green-700'} text-white shadow-sm">${t}</button>`;
 const lk=(t,fn,c)=>`<button onclick="${fn}" class="${c||'text-green-700'} font-bold px-1.5 hover:underline text-xs md:text-sm">${t}</button>`;
 const bar=(t,b)=>`<div class="flex flex-wrap justify-between items-center gap-2 mb-3"><h2 class="font-black text-lg text-slate-800">${t}</h2><div class="flex gap-2 flex-wrap">${b||''}</div></div>`;
-const blkBadge='<span class="ml-1.5 inline-block text-[11px] font-bold bg-rose-100 text-rose-700 border border-rose-300 px-1.5 py-0.5 rounded">BLOCKED / بلاک</span>';
 
 function toast(m,ok){
   const e=document.createElement('div');
@@ -230,8 +247,7 @@ function fsub(e){e.preventDefault();const bad=[...e.target.querySelectorAll('[da
 // ===== BUSINESS LOGIC HELPERS =====
 const bs=()=>S.settings.basis==='kg'?1:40,RB=()=>S.settings.basis==='kg'?'per KG':'per 40 KG (man)';
 const pf=b=>b.amt-(b.wt*(b.cost||0))/bs();
-const pty=(t,activeOnly)=>S.parties.filter(p=>p.type===t&&(!activeOnly||!p.blocked));
-const ptyOpts=(t,curId)=>S.parties.filter(p=>p.type===t&&(!p.blocked||p.id===curId)).map(p=>[p.id,p.name+(p.blocked?' [BLOCKED]':'')]);
+const pty=t=>S.parties.filter(p=>p.type===t);
 const nm=id=>{const p=S.parties.find(x=>x.id===id);return p?p.name:'-'};
 const isT=b=>b&&b.lines&&b.lines.length;
 
@@ -256,7 +272,6 @@ function cb(d,strict){
 // BANK KHATA CORE (Debits / Credits / Monthly Hisaab)
 // =========================================================================
 const BK=()=>S.banks||(S.banks=[]),BX=()=>S.btx||(S.btx=[]);
-const bankOpts=curId=>BK().filter(b=>!b.blocked||b.id===curId).map(b=>[b.id,b.name+(b.blocked?' [BLOCKED]':'')]);
 
 function bled(b){
   if(!b)return [];
@@ -279,29 +294,17 @@ function bled(b){
 }
 const bbal=b=>{const L=bled(b);return L.length?L[L.length-1].r:0};
 
-const filterBar=(curVal,setFn,allCnt,actCnt,blkCnt)=>`
-  <div class="flex flex-wrap items-center gap-2 mb-3">
-    <div class="flex bg-white border rounded-lg p-1 text-xs font-bold shadow-sm">
-      <button onclick="${setFn}('all')" class="px-3 py-1 rounded-md ${curVal==='all'?'bg-slate-800 text-white':'text-slate-600 hover:bg-slate-100'}">Sab (${allCnt})</button>
-      <button onclick="${setFn}('active')" class="px-3 py-1 rounded-md ${curVal==='active'?'bg-emerald-700 text-white':'text-slate-600 hover:bg-slate-100'}">Active (${actCnt})</button>
-      <button onclick="${setFn}('blocked')" class="px-3 py-1 rounded-md ${curVal==='blocked'?'bg-rose-700 text-white':'text-slate-600 hover:bg-slate-100'}">Blocked (${blkCnt})</button>
-    </div>
-  </div>
-`;
-
 function pgBank(){
-  const allBanks=BK(),allTx=BX();
-  const totalDep=sum(allTx.filter(x=>x.type==='dep'),'amt')+sum(allBanks,'ob');
+  const banks=BK(),allTx=BX();
+  const totalDep=sum(allTx.filter(x=>x.type==='dep'),'amt')+sum(banks,'ob');
   const totalWd=sum(allTx.filter(x=>x.type==='wd'),'amt');
-  const totalBal=sum(allBanks,bbal);
+  const totalBal=sum(banks,bbal);
 
   // Month-wise Hisaab
   const mTx=allTx.filter(x=>(x.date||'').startsWith(selMonth));
   const mDep=sum(mTx.filter(x=>x.type==='dep'),'amt');
   const mWd=sum(mTx.filter(x=>x.type==='wd'),'amt');
   const mBachat=mDep-mWd;
-
-  const banks=bkFilter==='active'?allBanks.filter(b=>!b.blocked):bkFilter==='blocked'?allBanks.filter(b=>b.blocked):allBanks;
 
   return `
     ${bar('Bank Khata / بینک اکاؤنٹس رجسٹر',
@@ -346,9 +349,8 @@ function pgBank(){
     </div>
 
     <!-- BANK LIST TABLE -->
-    <div class="flex flex-wrap justify-between items-center gap-2 mb-2">
+    <div class="flex justify-between items-center mb-2">
       <h3 class="font-black text-slate-800">Mojooda Bank Accounts</h3>
-      ${filterBar(bkFilter,'setBkFilter',allBanks.length,allBanks.filter(b=>!b.blocked).length,allBanks.filter(b=>b.blocked).length)}
     </div>
     ${ksBox()}
     ${tbl(
@@ -357,37 +359,33 @@ function pgBank(){
         const l=bled(b),ba=bbal(b);
         return [
           i+1,
-          `<div class="${b.blocked?'opacity-70':''}"><b>${esc(b.name)}</b>${b.blocked?blkBadge:''}<div class="text-xs text-slate-400">${esc(b.acc||'')}</div></div>`,
+          `<b>${esc(b.name)}</b><div class="text-xs text-slate-400">${esc(b.acc||'')}</div>`,
           `<b class="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded">+ ${N(sum(l,'i'))}</b>`,
           `<b class="text-rose-700 bg-rose-50 px-2 py-0.5 rounded">- ${N(sum(l,'o'))}</b>`,
           `<b class="text-base ${ba>=0?'text-blue-800':'text-rose-700'}">${N(ba)}</b>`,
           lk('Statement',`bstmt(${b.id})`)+
-          (!b.blocked?lk('+ Jama',`btxForm('dep',${b.id})`,'text-emerald-700')+lk('Nikalna',`btxForm('wd',${b.id})`,'text-rose-600'):'')+
+          lk('+ Jama',`btxForm('dep',${b.id})`,'text-emerald-700')+
+          lk('Nikalna',`btxForm('wd',${b.id})`,'text-rose-600')+
           lk('Edit',`bankForm(${b.id})`,'text-blue-700')+
-          lk(b.blocked?'Unblock':'Block',`toggleBlockBank(${b.id})`,b.blocked?'text-emerald-700':'text-amber-700')+
           lk('Del',`delBank(${b.id})`,'text-rose-500')
         ];
       }),
-      bkFilter==='blocked'?'Koi bank account block nahi hai.':'Abhi koi bank khata nahi banaya gaya. Upar se "+ Naya Bank Khata" dabayein.'
+      'Abhi koi bank khata nahi banaya gaya. Upar se "+ Naya Bank Khata" dabayein.'
     )}
   `;
 }
 
-function setBkFilter(v){bkFilter=v;go('bank')}
-
 function bankForm(id){
   const f=BK().find(x=>x.id===id)||{};
-  const fields=[
+  form(id?'Bank Edit Karein':'Naya Bank Khata',[
     {k:'pre',l:'Bank Select Karein',t:'select',o:[['','-- Apna naam khud likhein --'],'HBL','Bank Alfalah','UBL','Bank of Punjab (BOP)','Meezan Bank','Allied Bank (ABL)','MCB Bank','JazzCash','Easypaisa','Other Bank'],v:''},
     {k:'name',l:'Bank Ka Naam (Title)',v:f.name||''},
     {k:'acc',l:'Account No. / IBAN',v:f.acc||''},
     {k:'ob',l:'Shuru Ka Balance (Opening)',t:'number',v:f.ob||0}
-  ];
-  if(id)fields.push({k:'blocked',l:'Account Status',t:'select',o:[['0','Active / فعال'],['1','Blocked / بلاک']],v:f.blocked?'1':'0'});
-  form(id?'Bank Edit Karein':'Naya Bank Khata',fields,o=>{
+  ],o=>{
     const n=(o.name.trim()||o.pre).trim();if(!n){toast('Bank ka naam enter karein');return false}
     const oldName=f.name;
-    const d={name:n,acc:o.acc.trim(),ob:+o.ob||0,blocked:id?(o.blocked==='1'):!!f.blocked};
+    const d={name:n,acc:o.acc.trim(),ob:+o.ob||0};
     if(id){
       Object.assign(f,d);
       if(oldName&&oldName!==n){
@@ -399,44 +397,39 @@ function bankForm(id){
   });
 }
 
-function toggleBlockBank(id){
-  const b=BK().find(x=>x.id===id);if(!b)return;
-  const msg=b.blocked?`"${b.name}" ko Unblock karein?`:`"${b.name}" ko Block karein? Block karne ke baad is mein nayi entry nahi ho sakegi, lekin purana hisaab mehfooz rahega.`;
-  if(!cfm(msg))return;
-  b.blocked=!b.blocked;save();go(cur);
-  toast(b.blocked?'Bank account block ho gaya':'Bank account unblock ho gaya',1);
-}
-
 function delBank(id){
-  if(BX().some(x=>x.bid===id))return toast('Is bank mein pehle se entries hain - isay Block kar sakte hain ya pehle entries delete karein');
-  if(cfm('Bank delete karein?')){S.banks=BK().filter(x=>x.id!==id);save();go(cur);toast('Bank delete ho gaya',1)}
+  const hasTx=BX().some(x=>x.bid===id);
+  if(hasTx){
+    if(!cfm('Is bank khata mein purani entries mojood hain! Kya aap is bank aur is ki tamam entries ko hamesha ke liye delete karna chahte hain?'))return;
+    const txIds=new Set(BX().filter(x=>x.bid===id).map(x=>x.id));
+    S.btx=BX().filter(x=>x.bid!==id);
+    S.entries=S.entries.filter(e=>!e.bx||!txIds.has(e.bx));
+  }else{
+    if(!cfm('Bank delete karein?'))return;
+  }
+  S.banks=BK().filter(x=>x.id!==id);save();go(cur);toast('Bank delete ho gaya',1);
 }
 
 function btxForm(kind,bid,id){
   const t=BX().find(x=>x.id===id)||{};kind=t.type||kind;const dep=kind==='dep';
   if(!BK().length)return toast('Pehle bank add karein');
-  if(!id&&bid){const sb=BK().find(x=>x.id===bid);if(sb&&sb.blocked)return toast('Yeh bank account block hai — pehle unblock karein')}
-  if(!id&&!BK().some(b=>!b.blocked))return toast('Sab bank accounts block hain — pehle kisi account ko unblock karein');
 
   form(dep?'Paisa Aaya / Jama (Deposit - Green)':'Paisa Nikala / Transfer (Withdraw - Red)',[
     {k:'date',l:'Tareekh / تاریخ',t:'date',v:t.date||D,r:1},
-    {k:'bid',l:'Bank Khata',t:'combo',o:bankOpts(t.bid||bid),v:t.bid||bid,r:1},
+    {k:'bid',l:'Bank Khata',t:'combo',o:BK().map(b=>[b.id,b.name]),v:t.bid||bid,r:1},
     {k:'amt',l:'Raqam / رقم',t:'number',v:t.amt||'',r:1},
     {k:'mode',l:'Tareeqa (Mode)',t:'select',o:dep?['Cash Deposit','Online Received','Cheque Deposit','Transfer From Other Bank']:['Online Transfer to Mill/Party','Cheque Payment','Cash Withdrawal','Bank to Bank Transfer'],v:t.mode},
-    {k:'lid',l:dep?'Party se aaya? (Party khata mein khud jama hoga)':'Mill ya Party ko bheja? (Khata mein khud payment hogi)',t:'combo',o:[['','-- Kisi Party/Mill se talluq nahi --'],...ptyOpts(dep?'party':'mill',t.lid)],v:t.lid||''},
+    {k:'lid',l:dep?'Party se aaya? (Party khata mein khud jama hoga)':'Mill ya Party ko bheja? (Khata mein khud payment hogi)',t:'combo',o:[['','-- Kisi Party/Mill se talluq nahi --'],...pty(dep?'party':'mill').map(p=>[p.id,p.name])],v:t.lid||''},
     {k:'who',l:dep?'Kis se aaya / From':'Kisko bheja / To',v:t.who||''},
     {k:'note',l:'Tafseel / Note',v:t.note||''}
   ],o=>{
     const a=+o.amt;if(!(a>0)){toast('Durust raqam likhein');return false}
     const b=BK().find(x=>x.id===+o.bid);
     if(!b){toast('Bank select karein');return false}
-    if(b.blocked&&(!id||t.bid!==b.id)){toast('Yeh bank account block hai');return false}
-    const lid=+o.lid||0,linked=lid?S.parties.find(x=>x.id===lid):null;
-    if(linked&&linked.blocked&&(!id||t.lid!==lid)){toast('Yeh '+(linked.type==='mill'?'Mill':'Party')+' block hai');return false}
-
     const av=bbal(b)+(id&&t.bid===b.id?(t.type==='wd'?t.amt:-t.amt):0);
     if(!dep&&a>av&&!cfm('Bank mein sirf Rs. '+N(av)+' hain. Phir bhi transfer karein?'))return false;
 
+    const lid=+o.lid||0,linked=lid?S.parties.find(x=>x.id===lid):null;
     const d={date:o.date,bid:b.id,type:kind,amt:Math.round(a),mode:o.mode,lid,who:linked?linked.name:o.who.trim(),note:o.note.trim()};
     
     let curTx=t;
@@ -472,7 +465,7 @@ function bsTbl(b){
 function bstmt(id){
   const b=BK().find(x=>x.id===id);if(!b)return;
   const l=bled(b);
-  $('mt').textContent='Bank Statement: '+mk(b.name)+(b.acc?` (${b.acc})`:'')+(b.blocked?' [BLOCKED]':'');
+  $('mt').textContent='Bank Statement: '+mk(b.name)+(b.acc?` (${b.acc})`:'');
   $('mb').innerHTML=`
     <div class="grid grid-cols-3 gap-2 mb-3 text-center">
       <div class="bg-emerald-50 p-2 rounded-lg"><span class="text-xs text-emerald-800 font-bold block">Kul Aaya (In)</span><b class="text-emerald-700 text-lg">+ ${N(sum(l,'i'))}</b></div>
@@ -545,21 +538,18 @@ function tCalc(){
 }
 
 function truckForm(id){
-  const b=S.bills.find(x=>x.id===id)||{};
-  if(!id&&!pty('party',true).length)return toast('Pehle koi active party add ya unblock karein');
-  if(id&&!pty('party').length)return toast('Pehle party add karein');
-  const lp=S.purchases[0];
+  const b=S.bills.find(x=>x.id===id)||{};if(!pty('party').length)return toast('Pehle party add karein');const lp=S.purchases[0];
   const L=(a,c)=>`<label class="block text-sm font-bold text-slate-600 mb-1">${a}${c}</label>`,inp=(n,t,v,x)=>`<input name="${n}" type="${t}" value="${escA(v==null?'':v)}" ${x||''} class="inp">`;
   $('mt').textContent=id?'Truck Bill Edit':'Naya Truck / Bulk Bill';
   $('mb').innerHTML=`
     <form id="tf" onsubmit="return tSave(event,${id||0})" class="space-y-3">
       <div class="grid sm:grid-cols-2 md:grid-cols-3 gap-3 bg-slate-50 p-3 rounded-xl border">
         ${L('Tareekh',inp('date','date',b.date||D,'required'))}
-        ${L('Party / Dealer',combo({k:'pid',o:ptyOpts('party',b.pid),v:b.pid,r:1}))}
+        ${L('Party / Dealer',combo({k:'pid',o:pty('party').map(p=>[p.id,p.name]),v:b.pid,r:1}))}
         ${L('Gaari / Truck No',inp('veh','text',b.veh||''))}
         ${L('Default Rate ('+RB()+')',inp('rate','number',b.lines?'':'','step="any" min="0"'))}
         ${L('Wazan Per Katta (KG)',inp('pb','number',b.pb!=null?b.pb:50,'step="any" min="0"'))}
-        ${L('Mill (Khata Link)',combo({k:'mid',o:ptyOpts('mill',b.mid),v:b.mid}))}
+        ${L('Mill (Khata Link)',combo({k:'mid',o:pty('mill').map(p=>[p.id,p.name]),v:b.mid}))}
         ${L('Mill Kharid Rate (Munafa)',inp('cost','number',b.cost!=null?b.cost:(lp?lp.rate:''),'step="any" min="0"'))}
         <div class="sm:col-span-2">${L('Note / Driver',inp('note','text',b.tnote||''))}</div>
       </div>
@@ -575,20 +565,14 @@ function truckForm(id){
 
 function tSave(e,id){
   e.preventDefault();const f=$('tf').elements;if(!f.pid.value){toast('Party select karein');return false}
-  const b=S.bills.find(x=>x.id===id);
-  const pid=+f.pid.value,pObj=S.parties.find(x=>x.id===pid);
-  if(pObj&&pObj.blocked&&(!id||b.pid!==pid)){toast('Yeh party block hai — active party select karein');return false}
-  const mid=+f.mid.value||0,mObj=mid?S.parties.find(x=>x.id===mid):null;
-  if(mObj&&mObj.blocked&&(!id||b.mid!==mid)){toast('Yeh mill block hai — active mill select karein');return false}
-
   const R=tRd().filter(x=>x.k>0||x.w>0);if(!R.length||R.some(x=>!(x.k>0&&x.w>0&&x.r>0))){toast('Rows mein wazan, katte aur rate enter karein');return false}
-  const amt=sum(R,'a'),wt=Math.round(sum(R,'w')*100)/100,katte=sum(R,'k'),cost=+f.cost.value||0;
+  const amt=sum(R,'a'),wt=Math.round(sum(R,'w')*100)/100,katte=sum(R,'k'),cost=+f.cost.value||0,mid=+f.mid.value||0;
   if(mid&&!(cost>0)){toast('Mill ka Kharid Rate enter karein');return false}
-  const st=stk().r+(id?b.katte:0);
+  const b=S.bills.find(x=>x.id===id),st=stk().r+(id?b.katte:0);
   if(katte>st&&!cfm('Stock mein sirf '+st+' katte hain. Phir bhi bill banayein?'))return false;
 
   const d={
-    date:f.date.value,pid,mid,katte,wt,rate:Math.round(amt*bs()/wt*100)/100,amt,cost,mamt:mid&&cost>0?Math.round(wt*cost/bs()):0,
+    date:f.date.value,pid:+f.pid.value,mid,katte,wt,rate:Math.round(amt*bs()/wt*100)/100,amt,cost,mamt:mid&&cost>0?Math.round(wt*cost/bs()):0,
     veh:f.veh.value.trim(),pb:+f.pb.value||0,tnote:f.note.value.trim(),note:('Truck '+f.veh.value.trim()+' '+f.note.value.trim()).trim(),
     lines:R.map(x=>({d:x.d,k:x.k,w:x.w,r:x.r,a:x.a}))
   };
@@ -667,16 +651,9 @@ function billTbl(L){
 const pgBill=()=>bar('Bills Register / کیش میمو',bt('+ Naya Truck Bill','truckForm()','bg-blue-700')+bt('+ Simple Bill','billForm()'))+ksBox()+billTbl([...S.bills].sort((a,b)=>a.date<b.date?1:a.date>b.date?-1:b.no-a.no).slice(0,200));
 
 function billForm(id){
-  const b=S.bills.find(x=>x.id===id)||{};
-  if(!id&&!pty('party',true).length)return toast('Pehle koi active party add ya unblock karein');
-  if(id&&!pty('party').length)return toast('Pehle party add karein');
-  const lp=S.purchases[0];
-  form(id?'Bill Edit':'Naya Bill',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Party',t:'combo',o:ptyOpts('party',b.pid),v:b.pid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'cost',l:'Mill Kharid Rate',t:'number',v:b.cost!=null?b.cost:(lp?lp.rate:'')},{k:'mid',l:'Mill (Optional)',t:'combo',o:ptyOpts('mill',b.mid),v:b.mid},{k:'note',l:'Note',v:b.note}],o=>{
-    const pid=+o.pid,pObj=S.parties.find(x=>x.id===pid);
-    if(pObj&&pObj.blocked&&(!id||b.pid!==pid)){toast('Yeh party block hai — active party select karein');return false}
-    const mid=+o.mid||0,mObj=mid?S.parties.find(x=>x.id===mid):null;
-    if(mObj&&mObj.blocked&&(!id||b.mid!==mid)){toast('Yeh mill block hai — active mill select karein');return false}
-    const d={date:o.date,pid,mid,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),cost:+o.cost||0,note:o.note.trim()};
+  const b=S.bills.find(x=>x.id===id)||{};if(!pty('party').length)return toast('Pehle party add karein');const lp=S.purchases[0];
+  form(id?'Bill Edit':'Naya Bill',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Party',t:'combo',o:pty('party').map(p=>[p.id,p.name]),v:b.pid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'cost',l:'Mill Kharid Rate',t:'number',v:b.cost!=null?b.cost:(lp?lp.rate:'')},{k:'mid',l:'Mill (Optional)',t:'combo',o:pty('mill').map(p=>[p.id,p.name]),v:b.mid},{k:'note',l:'Note',v:b.note}],o=>{
+    const d={date:o.date,pid:+o.pid,mid:+o.mid||0,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),cost:+o.cost||0,note:o.note.trim()};
     d.mamt=d.mid&&d.cost>0?Math.round(d.wt*d.cost/bs()):0;
     if(!(d.katte>0&&d.wt>0&&d.rate>0&&d.amt>0)){toast('Katte, wazan, rate aur raqam darj karein');return false}
     const st=stk().r+(id?b.katte:0);
@@ -706,23 +683,16 @@ function entForm(kind,pid,id){
     if(tx)return btxForm('',tx.bid,tx.id);
   }
   const inn=kind==='pin'||kind==='oin',pk=kind==='pin'?'party':kind==='mout'?'mill':null;
-  if(!id&&pk==='party'&&!pty('party',true).length)return toast('Koi active party mojood nahi');
-  if(!id&&pk==='mill'&&!pty('mill',true).length)return toast('Koi active mill mojood nahi');
-  if(!id&&pid){const sp=S.parties.find(x=>x.id===pid);if(sp&&sp.blocked)return toast('Yeh account block hai — pehle unblock karein')}
+  if(!id&&pk==='party'&&!pty('party').length)return toast('Pehle party add karein');
+  if(!id&&pk==='mill'&&!pty('mill').length)return toast('Pehle mill add karein');
 
   const f=[{k:'date',l:'Tareekh',t:'date',v:e.date||D,r:1}];
-  if(pk)f.push({k:'pid',l:pk==='mill'?'Mill':'Party',t:'combo',o:ptyOpts(pk,e.pid||pid),v:e.pid||pid,r:1});
-  const bModes=BK().filter(b=>!b.blocked||(id&&e.mode===b.name)).map(b=>b.name);
-  f.push({k:'mode',l:'Mode',t:'select',o:['Cash',...bModes,'Other Bank'],v:e.mode||'Cash'},{k:'amt',l:'Raqam',t:'number',v:e.amt,r:1},{k:'note',l:'Tafseel / Note',v:e.note});
+  if(pk)f.push({k:'pid',l:pk==='mill'?'Mill':'Party',t:'combo',o:pty(pk).map(p=>[p.id,p.name]),v:e.pid||pid,r:1});
+  f.push({k:'mode',l:'Mode',t:'select',o:['Cash',...BK().map(b=>b.name),'Other Bank'],v:e.mode||'Cash'},{k:'amt',l:'Raqam',t:'number',v:e.amt,r:1},{k:'note',l:'Tafseel / Note',v:e.note});
   form(id?'Entry Edit Karein':(inn?'Aamdan / Jama (In)':'Kharch / Payment (Out)'),f,o=>{
     const a=Math.round(+o.amt);if(!(a>0)){toast('Enter amount');return false}
     const selPid=pk?+o.pid:0;
-    if(selPid){
-      const sp=S.parties.find(x=>x.id===selPid);
-      if(sp&&sp.blocked&&(!id||e.pid!==selPid)){toast('Yeh account block hai');return false}
-    }
     const bank=BK().find(b=>b.name===o.mode);
-    if(bank&&bank.blocked&&(!id||e.mode!==bank.name)){toast('Yeh bank account block hai');return false}
 
     const d={date:o.date,type:inn?'in':'out',mode:o.mode,pid:selPid,amt:a,note:o.note.trim()};
     let curEnt=e;
@@ -789,45 +759,36 @@ function delEnt(eid,pid){
 }
 
 // PARTIES & MILLS
-function setKhFilter(v){khFilter=v;go(cur)}
-
 function kh(t){
-  const m=t==='mill',allL=pty(t),tot=sum(allL,bal);
-  const L=khFilter==='active'?allL.filter(p=>!p.blocked):khFilter==='blocked'?allL.filter(p=>p.blocked):allL;
+  const m=t==='mill',L=pty(t),tot=sum(L,bal);
   return `
     ${bar(m?'Mill Khata / مل کھاتہ':'Party Khata / پارٹی کھاتہ',bt(m?'+ Naya Mill':'+ Nayi Party',`partyForm('${t}')`)+(m?bt('+ Maal Khareeda','purForm()','bg-indigo-700')+bt('Mill ko Payment',"entForm('mout')",'bg-rose-600'):bt('+ Party se Jama',"entForm('pin')",'bg-emerald-600')))}
     <div class="grid grid-cols-2 gap-3 mb-3">${card(m?'Mill ko Dena':'Parties se Lena',N(tot),m?'text-rose-700':'text-amber-700')}</div>
-    <div class="flex flex-wrap justify-between items-center gap-2">
-      ${ksBox()}
-      ${filterBar(khFilter,'setKhFilter',allL.length,allL.filter(p=>!p.blocked).length,allL.filter(p=>p.blocked).length)}
-    </div>
+    ${ksBox()}
     ${tbl(['#',m?'Mill':'Party',m?'Maal (Khareeda)':'Naam (Bill)',m?'Adaigi':'Wasooli','Baqaya','Actions'],L.map((p,i)=>{
       const l=led(p),b=l.length?l[l.length-1].r:0;
       return [
         i+1,
-        `<div class="${p.blocked?'opacity-70':''}"><b>${esc(p.name)}</b>${p.blocked?blkBadge:''}${p.phone?`<div class="text-xs text-slate-400">${esc(p.phone)}</div>`:''}</div>`,
+        `<div><b>${esc(p.name)}</b>${p.phone?`<div class="text-xs text-slate-400">${esc(p.phone)}</div>`:''}</div>`,
         N(sum(l,'a')),
         N(sum(l,'b')),
         `<b class="${b>0?(m?'text-rose-700':'text-amber-700'):'text-emerald-700'}">${N(b)}</b>`,
         lk('Statement',`stmt(${p.id})`)+
-        (!p.blocked?(m?lk('+ Maal',`purForm(0,${p.id})`,'text-indigo-700')+lk('Payment',`entForm('mout',${p.id})`,'text-rose-600'):lk('+ Jama',`entForm('pin',${p.id})`,'text-emerald-700')):'')+
+        (m?lk('+ Maal',`purForm(0,${p.id})`,'text-indigo-700')+lk('Payment',`entForm('mout',${p.id})`,'text-rose-600'):lk('+ Jama',`entForm('pin',${p.id})`,'text-emerald-700'))+
         lk('Edit',`partyForm('${t}',${p.id})`,'text-blue-700')+
-        lk(p.blocked?'Unblock':'Block',`toggleBlockParty(${p.id})`,p.blocked?'text-emerald-700':'text-amber-700')+
         lk('Del',`delParty(${p.id})`,'text-rose-600')
       ];
-    }),khFilter==='blocked'?'Koi account block nahi hai.':undefined)}
+    }))}
   `;
 }
 const pgParty=()=>kh('party'),pgMill=()=>kh('mill');
 
 function partyForm(t,id){
   const f=S.parties.find(x=>x.id===id)||{};
-  const fields=[{k:'name',l:'Naam',v:f.name,r:1},{k:'phone',l:'Phone',v:f.phone},{k:'ob',l:'Pichla Baqaya',t:'number',v:f.ob||0}];
-  if(id)fields.push({k:'blocked',l:'Account Status',t:'select',o:[['0','Active / فعال'],['1','Blocked / بلاک']],v:f.blocked?'1':'0'});
-  form((id?'Edit ':'Naya ')+(t==='mill'?'Mill':'Party'),fields,o=>{
+  form((id?'Edit ':'Naya ')+(t==='mill'?'Mill':'Party'),[{k:'name',l:'Naam',v:f.name,r:1},{k:'phone',l:'Phone',v:f.phone},{k:'ob',l:'Pichla Baqaya',t:'number',v:f.ob||0}],o=>{
     const n=o.name.trim();if(S.parties.some(x=>x.id!==id&&x.type===t&&x.name.toLowerCase()===n.toLowerCase())){toast('Yeh naam pehle se mojood hai');return false}
     const oldName=f.name;
-    const d={name:n,phone:o.phone.trim(),ob:+o.ob||0,blocked:id?(o.blocked==='1'):!!f.blocked};
+    const d={name:n,phone:o.phone.trim(),ob:+o.ob||0};
     if(id){
       Object.assign(f,d);
       if(oldName&&oldName!==n)BX().forEach(x=>{if(x.lid===id)x.who=n});
@@ -836,20 +797,26 @@ function partyForm(t,id){
   });
 }
 
-function toggleBlockParty(id){
+function delParty(id){
   const p=S.parties.find(x=>x.id===id);if(!p)return;
-  const msg=p.blocked?`"${p.name}" ko Unblock karein?`:`"${p.name}" ko Block karein? Block karne ke baad naya bill ya entry nahi ban sakegi, lekin purana hisaab mehfooz rahega.`;
-  if(!cfm(msg))return;
-  p.blocked=!p.blocked;save();go(cur);
-  toast(p.blocked?'Account block ho gaya':'Account unblock ho gaya',1);
+  const hasLinks=led(p).some(x=>x.d!=='0000')||S.bills.some(b=>b.pid===id||b.mid===id)||S.purchases.some(x=>x.pid===id)||S.entries.some(e=>e.pid===id)||BX().some(x=>x.lid===id);
+  if(hasLinks){
+    if(!cfm(`"${p.name}" ke khata mein purani entries/bills mojood hain! Kya aap is khata aur is se juri tamam entries/bills ko bhi delete karna chahte hain?`))return;
+    S.bills=S.bills.filter(b=>b.pid!==id);
+    S.bills.forEach(b=>{if(b.mid===id){b.mid=0;b.mamt=0}});
+    S.purchases=S.purchases.filter(x=>x.pid!==id);
+    S.entries=S.entries.filter(e=>e.pid!==id);
+    BX().forEach(x=>{if(x.lid===id)x.lid=0});
+  }else{
+    if(!cfm('Delete karein?'))return;
+  }
+  S.parties=S.parties.filter(x=>x.id!==id);save();go(cur);toast('Delete ho gaya',1);
 }
-
-function delParty(id){const p=S.parties.find(x=>x.id===id);if(!p)return;if(led(p).some(x=>x.d!=='0000'))return toast('Is khata mein entries mojood hain - isay Block kar sakte hain');if(cfm('Delete karein?')){S.parties=S.parties.filter(x=>x.id!==id);save();go(cur)}}
 
 function stmt(id){
   const p=S.parties.find(x=>x.id===id);if(!p)return;
   const b=bal(p),m=p.type==='mill';
-  $('mt').textContent='Statement: '+mk(p.name)+(p.blocked?' [BLOCKED]':'');
+  $('mt').textContent='Statement: '+mk(p.name);
   $('mb').innerHTML=`
     ${tbl(['Tareekh','Tafseel',m?'Maal':'Naam',m?'Payment':'Jama','Baqaya',''],led(p).map(x=>[x.d==='0000'?'-':x.d,escA(x.t),x.a?`<b class="text-slate-800">${N(x.a)}</b>`:'',x.b?`<b class="text-emerald-700">${N(x.b)}</b>`:'',`<b>${N(x.r)}</b>`,x.e?lk('Edit',`editEnt(${x.e})`,'text-blue-700')+lk('✕',`delEnt(${x.e},${p.id})`,'text-rose-600'):'']))}
     <p class="mt-3 font-black text-lg">Total Baqaya: ${N(b)}</p>
@@ -864,14 +831,9 @@ function printS(id){
 
 // PURCHASES
 function purForm(id,mid){
-  const b=S.purchases.find(x=>x.id===id)||{};
-  if(!id&&!pty('mill',true).length)return toast('Pehle koi active mill add ya unblock karein');
-  if(id&&!pty('mill').length)return toast('Pehle mill add karein');
-  if(!id&&mid){const sm=S.parties.find(x=>x.id===mid);if(sm&&sm.blocked)return toast('Yeh mill block hai — pehle unblock karein')}
-  form(id?'Maal Edit':'Maal Khareeda',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Mill',t:'combo',o:ptyOpts('mill',b.pid||mid),v:b.pid||mid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Mill Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'note',l:'Note',v:b.note}],o=>{
-    const pid=+o.pid,mObj=S.parties.find(x=>x.id===pid);
-    if(mObj&&mObj.blocked&&(!id||b.pid!==pid)){toast('Yeh mill block hai — active mill select karein');return false}
-    const d={date:o.date,pid,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),note:o.note.trim()};
+  const b=S.purchases.find(x=>x.id===id)||{};if(!pty('mill').length)return toast('Pehle mill add karein');
+  form(id?'Maal Edit':'Maal Khareeda',[{k:'date',l:'Tareekh',t:'date',v:b.date||D,r:1},{k:'pid',l:'Mill',t:'combo',o:pty('mill').map(p=>[p.id,p.name]),v:b.pid||mid,r:1},{k:'katte',l:'Katte',t:'number',v:b.katte,r:1},{k:'wt',l:'Wazan KG',t:'number',v:b.wt,r:1},{k:'rate',l:'Mill Rate ('+RB()+')',t:'number',v:b.rate,r:1},{k:'amt',l:'Raqam',t:'number',v:b.amt,r:1},{k:'note',l:'Note',v:b.note}],o=>{
+    const d={date:o.date,pid:+o.pid,katte:+o.katte,wt:+o.wt,rate:+o.rate,amt:Math.round(+o.amt),note:o.note.trim()};
     if(!(d.katte>0&&d.wt>0&&d.rate>0&&d.amt>0)){toast('Tamam fields darj karein');return false}
     if(id)Object.assign(b,d);else S.purchases.unshift(Object.assign({id:uid()},d));save();go(cur);
   });
