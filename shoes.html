@@ -3023,5 +3023,302 @@
     setPosMode(state.posMode || 'wholesale');
     refreshView('pos');
   </script>
+<script>
+
+(function () {
+  const DEF = ['Sneaker', 'Loafer', 'Formal', 'Dress Shoes', 'Sandal', 'Softy', 'Jogger'];
+  const $ = id => document.getElementById(id);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const mkBrand = n => ({ id: uid(), name: n, img: '', cats: DEF.map(c => ({ id: uid(), name: c, img: '', arts: [] })) });
+  const P = { b: null, c: null, a: null };
+  let E = { kind: 'b', id: null, img: '', blob: null };
+  let dirHandle = null, savedHandle = null, ft;
+
+  /* ---------- CSS ---------- */
+  const st = document.createElement('style');
+  st.textContent = `
+  .bm-hero{height:6px;border-radius:6px;margin-bottom:14px;background:linear-gradient(90deg,#ff4d6d,#ff9f1c,#ffd60a,#38b000,#00b4d8,#7b2cbf,#ff4d6d);background-size:200% 100%;animation:bmFlow 8s linear infinite}
+  @keyframes bmFlow{to{background-position:200% 0}}
+  .bm-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+  .bm-crumbs{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;font-weight:700}
+  .bm-crumbs button{border:none;background:var(--blue-soft);color:var(--blue);padding:6px 12px;border-radius:20px;font-weight:700;cursor:pointer}
+  .bm-crumbs span.sep{color:#8a94a6}
+  .bm-folder{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--text-muted)}
+  .bm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+  .rb-card{border:3px solid transparent;border-radius:18px;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;
+    background:linear-gradient(#fff,#fff) padding-box,linear-gradient(135deg,#ff4d6d,#ff9f1c,#ffd60a,#38b000,#00b4d8,#7b2cbf) border-box;
+    transition:transform .2s var(--ease),box-shadow .2s var(--ease)}
+  .rb-card:hover{transform:translateY(-5px);box-shadow:0 14px 28px rgba(123,44,191,.22)}
+  .rb-img{height:130px;display:grid;place-items:center;font-size:44px;background:linear-gradient(135deg,hsl(var(--h) 90% 88%),hsl(calc(var(--h) + 50) 90% 80%))}
+  .rb-img img{width:100%;height:100%;object-fit:cover}
+  .rb-body{padding:12px;display:flex;flex-direction:column;gap:4px}
+  .rb-body b{font-size:15px}.rb-body small{color:var(--text-muted)}
+  .rb-act{display:flex;gap:6px;margin-top:8px}
+  .rb-add{border:3px dashed #c4b5fd;border-radius:18px;min-height:210px;display:grid;place-items:center;text-align:center;color:var(--purple);font-weight:800;cursor:pointer;background:#faf7ff;transition:.2s}
+  .rb-add:hover{background:var(--purple-soft);transform:translateY(-3px)}
+  .bm-art-head{display:flex;gap:16px;align-items:center;margin-bottom:14px}
+  .bm-art-head .rb-img{width:110px;height:90px;border-radius:14px;overflow:hidden;font-size:34px}
+  .bm-prev{width:100%;height:120px;object-fit:cover;border-radius:10px;margin-top:8px;background:var(--bg-muted)}
+  `;
+  document.head.appendChild(st);
+
+  /* ---------- UI injection ---------- */
+  const nb = document.createElement('button');
+  nb.className = 'nav-btn';
+  nb.dataset.view = 'brands';
+  nb.dataset.title = 'Brands & Sizes';
+  nb.dataset.sub = 'Brand → Category → Article → Size drill-down with stock & price';
+  nb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg><span>Brands &amp; Sizes</span>';
+  document.querySelector('.nav-btn[data-view="purchases"]').before(nb);
+  nb.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    nb.classList.add('active');
+    $('view-brands').classList.add('active');
+    $('pageTitle').textContent = nb.dataset.title;
+    $('pageSub').textContent = nb.dataset.sub;
+    $('sidebar').classList.remove('mobile-open');
+    render();
+  });
+
+  const view = document.createElement('section');
+  view.id = 'view-brands';
+  view.className = 'view';
+  view.innerHTML = `<div class="bm-hero"></div>
+    <div class="bm-bar"><div class="bm-crumbs" id="bmCrumbs"></div>
+      <div class="bm-folder"><span id="bmFolderStat">No data folder selected</span>
+        <button class="btn btn-sm btn-soft" id="bmReconnect" style="display:none" onclick="bm.reconnect()">Reconnect</button>
+        <button class="btn btn-sm btn-primary" onclick="bm.pickFolder()">📁 Select Data Folder</button></div></div>
+    <div id="bmRoot"></div>`;
+  document.querySelector('.main-content').appendChild(view);
+
+  const modal = document.createElement('div');
+  modal.className = 'modal-backdrop';
+  modal.id = 'bmModal';
+  modal.innerHTML = `<div class="modal" style="max-width:480px">
+    <div class="modal-header"><strong id="bmTitle">Add</strong><button class="btn btn-sm" onclick="closeModal('bmModal')">✕</button></div>
+    <div class="modal-body">
+      <label class="field-label">Name *</label><input id="bmName" class="input" style="margin-bottom:10px" />
+      <div id="bmArtFields" style="display:none">
+        <div class="grid-2" style="margin-bottom:10px">
+          <div><label class="field-label">Sizes (comma separated)</label><input id="bmSizes" class="input" value="39,40,41,42,43,44" /></div>
+          <div><label class="field-label">Default price / pair (Rs.)</label><input id="bmPrice" type="number" class="input" value="1500" /></div>
+        </div></div>
+      <label class="field-label">Image (internet link)</label>
+      <div style="display:flex;gap:8px"><input id="bmUrl" class="input" placeholder="https://..." oninput="bm.setUrl(this.value)" />
+        <button class="btn btn-soft" onclick="bm.auto()">🌐 Find</button></div>
+      <label class="field-label" style="margin-top:10px">…or upload your own image</label>
+      <input type="file" id="bmFile" accept="image/*" class="input" onchange="bm.upload(event)" />
+      <img id="bmPrev" class="bm-prev" style="display:none" />
+    </div>
+    <div class="modal-footer"><button class="btn" onclick="closeModal('bmModal')">Cancel</button><button class="btn btn-primary" onclick="bm.save()">Save</button></div></div>`;
+  document.body.appendChild(modal);
+
+  const fb = document.createElement('button');
+  fb.className = 'btn btn-sm btn-soft';
+  fb.style.width = '100%';
+  fb.textContent = '📁 Data Folder (Settings)';
+  fb.onclick = () => nb.click() || bm.pickFolder();
+  document.getElementById('importFile').before(fb);
+
+  /* ---------- data helpers ---------- */
+  function ensure() { if (!state.brands || !state.brands.length) state.brands = [mkBrand('Apcot')]; }
+  const brand = () => state.brands.find(x => x.id === P.b);
+  const cat = () => brand() && brand().cats.find(x => x.id === P.c);
+  const art = () => cat() && cat().arts.find(x => x.id === P.a);
+  const list = k => k === 'b' ? state.brands : k === 'c' ? brand().cats : cat().arts;
+
+  /* ---------- render ---------- */
+  function card(i, k, o, sub) {
+    return `<div class="rb-card" onclick="bm.go('${k}','${o.id}')">
+      <div class="rb-img" style="--h:${(i * 47) % 360}">${o.img ? `<img src="${esc(o.img)}" onerror="this.remove()">` : '👟'}</div>
+      <div class="rb-body"><b>${esc(o.name)}</b><small>${sub}</small>
+      <div class="rb-act"><button class="btn btn-sm" onclick="event.stopPropagation();bm.open('${k}','${o.id}')">Edit</button>
+      <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();bm.del('${k}','${o.id}')">Delete</button></div></div></div>`;
+  }
+  const addCard = (k, t) => `<div class="rb-add" onclick="bm.open('${k}')"><div><div style="font-size:34px">＋</div>${t}</div></div>`;
+  const sizeQty = a => a.sizes.reduce((s, z) => s + (Number(z.qty) || 0), 0);
+
+  function render() {
+    ensure();
+    const b = brand(), c = cat(), a = art();
+    if (P.b && !b) P.b = P.c = P.a = null;
+    let cr = `<button onclick="bm.up(0)">All Brands</button>`;
+    if (b) cr += `<span class="sep">›</span><button onclick="bm.up(1)">${esc(b.name)}</button>`;
+    if (c) cr += `<span class="sep">›</span><button onclick="bm.up(2)">${esc(c.name)}</button>`;
+    if (a) cr += `<span class="sep">›</span><span>${esc(a.name)}</span>`;
+    $('bmCrumbs').innerHTML = cr;
+    const root = $('bmRoot');
+
+    if (!b) {
+      root.innerHTML = `<div class="bm-grid">${state.brands.map((x, i) => card(i, 'b', x,
+        `${x.cats.length} categories · ${x.cats.reduce((s, y) => s + y.arts.length, 0)} articles`)).join('')}${addCard('b', 'Add Brand')}</div>`;
+    } else if (!c) {
+      root.innerHTML = `<div class="bm-grid">${b.cats.map((x, i) => card(i, 'c', x, `${x.arts.length} articles`)).join('')}${addCard('c', 'Add Category')}</div>`;
+    } else if (!a) {
+      root.innerHTML = `<div class="bm-grid">${c.arts.map((x, i) => card(i, 'a', x,
+        `${x.sizes.length} sizes · ${sizeQty(x)} pairs`)).join('')}${addCard('a', 'Add Article')}</div>`;
+    } else {
+      root.innerHTML = `<div class="card"><div class="card-body">
+        <div class="bm-art-head"><div class="rb-img" style="--h:200">${a.img ? `<img src="${esc(a.img)}">` : '👟'}</div>
+          <div><h3>${esc(a.name)}</h3><small style="color:var(--text-muted)">${esc(b.name)} › ${esc(c.name)} · ${sizeQty(a)} pairs in stock</small></div></div>
+        <div class="table-wrap"><table><thead><tr><th>Size</th><th>Stock (Pairs)</th><th>Price / Pair</th><th>Value</th><th></th></tr></thead><tbody>
+        ${a.sizes.map((z, i) => `<tr>
+          <td><input class="mini-input" style="width:80px;text-align:center" value="${esc(z.size)}" onchange="bm.sz(${i},'size',this.value)"></td>
+          <td><input type="number" min="0" class="mini-input" style="width:90px" value="${z.qty}" onchange="bm.sz(${i},'qty',this.value)"></td>
+          <td><input type="number" min="0" class="mini-input" style="width:110px" value="${z.price}" onchange="bm.sz(${i},'price',this.value)"></td>
+          <td><strong>${fmt(z.qty * z.price)}</strong></td>
+          <td><button class="btn btn-sm btn-danger" onclick="bm.delSize(${i})">✕</button></td></tr>`).join('') ||
+          '<tr><td colspan="5" style="text-align:center;color:var(--text-muted)">No sizes yet. Add the first one.</td></tr>'}
+        </tbody></table></div>
+        <button class="btn btn-primary" style="margin-top:12px" onclick="bm.addSize()">＋ Add Size</button></div></div>`;
+    }
+  }
+
+  /* ---------- folder storage ---------- */
+  const idb = (m, v) => new Promise(r => {
+    const o = indexedDB.open('ncs_fs', 1);
+    o.onupgradeneeded = () => o.result.createObjectStore('h');
+    o.onerror = () => r(null);
+    o.onsuccess = () => {
+      const s = o.result.transaction('h', m === 'get' ? 'readonly' : 'readwrite').objectStore('h');
+      const q = m === 'get' ? s.get('dir') : s.put(v, 'dir');
+      q.onsuccess = () => r(q.result); q.onerror = () => r(null);
+    };
+  });
+  async function writeFile(name, data, sub) {
+    let d = dirHandle;
+    if (sub) d = await d.getDirectoryHandle(sub, { create: true });
+    const w = await (await d.getFileHandle(name, { create: true })).createWritable();
+    await w.write(data); await w.close();
+  }
+  function folderUI() {
+    $('bmFolderStat').textContent = dirHandle ? '✅ Saving to folder: ' + dirHandle.name
+      : savedHandle ? 'Folder "' + savedHandle.name + '" needs permission' : 'No data folder selected';
+    $('bmReconnect').style.display = !dirHandle && savedHandle ? '' : 'none';
+  }
+  function sync() {
+    if (!dirHandle) return;
+    clearTimeout(ft);
+    ft = setTimeout(() => writeFile('pos-data.json', JSON.stringify(state, null, 2)).catch(() => {}), 400);
+  }
+  async function attach(h) {
+    dirHandle = h; savedHandle = h; folderUI();
+    try {
+      const f = await (await h.getFileHandle('pos-data.json')).getFile();
+      if (confirm('Is folder me purana data mila. Load karein? (Cancel = current data folder me save hoga)')) {
+        state = JSON.parse(await f.text()); ensure();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        renderQuickStats(); render(); showToast('Folder data loaded.'); return;
+      }
+    } catch (e) { /* no file yet */ }
+    saveState(); showToast('Folder connected: ' + h.name);
+  }
+
+  /* ---------- saveState hook + public API ---------- */
+  const _save = window.saveState;
+  window.saveState = function () { _save(); sync(); };
+
+  window.bm = {
+    go(k, id) { if (k === 'b') P.b = id; else if (k === 'c') P.c = id; else P.a = id; render(); },
+    up(n) { if (n < 3) P.a = null; if (n < 2) P.c = null; if (n < 1) P.b = null; render(); },
+    open(k, id) {
+      E = { kind: k, id: id || null, img: '', blob: null };
+      const o = id ? list(k).find(x => x.id === id) : null;
+      $('bmTitle').textContent = (o ? 'Edit ' : 'Add ') + { b: 'Brand', c: 'Category', a: 'Article' }[k];
+      $('bmName').value = o ? o.name : '';
+      $('bmArtFields').style.display = k === 'a' && !o ? '' : 'none';
+      E.img = o ? o.img || '' : '';
+      $('bmUrl').value = E.img.startsWith('data:') ? '' : E.img;
+      $('bmFile').value = '';
+      bm.prev();
+      $('bmModal').classList.add('open');
+    },
+    prev() { const p = $('bmPrev'); p.style.display = E.img ? 'block' : 'none'; p.src = E.img; },
+    setUrl(v) { E.img = v.trim(); E.blob = null; bm.prev(); },
+    auto() {
+      const w = ($('bmName').value.trim().split(' ')[0] || 'sneaker').toLowerCase();
+      const cat0 = E.kind === 'c' ? w : (cat() ? cat().name.split(' ')[0].toLowerCase() : 'sneaker');
+      E.img = 'https://loremflickr.com/480/360/shoes,' + encodeURIComponent(cat0) + '?lock=' + Math.floor(Math.random() * 9999);
+      E.blob = null; $('bmUrl').value = E.img; bm.prev();
+    },
+    upload(ev) {
+      const f = ev.target.files[0]; if (!f) return;
+      const im = new Image();
+      im.onload = () => {
+        const s = Math.min(1, 600 / Math.max(im.width, im.height));
+        const cv = document.createElement('canvas');
+        cv.width = im.width * s; cv.height = im.height * s;
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        E.img = cv.toDataURL('image/jpeg', 0.82);
+        cv.toBlob(b => { E.blob = b; }, 'image/jpeg', 0.82);
+        $('bmUrl').value = ''; bm.prev();
+      };
+      im.src = URL.createObjectURL(f);
+    },
+    async save() {
+      const name = $('bmName').value.trim();
+      if (!name) { showToast('Name is required'); return; }
+      if (dirHandle && E.img) {
+        try {
+          let blob = E.blob;
+          if (!blob && E.img.startsWith('http')) {
+            blob = await (await fetch(E.img)).blob();
+            E.img = await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(blob); });
+          }
+          if (blob) await writeFile(name.replace(/[^\w-]+/g, '_') + '_' + Date.now() + '.jpg', blob, 'images');
+        } catch (e) { /* internet image could not be copied; link is kept */ }
+      }
+      let o = E.id ? list(E.kind).find(x => x.id === E.id) : null;
+      if (o) { o.name = name; o.img = E.img; }
+      else {
+        o = { id: uid(), name, img: E.img };
+        if (E.kind === 'b') Object.assign(o, mkBrand(name), { id: o.id, img: E.img });
+        if (E.kind === 'c') o.arts = [];
+        if (E.kind === 'a') {
+          const pr = Number($('bmPrice').value) || 0;
+          o.sizes = $('bmSizes').value.split(',').map(s => s.trim()).filter(Boolean).map(s => ({ size: s, qty: 0, price: pr }));
+        }
+        list(E.kind).push(o);
+      }
+      saveState(); closeModal('bmModal'); render(); showToast('Saved');
+    },
+    del(k, id) {
+      if (!confirm('Delete this and everything inside it?')) return;
+      const l = list(k); l.splice(l.findIndex(x => x.id === id), 1);
+      saveState(); render();
+    },
+    sz(i, f, v) { const z = art().sizes[i]; z[f] = f === 'size' ? v : Math.max(0, Number(v) || 0); saveState(); render(); },
+    addSize() {
+      const a = art(), last = a.sizes[a.sizes.length - 1];
+      a.sizes.push({ size: last && !isNaN(last.size) ? String(Number(last.size) + 1) : '', qty: 0, price: last ? last.price : 0 });
+      saveState(); render();
+    },
+    delSize(i) { art().sizes.splice(i, 1); saveState(); render(); },
+    async pickFolder() {
+      if (!window.showDirectoryPicker) { showToast('Folder select ke liye Chrome ya Edge use karein.'); return; }
+      try {
+        const h = await showDirectoryPicker({ mode: 'readwrite' });
+        await idb('put', h); await attach(h);
+      } catch (e) { /* cancelled */ }
+    },
+    async reconnect() {
+      if (savedHandle && (await savedHandle.requestPermission({ mode: 'readwrite' })) === 'granted') await attach(savedHandle);
+    }
+  };
+
+  /* ---------- restore folder on load ---------- */
+  (async () => {
+    ensure();
+    const h = await idb('get');
+    if (h) {
+      savedHandle = h;
+      if ((await h.queryPermission({ mode: 'readwrite' })) === 'granted') dirHandle = h;
+    }
+    folderUI();
+  })();
+})();
+
+</script>
 </body>
 </html>
